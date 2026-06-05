@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Gestión de Cambios (HU-02 + HU-04)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Gestión de Cambios y Devoluciones</h1>
+                <p class="text-indigo-200 text-sm">Cajero: María López | Caja: 02</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-indigo-200">Fecha del Sistema</p>
+                <p class="font-semibold">05 Jun 2026</p>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            
+            <!-- PASO 1: SOLICITAR TICKET (HU-04) -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center">
+                    <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs mr-2">1</span>
+                    Validar Comprobante (Obligatorio)
+                </h2>
+                <div class="flex gap-3">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <!-- REQ HU-04: El sistema debe solicitar el ticket -->
+                        <input type="text" value="T-20260526-089" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono" placeholder="Escanear o ingresar N° de Ticket">
+                    </div>
+                    <button class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        Validar
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 2: RESULTADO DE VALIDACIÓN (HU-02 + HU-04) -->
+            <!-- ESTADO A: TICKET VÁLIDO Y DENTRO DEL PLAZO (10 días) -->
+            <div class="border border-green-200 bg-green-50 rounded-lg p-5">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Ticket Encontrado: T-20260526-089</h3>
+                        <p class="text-sm text-gray-600">Fecha de compra: 26 de Mayo, 2026 - 10:15 AM</p>
+                    </div>
+                    <!-- REQ HU-02: El sistema debe validar la fecha e informar el plazo -->
+                    <div class="flex flex-col items-end">
+                        <span class="px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-full bg-green-100 text-green-800 border border-green-200">
+                            ✅ 10 / 15 días transcurridos
+                        </span>
+                        <span class="text-xs text-green-700 mt-1 font-medium">Dentro del plazo permitido</span>
+                    </div>
+                </div>
+
+                <!-- Lista de productos de esa venta -->
+                <div class="bg-white rounded border border-gray-200 overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Cant.</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-gray-900">Zapatillas Running T-42</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 text-right">1</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 text-right">$85.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 
+            ========================================================================
+            ESTADO B (Alternativo): TICKET VENCIDO (20 días) - Descomentar para ver
+            ========================================================================
+            <div class="border border-red-200 bg-red-50 rounded-lg p-5">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Ticket Encontrado: T-20260510-012</h3>
+                        <p class="text-sm text-gray-600">Fecha de compra: 10 de Mayo, 2026</p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-full bg-red-100 text-red-800 border border-red-200">
+                            ⚠️ 20 / 15 días transcurridos
+                        </span>
+                    </div>
+                </div>
+                
+                REQ HU-02: El sistema debe informar si el plazo está vencido
+                <div class="bg-red-100 border-l-4 border-red-600 p-3 rounded-r mb-4">
+                    <p class="text-sm text-red-800 font-bold">Plazo de cambio vencido</p>
+                    <p class="text-sm text-red-700">La política de la empresa solo permite cambios hasta 15 días después de la compra.</p>
+                </div>
+            </div>
+            ========================================================================
+            -->
+
+            <!-- PASO 3: ACCIONES -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <button class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                
+                <!-- REQ HU-04 + HU-02: No se debe permitir continuar sin comprobante válido o si el plazo está vencido -->
+                <!-- En Estado A (Válido): El botón está habilitado -->
+                <button class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-sm flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    Continuar con el Cambio
+                </button>
+
+                <!-- En Estado B (Vencido): El botón se vería así (Deshabilitado) -->
+                <!-- 
+                <button disabled class="px-8 py-3 bg-gray-300 text-gray-500 font-bold rounded-lg cursor-not-allowed flex items-center shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    Cambio No Permitido
+                </button>
+                -->
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

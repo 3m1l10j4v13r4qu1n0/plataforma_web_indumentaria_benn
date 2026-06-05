@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Control de Descuentos (HU-05)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden relative">
+        
+        <!-- Header -->
+        <div class="bg-blue-700 text-white p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Finalizar Venta</h1>
+                <p class="text-blue-200 text-sm">Vendedor: Carlos Ruiz | Caja: 03</p>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            
+            <!-- RESUMEN DE COMPRA -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Resumen de Productos</h3>
+                <div class="flex justify-between text-sm mb-2">
+                    <span>Subtotal (3 productos)</span>
+                    <span class="font-medium">$120.00</span>
+                </div>
+            </div>
+
+            <!-- ======================================================================== -->
+            <!-- SECCIÓN DE DESCUENTO (HU-05) -->
+            <!-- ======================================================================== -->
+            <div class="bg-white border border-gray-200 rounded-lg p-5 space-y-4">
+                <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                    Aplicar Descuento
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Porcentaje (%)</label>
+                        <!-- REQ: Validar porcentaje de descuento -->
+                        <input type="number" value="10" min="0" max="100" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold text-gray-900">
+                    </div>
+                    <div class="flex items-end">
+                        <!-- REQ: Los descuentos altos deben requerir autorización -->
+                        <p class="text-xs text-gray-500 bg-gray-100 p-2 rounded border border-gray-200">
+                            🔒 Límite sin autorización: <span class="font-bold text-gray-700">20%</span><br>
+                            Si supera este valor, se solicitará PIN de Gerente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- PREVISUALIZACIÓN EN TIEMPO REAL -->
+                <div class="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
+                    <span class="text-gray-600">Descuento aplicado:</span>
+                    <span class="text-green-600 font-bold">-$12.00 (10%)</span>
+                </div>
+            </div>
+
+            <!-- 
+            ========================================================================
+            ESTADO A: DESCUENTO APROBADO AUTOMÁTICAMENTE (<= 20%)
+            ======================================================================== -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <div>
+                    <p class="text-sm font-semibold text-green-800">Descuento aplicado correctamente.</p>
+                    <p class="text-xs text-green-700">No requiere autorización adicional.</p>
+                </div>
+            </div>
+
+            <!-- 
+            ========================================================================
+            ESTADO B: DESCUENTO ALTO (40%) -> REQUIERE AUTORIZACIÓN (Comentado)
+            Descomenta este bloque y comenta el Estado A para visualizarlo.
+            ========================================================================
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-3">
+                <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <div>
+                    <p class="text-sm font-semibold text-yellow-800">Descuento del 40% supera el límite permitido.</p>
+                    <p class="text-xs text-yellow-700">Se requiere autorización de un usuario con rol de Gerente.</p>
+                </div>
+            </div>
+            ========================================================================
+            -->
+
+        </div>
+
+        <!-- FOOTER / TOTALES -->
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+            <div class="text-right">
+                <p class="text-sm text-gray-500">Total a Pagar</p>
+                <p class="text-3xl font-bold text-blue-700">$108.00</p>
+            </div>
+            <div class="flex space-x-3">
+                <button class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors">
+                    Cancelar
+                </button>
+                <button class="px-8 py-3 bg-blue-700 text-white font-bold rounded-lg hover:bg-blue-800 shadow-sm">
+                    Confirmar y Cobrar
+                </button>
+            </div>
+        </div>
+
+        <!-- 
+        ========================================================================
+        MODAL DE AUTORIZACIÓN DE GERENTE (HU-05)
+        Este modal aparece cuando el descuento > límite.
+        ========================================================================
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200">
+                <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+                    <h3 class="font-bold text-lg">🔒 Autorización Requerida</h3>
+                    <button class="text-gray-400 hover:text-white transition-colors">✕</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm text-gray-600">Un descuento del <span class="font-bold text-gray-900">40%</span> supera el límite permitido. Por favor, ingrese sus credenciales para autorizar.</p>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ID / Usuario del Gerente</label>
+                        <input type="text" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-gray-800" placeholder="Ej: GER-001">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">PIN de Autorización</label>
+                        <input type="password" maxlength="4" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-gray-800 tracking-widest text-center" placeholder="••••">
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button class="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</button>
+                        <!-- REQ: Registrar quién autorizó el descuento -->
+                        <button class="flex-1 px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-sm">Autorizar Descuento</button>
+                    </div>
+                    <p class="text-xs text-gray-400 text-center mt-2">Esta acción quedará registrada en el log de auditoría con fecha, hora y usuario autorizador.</p>
+                </div>
+            </div>
+        </div>
+        ========================================================================
+        -->
+
+    </div>
+
+</body>
+</html>

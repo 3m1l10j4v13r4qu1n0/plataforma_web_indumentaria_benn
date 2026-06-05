@@ -187,6 +187,48 @@ Basado en el roadmap y la metodología Kanban, las tareas inmediatas son:
 3. **Revisión de Código**: Establecer el flujo de Pull Requests con al menos una aprobación requerida antes de fusionar a la rama principal.
 
 ---
+
+## 14.
+
+---
+
+## 15. Mockups y Prototipos de Interfaz
+
+Para garantizar que la implementación del Frontend se alinee perfectamente con los requisitos de negocio, se han diseñado prototipos de alta fidelidad en **HTML + Tailwind CSS** para cada Historia de Usuario crítica. 
+
+Estos mockups incluyen los estados principales (éxito, error, campos deshabilitados y validaciones) definidos en los criterios de aceptación.
+
+### 📂 Ubicación en el Repositorio
+Todos los archivos de los prototipos se encuentran en la carpeta:  
+`docs/05_mockups/`
+
+### 🖥️ Catálogo de Mockups
+
+| Historia de Usuario | Módulo | Descripción del Prototipo | Archivo |
+| :--- | :--- | :--- | :--- |
+| **HU-01** | Ventas | Pantalla de punto de venta con validación de stock en tiempo real, badges de color y bloqueo de botón si el stock es 0. | `mockup_hu01.html` |
+| **HU-02 + HU-04** | Cambios | Flujo unificado de validación de ticket y cálculo visual del plazo de 15 días (incluye estados de "plazo válido" y "plazo vencido"). | `mockup_hu02_hu04.html` |
+| **HU-03** | Cambios | Pantalla de inspección física del producto con checklist de etiqueta, selector de estado y campo de observaciones. | `mockup_hu03.html` |
+| **HU-05** | Administración | Interfaz de aplicación de descuentos con modal de autorización jerárquica para gerentes cuando se supera el límite. | `mockup_hu05.html` |
+| **HU-06** | Consultas | Pantalla de búsqueda rápida de stock por nombre o código, con indicadores visuales de stock saludable, bajo o agotado. | `mockup_hu06.html` |
+| **HU-07** | Ventas | Pantalla de confirmación de venta con simulación visual de ticket impreso y manejo de errores de impresora. | `mockup_hu07.html` |
+
+### 👁️ Cómo visualizar los mockups
+
+Tienes dos opciones para revisar los diseños:
+
+1. **Localmente (Recomendado)**: 
+   - Descarga o clona el repositorio.
+   - Navega a la carpeta `docs/05_mockups/`.
+   - Haz doble clic en cualquier archivo `.html` para abrirlo en tu navegador web (Chrome, Firefox, Edge). No requiere servidor local.
+
+2. **En línea (Tailwind Play)**:
+   - Abre el archivo `.html` con un editor de texto (como VS Code o el Bloc de notas).
+   - Copia todo el código.
+   - Pégalo en [https://play.tailwindcss.com/](https://play.tailwindcss.com/) para verlo renderizado al instante y experimentar con los estados comentados en el código.
+
+> **Nota para el equipo de desarrollo**: Los mockups contienen comentarios HTML (`<!-- REQ: ... -->`) que vinculan directamente cada elemento visual con el criterio de aceptación específico de la Historia de Usuario correspondiente.---
+
 *Documento generado para fines académicos. Última actualización: Junio 2026.*
 ```
 

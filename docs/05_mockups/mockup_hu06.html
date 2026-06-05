@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Consultar Stock (HU-06)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-teal-600 text-white p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Consulta de Stock en Tiempo Real</h1>
+                <p class="text-teal-100 text-sm">Vendedor: Carlos Ruiz</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-teal-100">Sistema</p>
+                <p class="font-semibold">05 Jun 2026 - 14:35</p>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            
+            <!-- BARRA DE BÚSQUEDA (HU-06: Búsqueda por nombre o código) -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" value="Camiseta" class="block w-full pl-12 pr-4 py-4 border-2 border-teal-100 rounded-lg text-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all" placeholder="Escanear código o escribir nombre del producto...">
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded border border-gray-200">Enter para buscar</span>
+                </div>
+            </div>
+
+            <!-- RESULTADOS DE BÚSQUEDA -->
+            <div class="space-y-3">
+                <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Resultados encontrados (2)</h2>
+                
+                <!-- RESULTADO 1: Stock Saludable (Caso Positivo) -->
+                <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-teal-50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 text-lg">Camiseta Básica Azul</p>
+                            <p class="text-sm text-gray-500">Código: CAM-001 | Categoría: Indumentaria</p>
+                        </div>
+                    </div>
+                    <!-- REQ: El sistema debe mostrar cantidad disponible -->
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800 border border-green-200">
+                            24 en stock
+                        </span>
+                        <p class="text-xs text-gray-400 mt-1">Última actualización: hace 2 min</p>
+                    </div>
+                </div>
+
+                <!-- RESULTADO 2: Stock Bajo (Caso Borde) -->
+                <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 text-lg">Camiseta Básica Roja</p>
+                            <p class="text-sm text-gray-500">Código: CAM-002 | Categoría: Indumentaria</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            2 en stock
+                        </span>
+                        <p class="text-xs text-gray-400 mt-1">Última actualización: hace 5 min</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 
+            ========================================================================
+            ESTADO ALTERNATIVO: Producto inexistente (Caso Negativo)
+            Descomentar esta sección y comentar la de "Resultados" para ver el estado de error
+            ========================================================================
+            <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Producto no encontrado</h3>
+                <p class="mt-1 text-sm text-gray-500">No existe ningún producto activo con el código o nombre "XYZ-999".</p>
+                <p class="mt-2 text-xs text-gray-400">Verifique el código de barras o intente con otra palabra clave.</p>
+            </div>
+            ========================================================================
+            -->
+
+        </div>
+    </div>
+
+</body>
+</html>

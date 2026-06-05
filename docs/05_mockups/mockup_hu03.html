@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Inspección de Producto (HU-03)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-indigo-700 text-white p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Inspección de Producto para Cambio</h1>
+                <p class="text-indigo-200 text-sm">Ticket: T-20260526-089 | Cajero: María López</p>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            
+            <!-- CONTEXTO: Producto a evaluar -->
+            <div class="flex items-start gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="bg-gray-200 border-2 border-dashed border-gray-300 rounded-lg w-24 h-24 flex items-center justify-center text-gray-400">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Zapatillas Running T-42</h3>
+                    <p class="text-sm text-gray-600">SKU: ZAP-RUN-042 | Precio original: $85.00</p>
+                    <p class="text-xs text-indigo-600 mt-1 font-medium">Compra original: 26 de Mayo, 2026</p>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DE INSPECCIÓN (HU-03) -->
+            <div class="space-y-5">
+                <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide border-b pb-2">Checklist de Inspección Física</h2>
+                
+                <!-- REQ: El producto debe conservar su etiqueta -->
+                <div class="flex items-center p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 transition-colors cursor-pointer">
+                    <input id="check-etiqueta" type="checkbox" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" checked>
+                    <label for="check-etiqueta" class="ml-3 block text-sm font-medium text-gray-900 cursor-pointer">
+                        ¿El producto conserva su etiqueta original intacta?
+                        <span class="block text-xs text-gray-500 font-normal">Verificar que no esté cortada, arrancada o adulterada.</span>
+                    </label>
+                </div>
+
+                <!-- REQ: El producto no debe presentar uso -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-900">Estado físico del producto:</label>
+                    <select id="select-estado" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <option value="nuevo">🟢 Nuevo / Sin señales de uso (Apto)</option>
+                        <option value="usado">🟡 Con leves señales de uso (No apto)</option>
+                        <option value="danado">🔴 Dañado o sucio (No apto)</option>
+                    </select>
+                </div>
+
+                <!-- Observaciones (Se vuelve crítico si se rechaza) -->
+                <div class="space-y-2">
+                    <label for="observaciones" class="block text-sm font-medium text-gray-900">Observaciones del cajero <span class="text-red-500">*</span></label>
+                    <textarea id="observaciones" rows="3" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ej: El producto está en perfectas condiciones, caja cerrada."></textarea>
+                </div>
+            </div>
+
+            <!-- ======================================================================== -->
+            <!-- ESTADO A: PRODUCTO APTO (Checklist correcto) -->
+            <!-- ======================================================================== -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <h4 class="text-sm font-bold text-green-800">Producto apto para cambio</h4>
+                    <p class="text-sm text-green-700">El producto cumple con las políticas de la empresa (nuevo y etiquetado). Puede proceder a seleccionar el producto de reemplazo.</p>
+                </div>
+            </div>
+
+            <!-- 
+            ========================================================================
+            ESTADO B: PRODUCTO RECHAZADO (Descomentar para ver el estado de error)
+            ========================================================================
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <h4 class="text-sm font-bold text-red-800">Producto NO apto para cambio</h4>
+                    <p class="text-sm text-red-700">El producto presenta señales de uso y/o no conserva su etiqueta. Por política de la empresa, el cambio es rechazado.</p>
+                </div>
+            </div>
+            ========================================================================
+            -->
+
+            <!-- ACCIONES -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <button class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                    Cancelar Cambio
+                </button>
+                
+                <!-- REQ: El sistema debe rechazar productos en mal estado -->
+                <!-- En Estado A (Apto): Botón habilitado -->
+                <button class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-sm flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Aprobar Inspección y Continuar
+                </button>
+
+                <!-- En Estado B (Rechazado): El botón se vería así -->
+                <!-- 
+                <button disabled class="px-8 py-3 bg-red-600 text-white font-bold rounded-lg opacity-50 cursor-not-allowed flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Rechazar Cambio (No permitido)
+                </button>
+                -->
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

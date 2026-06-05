@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Nueva Venta (HU-01)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen p-6">
+
+    <!-- Contenedor Principal del Punto de Venta -->
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-blue-700 text-white p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Nueva Venta</h1>
+                <p class="text-blue-200 text-sm">Cajero: Juan Pérez | Caja: 01</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-blue-200">Fecha</p>
+                <p class="font-semibold">05 Jun 2026 - 14:30</p>
+            </div>
+        </div>
+
+        <!-- Barra de Búsqueda / Escaneo -->
+        <div class="p-6 border-b border-gray-200">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Buscar o escanear producto</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <!-- Icono de código de barras -->
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                    </svg>
+                </div>
+                <!-- REQ: La búsqueda debe poder hacerse por nombre o código -->
+                <input type="text" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ej: CAM-001 o 'Camiseta Básica'">
+            </div>
+        </div>
+
+        <!-- Lista de Productos en Carrito -->
+        <div class="p-6">
+            <h2 class="text-lg font-semibold mb-4">Productos a vender</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unit.</th>
+                            <!-- REQ: El sistema debe mostrar el stock disponible del producto -->
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Actual</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        
+                        <!-- FILA 1: Producto con stock disponible (Caso Positivo) -->
+                        <tr>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">Camiseta Básica Azul</div>
+                                <div class="text-xs text-gray-500">SKU: CAM-001</div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700">$25.00</td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <!-- Badge Verde: Stock > 0 -->
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    5 disponibles
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <input type="number" min="1" max="5" value="1" class="w-20 p-2 border border-gray-300 rounded text-center focus:ring-blue-500 focus:border-blue-500">
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">$25.00</td>
+                        </tr>
+
+                        <!-- FILA 2: Producto SIN stock (Caso Negativo / Borde) -->
+                        <tr class="bg-red-50">
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-red-900">Pantalón Deportivo</div>
+                                <div class="text-xs text-red-600">SKU: PAN-042</div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-red-700">$40.00</td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <!-- Badge Rojo: Stock == 0 -->
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    0 disponibles
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <!-- Input deshabilitado visualmente -->
+                                <input type="number" value="0" disabled class="w-20 p-2 border border-red-200 bg-red-100 rounded text-center text-red-500 cursor-not-allowed">
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-red-900 text-right">$0.00</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ALERTA DE BLOQUEO (Crítico para HU-01) -->
+            <!-- REQ: No se debe permitir vender productos sin stock -->
+            <div class="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700 font-semibold">
+                            No se puede procesar la venta
+                        </p>
+                        <p class="text-sm text-red-600 mt-1">
+                            El producto "Pantalón Deportivo" no tiene stock disponible. Por favor, elimínalo del carrito para continuar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer con Totales y Acciones -->
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+            <div>
+                <p class="text-sm text-gray-500">Total de artículos</p>
+                <p class="text-2xl font-bold text-gray-900">1</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-500">Total a Pagar</p>
+                <p class="text-3xl font-bold text-blue-700">$25.00</p>
+            </div>
+            <div class="flex space-x-3">
+                <button class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    Cancelar
+                </button>
+                <!-- REQ: No se debe permitir vender productos sin stock -->
+                <!-- ESTADO: Botón deshabilitado (disabled) porque hay un item con stock 0 -->
+                <button disabled class="px-8 py-3 bg-gray-300 text-gray-500 font-bold rounded-lg cursor-not-allowed flex items-center shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    Confirmar Venta (Bloqueado)
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
