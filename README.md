@@ -76,15 +76,75 @@ proyecto-retail/
 │   │   ├── definicion_listo.md # (DoR) Qué debe tener una HU para pasar a "En Desarrollo"
 │   │   └── definicion_terminado.md # (DoD) Qué se necesita para mover una HU a "Done"
 │   │
-│   └── 04_historias_usuario/   # 📂 Aquí irán las carpetas específicas por HU (Fase 2)
-│       ├── HU-01/
-│       ├── HU-02/
-│       └── ...
-│
-├──src/                        # Carpeta del código (Backend / Frontend)
-│  ├── backend/
-│  └── frontend/─ database/                       # Scripts de migración, seeders y diseño ER
-└── .github/                        # Workflows de CI/CD (si aplica)
+│   ├── 04_historias_usuario
+│   │   ├── HU-01
+│   │   │   ├── HU-01_api.md
+│   │   │   ├── HU-01_caso_uso_expandido.md
+│   │   │   ├── HU-01.md
+│   │   │   ├── HU-01_modelos_datos.md
+│   │   │   ├── HU-01_pruebas.md
+│   │   │   └── HU-01_requerimientos.md
+│   │   ├── HU-02
+│   │   │   ├── HU-02_api.md
+│   │   │   ├── HU-02_caso_uso_expandido.md
+│   │   │   ├── HU-02.md
+│   │   │   ├── HU-02_modelos_datos.md
+│   │   │   ├── HU-02_pruevas.md
+│   │   │   └── HU-02_requerimientos.md
+│   │   ├── HU-03
+│   │   │   ├── HU-03_api.md
+│   │   │   ├── HU-03_caso_uso_expandido.md
+│   │   │   ├── HU-03.md
+│   │   │   ├── HU-03_modelos_datos.md
+│   │   │   ├── HU-03_pruevas.md
+│   │   │   └── HU-03_requerimientos.md
+│   │   ├── HU-04
+│   │   │   ├── HU-04_api.md
+│   │   │   ├── HU-04_caso_uso_expandido.md
+│   │   │   ├── HU-04.md
+│   │   │   ├── HU-04_modelo_datos.md
+│   │   │   ├── HU-04_pruevas.md
+│   │   │   └── HU-04_requerimientos.md
+│   │   ├── HU-05
+│   │   │   ├── HU-05_api.md
+│   │   │   ├── HU-05_caso_uso_expandido.md
+│   │   │   ├── HU-05.md
+│   │   │   ├── HU-05_modelos_datos.md
+│   │   │   ├── HU-05_pruevas.md
+│   │   │   └── HU-05_requerimientos.md
+│   │   ├── HU-06
+│   │   │   ├── HU-06_api.md
+│   │   │   ├── HU-06_caso_uso_expandido.md
+│   │   │   ├── HU-06.md
+│   │   │   ├── HU-06_modelo_datos.md
+│   │   │   ├── HU-06_pruevas.md
+│   │   │   └── HU-06_requerimientos.md
+│   │   ├── HU-07
+│   │   │   ├── HU-07_api.md
+│   │   │   ├── HU-07_caso_uso_expandido.md
+│   │   │   ├── HU-07.md
+│   │   │   ├── HU-07_modelo_datos.md
+│   │   │   ├── HU-07_pruevas.md
+│   │   │   └── HU-07_requerimientos.md
+│   │   └── HU-08
+│   │       ├── HU-08_api.md
+│   │       ├── HU-08_caso_uso_expandido.md
+│   │       ├── HU-08.md
+│   │       ├── HU-08_modelos_datos.md
+│   │       ├── HU-08_pruevas.md
+│   │       └── HU-08_requerimientos.md
+│   └── 05_mockups
+│       ├── mockup_hu01.html
+│       ├── mockup_hu02_hu04.html
+│       ├── mockup_hu03.html
+│       ├── mockup_hu05.html
+│       ├── mockup_hu06.html
+│       └── mockup_hu07.html
+│──src/                        # Carpeta del código (Backend / Frontend)
+│  ├── backend/                # Lógica de servidor, controladores, modelos, servicios
+│  └── frontend/               # Componentes de interfaz, vistas, servicios HTTP
+├── database/                  # Scripts de migración, seeders y diseño ER
+└── .github/                   # Workflows de CI/CD (si aplica)
 
 ```
 
