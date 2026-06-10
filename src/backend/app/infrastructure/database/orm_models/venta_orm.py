@@ -1,12 +1,14 @@
-# app/infrastructure/database/orm_models/venta_orm.py
-from datetime import datetime
-from typing import List
+# Implementacion de Adaptadores Concretos HU-05
 
-from sqlalchemy import DateTime, ForeignKey, String
+from datetime import datetime
+from typing import List, Optional
+
+from sqlalchemy import DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-# (Asumimos que Base ya está definida o importada desde un base.py compartido)
-# from app.infrastructure.database.orm_models.base import Base
+
+class Base(DeclarativeBase):
+    pass
 
 
 class VentaORM(Base):
@@ -18,6 +20,14 @@ class VentaORM(Base):
     )
     vendedor_id: Mapped[str] = mapped_column(String(36), nullable=False)
     estado: Mapped[str] = mapped_column(String(20), nullable=False, default="PENDIENTE")
+
+    # Nuevos campos para HU-05 (Control de Descuentos)
+    porcentaje_descuento: Mapped[float] = mapped_column(
+        Float, nullable=False, default=0.0
+    )
+    gerente_autorizacion_id: Mapped[Optional[str]] = mapped_column(
+        String(36), nullable=True
+    )
 
     detalles: Mapped[List["DetalleVentaORM"]] = relationship(
         back_populates="venta", cascade="all, delete-orphan"
