@@ -1,3 +1,6 @@
+# HU-01 exceptions
+
+
 class DomainException(Exception):
     """Excepción base para todas las excepciones de dominio."""
 
@@ -40,4 +43,31 @@ class EstadoProductoInvalidoError(DomainException):
         self.estado = estado
         super().__init__(
             f"El producto con ID '{producto_id}' no está activo (Estado: {estado})."
+        )
+
+
+# HU-02 exceptions
+
+
+class DescuentoExcedeLimiteError(DomainException):
+    """Se lanza cuando el descuento supera el límite permitido sin autorización."""
+
+    def __init__(self, porcentaje_solicitado: float, limite_permitido: float):
+        self.porcentaje_solicitado = porcentaje_solicitado
+        self.limite_permitido = limite_permitido
+        super().__init__(
+            f"El descuento del {porcentaje_solicitado}% excede el límite permitido del {limite_permitido}%. "
+            f"Se requiere autorización de un Gerente."
+        )
+
+
+class UsuarioNoAutorizadoError(DomainException):
+    """Se lanza cuando un usuario intenta autorizar una operación sin tener el rol requerido."""
+
+    def __init__(self, usuario_id: str, rol_requerido: str):
+        self.usuario_id = usuario_id
+        self.rol_requerido = rol_requerido
+        super().__init__(
+            f"El usuario con ID '{usuario_id}' no tiene el rol '{rol_requerido}' "
+            f"necesario para autorizar esta operación."
         )
