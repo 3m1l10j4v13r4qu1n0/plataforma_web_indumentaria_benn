@@ -1,3 +1,6 @@
+# HU-05
+
+from app.domain.models.descuento import Descuento
 from app.domain.models.detalle_venta import DetalleVenta
 from app.domain.models.venta import Venta
 from app.domain.ports.i_venta_repository import IVentaRepository
@@ -11,12 +14,14 @@ class VentaRepository(IVentaRepository):
         self.session = session
 
     async def crear_venta(self, venta: Venta) -> Venta:
-        # Mapeo de Entidad de Dominio a ORM
+        # Mapeo de Entidad de Dominio a ORM, incluyendo el Value Object Descuento
         orm_venta = VentaORM(
             id=venta.id,
             fecha_hora=venta.fecha_hora,
             vendedor_id=venta.vendedor_id,
             estado=venta.estado,
+            porcentaje_descuento=venta.descuento.porcentaje,
+            gerente_autorizacion_id=venta.descuento.gerente_autorizacion_id,
         )
 
         for item in venta.items:
@@ -29,7 +34,7 @@ class VentaRepository(IVentaRepository):
         await self.session.commit()
         await self.session.refresh(orm_venta)
 
-        # Retornamos la entidad de dominio actualizada (si la BD generó IDs, etc.)
+        # Reconstrucción de la entidad de dominio desde la BD (incluyendo el Value Object)
         return Venta(
             id=orm_venta.id,
             fecha_hora=orm_venta.fecha_hora,
@@ -39,4 +44,8 @@ class VentaRepository(IVentaRepository):
                 DetalleVenta(producto_id=d.producto_id, cantidad=d.cantidad)
                 for d in orm_venta.detalles
             ],
+            descuento=Descuento(
+                porcentaje=orm_venta.porcentaje_descuento,
+                gerente_autorizacion_id=orm_venta.gerente_autorizacion_id,
+            ),
         )
