@@ -46,7 +46,7 @@ class EstadoProductoInvalidoError(DomainException):
         )
 
 
-# HU-02 exceptions
+# HU-05 exceptions
 
 
 class DescuentoExcedeLimiteError(DomainException):
@@ -70,4 +70,31 @@ class UsuarioNoAutorizadoError(DomainException):
         super().__init__(
             f"El usuario con ID '{usuario_id}' no tiene el rol '{rol_requerido}' "
             f"necesario para autorizar esta operación."
+        )
+
+
+# HU-02 exceptions
+
+
+class PlazoDeCambioVencidoError(DomainException):
+    """Se lanza cuando se intenta solicitar un cambio fuera del plazo de 15 días."""
+
+    def __init__(self, numero_ticket: str, fecha_compra: str, dias_transcurridos: int):
+        self.numero_ticket = numero_ticket
+        self.fecha_compra = fecha_compra
+        self.dias_transcurridos = dias_transcurridos
+        super().__init__(
+            f"El plazo para cambiar el producto del ticket '{numero_ticket}' ha vencido. "
+            f"Fecha de compra: {fecha_compra}. Días transcurridos: {dias_transcurridos}. "
+            f"El límite máximo es de 15 días calendario."
+        )
+
+
+class VentaNoEncontradaError(DomainException):
+    """Se lanza cuando se intenta operar con una venta/ticket que no existe."""
+
+    def __init__(self, identificador: str):
+        self.identificador = identificador
+        super().__init__(
+            f"No se encontró ninguna venta o ticket con el identificador '{identificador}'."
         )
