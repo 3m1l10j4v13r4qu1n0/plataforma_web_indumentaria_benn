@@ -1,11 +1,16 @@
+"""
+Router API REST
+Actualizamos el endpoint para recivir nuevos capos y
+mapearlos al CrearVentaCommand HU-01 y HU-05
+
+"""
+
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
-from app.application.use_cases.validar_stock_venta_use_case import (
-    ValidarStockVentaUseCase,
-)
+from app.application.use_cases.procesar_venta_use_case import ProcesarVentaUseCase
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.infrastructure.dependencies.dependency_injection import (
+    get_procesar_venta_use_case,
     get_producto_repository,
-    get_validar_stock_venta_use_case,
 )
 from app.presentation.schemas.venta_schema import (
     CrearVentaRequest,
@@ -26,10 +31,6 @@ router = APIRouter(prefix="/api/v1", tags=["Ventas y Stock"])
 async def consultar_stock(
     codigo: str, producto_repo: IProductoRepository = Depends(get_producto_repository)
 ):
-    """
-    Obtiene el stock actual de un producto específico por su código.
-    Lanza 404 si el producto no existe (manejado por handlers.py).
-    """
     producto = await producto_repo.obtener_por_codigo(codigo)
     if not producto:
         from app.domain.exceptions import ProductoNoEncontradoError
@@ -47,16 +48,15 @@ async def consultar_stock(
     "/ventas",
     response_model=VentaResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Procesar Venta (Validación y Descuento)",
+    summary="Procesar Venta (Validación Stock + Descuentos)",
 )
 async def procesar_venta(
     request: CrearVentaRequest,
-    use_case: ValidarStockVentaUseCase = Depends(get_validar_stock_venta_use_case),
+    use_case: ProcesarVentaUseCase = Depends(get_procesar_venta_use_case),
 ):
     """
-    Valida el stock de todos los items. Si es válido, confirma la venta
-    y descuenta el inventario en una sola transacción atómica.
-    Lanza 409 Conflict si hay stock insuficiente (manejado por handlers.py).
+    Valida el stock de todos los items y la autorización de descuentos.
+    Si es válido, confirma la venta y descuenta el inventario en una sola transacción.
     """
     # Mapeo de Schema Pydantic a DTO de Aplicación
     command = CrearVentaCommand(
@@ -65,6 +65,8 @@ async def procesar_venta(
             ItemVentaDTO(producto_id=item.producto_id, cantidad=item.cantidad)
             for item in request.items
         ],
+        porcentaje_descuento=request.porcentaje_descuento,
+        gerente_autorizacion_id=request.gerente_autorizacion_id,
     )
 
     # Ejecución del Caso de Uso. Las excepciones de dominio burbujearán automáticamente a handlers.py
@@ -79,4 +81,8 @@ async def procesar_venta(
             ItemVentaResponse(producto_id=item.producto_id, cantidad=item.cantidad)
             for item in venta.items
         ],
+        descuento={
+            "porcentaje": venta.descuento.porcentaje,
+            "gerente_autorizacion_id": venta.descuento.gerente_autorizacion_id,
+        },
     )

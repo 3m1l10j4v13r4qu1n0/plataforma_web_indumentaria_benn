@@ -1,8 +1,12 @@
+# Manejadore Globales de Excepciones HU-01 y HU-05
+
 from app.domain.exceptions import (
+    DescuentoExcedeLimiteError,  # Nuevo
     DomainException,
     EstadoProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
+    UsuarioNoAutorizadoError,  # Nuevo
 )
 from app.presentation.schemas.venta_schema import ErrorResponse
 from fastapi import FastAPI, Request, status
@@ -12,7 +16,6 @@ from fastapi.responses import JSONResponse
 def register_exception_handlers(app: FastAPI):
     """
     Registra los manejadores de excepciones de dominio en la aplicación FastAPI.
-    Esto garantiza que los routers permanezcan limpios de bloques try/except.
     """
 
     @app.exception_handler(ProductoNoEncontradoError)
@@ -34,7 +37,7 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_409_CONFLICT,
             content=ErrorResponse(
                 error="STOCK_INSUFICIENTE",
-                mensaje=exc.__str__(),  # Usa el mensaje detallado de la excepción
+                mensaje=str(exc),
                 producto_id=exc.producto_id,
             ).model_dump(),
         )
@@ -52,9 +55,35 @@ def register_exception_handlers(app: FastAPI):
             ).model_dump(),
         )
 
+    # --- Nuevos Manejadores para HU-05 ---
+    @app.exception_handler(DescuentoExcedeLimiteError)
+    async def descuento_excede_limite_handler(
+        request: Request, exc: DescuentoExcedeLimiteError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,  # 403 indica que la acción está prohibida sin la debida autorización
+            content=ErrorResponse(
+                error="DESCUENTO_EXCEDE_LIMITE", mensaje=str(exc)
+            ).model_dump(),
+        )
+
+    @app.exception_handler(UsuarioNoAutorizadoError)
+    async def usuario_no_autorizado_handler(
+        request: Request, exc: UsuarioNoAutorizadoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=ErrorResponse(
+                error="USUARIO_NO_AUTORIZADO",
+                mensaje=str(exc),
+                usuario_id=exc.usuario_id,
+            ).model_dump(),
+        )
+
+    # -------------------------------------
+
     @app.exception_handler(DomainException)
     async def dominio_generico_handler(request: Request, exc: DomainException):
-        # Fallback para cualquier otra excepción de dominio no mapeada específicamente
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=ErrorResponse(
