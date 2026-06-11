@@ -80,3 +80,209 @@ app/
     ├── schemas/x_schema.py                # Pydantic Models
     ├── routers/x_router.py                # Endpoint POST /x con Depends
     └── handlers.py                        # @app.exception_handler(...)
+
+    ```
+---
+
+# 🌱 Cultura de Desarrollo de Software (Developer Culture)
+
+El objetivo es mantener un código limpio, mantenible y fácil de entender, fomentando hábitos de trabajo similares a los utilizados en equipos profesionales.
+
+## 📌 Principios Fundamentales
+
+### 1. Código Limpio (Clean Code)
+- Los nombres de variables, clases y funciones deben ser descriptivos.
+- Cada función debe tener una única responsabilidad.
+- Evitar métodos excesivamente largos.
+- Priorizar la legibilidad antes que la complejidad.
+
+### 2. Principios SOLID
+- **S (Single Responsibility):** cada clase debe tener una sola responsabilidad.
+- **O (Open/Closed):** el código debe estar abierto a extensión y cerrado a modificación.
+- **L (Liskov Substitution):** las implementaciones deben poder sustituir a sus abstracciones.
+- **I (Interface Segregation):** interfaces pequeñas y específicas.
+- **D (Dependency Inversion):** depender de abstracciones y no de implementaciones.
+
+### 3. KISS (Keep It Simple)
+- Implementar la solución más simple posible.
+- Evitar complejidad innecesaria.
+
+### 4. DRY (Don't Repeat Yourself)
+- No duplicar lógica de negocio.
+- Reutilizar componentes y abstraer código repetido.
+
+### 5. YAGNI (You Aren't Gonna Need It)
+- No implementar funcionalidades que todavía no son necesarias.
+
+---
+
+# 🌿 Estrategia de Ramas
+
+Prohibido trabajar directamente sobre `main`.
+
+Estructura recomendada:
+
+```text
+main
+│
+└── develop
+    ├── feature/product
+    ├── feature/category
+    ├── fix/login-validation
+    ├── refactor/product-service
+    ├── docs/readme
+    └── test/product-use-case
+```
+
+## Convenciones
+
+| Tipo de Rama | Ejemplo |
+|---------------|---------|
+| Nueva funcionalidad | `feature/create-product` |
+| Corrección de errores | `fix/login-error` |
+| Refactorización | `refactor/user-service` |
+| Documentación | `docs/readme` |
+| Pruebas | `test/product-use-case` |
+| Configuración | `chore/dependencies` |
+
+---
+
+# 📝 Convención de Commits
+
+Todos los commits deben seguir el estándar **Conventional Commits**.
+
+## Formato
+
+```text
+<tipo>: <descripción breve>
+```
+
+Ejemplos:
+
+```bash
+git commit -m "feat: agregar endpoint para crear productos"
+git commit -m "fix: corregir validación de email"
+git commit -m "docs: actualizar README"
+git commit -m "refactor: separar lógica de autenticación"
+git commit -m "test: agregar pruebas del caso de uso de productos"
+git commit -m "chore: actualizar dependencias"
+```
+
+## Tipos permitidos
+
+| Prefijo | Propósito |
+|-----------|----------|
+| feat | Nueva funcionalidad |
+| fix | Corrección de errores |
+| docs | Documentación |
+| refactor | Reorganización del código |
+| test | Pruebas |
+| style | Formato del código |
+| chore | Configuración y mantenimiento |
+| build | Dependencias y compilación |
+| ci | Integración continua |
+| perf | Optimización |
+| revert | Revertir cambios |
+
+---
+
+# 🔄 Filosofía de Commits
+
+### ✅ Commit Atómico
+Cada commit debe representar un único cambio.
+
+Correcto:
+
+```text
+feat: implementar CRUD de productos
+```
+
+Incorrecto:
+
+```text
+cambios varios
+```
+
+### ✅ Commits Pequeños y Frecuentes
+
+Preferir:
+
+- 10 commits pequeños
+
+En lugar de:
+
+- 1 commit gigante con muchos cambios mezclados.
+
+---
+
+# 🧪 Calidad del Código
+
+Antes de realizar un commit o Pull Request verificar:
+
+```bash
+ruff check .
+black .
+pytest
+```
+
+No se debe subir código que:
+
+- No compile.
+- Rompa pruebas existentes.
+- Contenga código comentado innecesario.
+- Tenga imports sin usar.
+
+---
+
+# 📚 Documentación
+
+Toda funcionalidad nueva debe actualizar:
+
+- README.md
+- Variables de entorno (`.env.example`)
+- Diagramas si corresponde
+- Endpoints y ejemplos de uso
+- Casos de uso afectados
+
+---
+
+# 🔍 Revisión de Código
+
+Antes de fusionar una rama:
+
+- Revisar los cambios con:
+
+```bash
+git diff
+git status
+```
+
+- Verificar que la rama esté actualizada respecto de `develop`.
+- Resolver conflictos antes del merge.
+- Mantener Pull Requests pequeños y fáciles de revisar.
+
+---
+
+# 🚫 Reglas Prohibidas
+
+- Trabajar directamente sobre `main`.
+- Hacer commits con mensajes como:
+
+```text
+cambios
+arreglos
+update
+cosas
+asd
+```
+
+- Duplicar lógica de negocio.
+- Acoplar el dominio con FastAPI, SQLAlchemy o Pydantic.
+- Ignorar excepciones mediante bloques `try/except` innecesarios.
+- Crear clases o funciones excesivamente grandes.
+
+---
+
+# 🎯 Objetivo
+
+Construir software mantenible, desacoplado y fácil de entender, aplicando los principios de Clean Architecture, Hexagonal Architecture, SOLID y las prácticas habituales utilizadas por equipos profesionales, adaptadas al contexto académico de estudiantes de segundo año de Analista de Sistemas.
