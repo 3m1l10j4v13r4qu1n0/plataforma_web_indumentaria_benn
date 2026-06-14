@@ -98,3 +98,17 @@ class VentaNoEncontradaError(DomainException):
         super().__init__(
             f"No se encontró ninguna venta o ticket con el identificador '{identificador}'."
         )
+
+
+# HU-03 exceptions
+
+
+class ProductoNoAptoParaCambioError(DomainException):
+    """Se lanza cuando el producto no cumple con las condiciones para ser cambiado."""
+
+    def __init__(self, condicion: str):
+        self.condicion = condicion
+        super().__init__(
+            f"El producto no cumple con las condiciones para cambio. "
+            f"Debe estar 'NUEVO_CON_ETIQUETA'. Estado declarado: '{condicion}'."
+        )
