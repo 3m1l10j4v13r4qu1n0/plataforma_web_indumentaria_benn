@@ -112,3 +112,17 @@ class ProductoNoAptoParaCambioError(DomainException):
             f"El producto no cumple con las condiciones para cambio. "
             f"Debe estar 'NUEVO_CON_ETIQUETA'. Estado declarado: '{condicion}'."
         )
+
+
+# HU-04 exceptions
+
+
+class ProductoNoPerteneceAVentaError(DomainException):
+    """Se lanza cuando se intenta cambiar un producto que no está en el ticket original."""
+
+    def __init__(self, producto_id: str, numero_ticket: str):
+        self.producto_id = producto_id
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            f"El producto con ID '{producto_id}' no se encuentra en el comprobante '{numero_ticket}'."
+        )
