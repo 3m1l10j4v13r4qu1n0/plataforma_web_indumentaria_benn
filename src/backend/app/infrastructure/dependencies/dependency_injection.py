@@ -1,8 +1,8 @@
+from app.application.use_cases.consultar_ticket_use_case import ConsultarTicketUseCase
+
 # Casos de Uso (Aplicación)
 from app.application.use_cases.procesar_venta_use_case import ProcesarVentaUseCase
-from app.application.use_cases.solicitar_cambio_use_case import (
-    SolicitarCambioUseCase,
-)  # HU-02 (Paso 4)
+from app.application.use_cases.solicitar_cambio_use_case import SolicitarCambioUseCase
 
 # Puertos (Interfaces del Dominio)
 from app.domain.ports.i_producto_repository import IProductoRepository
@@ -77,3 +77,12 @@ def get_solicitar_cambio_use_case(
     return SolicitarCambioUseCase(
         venta_repository=venta_repo, producto_repository=producto_repo
     )
+
+
+def get_consultar_ticket_use_case(
+    venta_repo: IVentaRepository = Depends(get_venta_repository),
+) -> ConsultarTicketUseCase:
+    """
+    Fábrica Transient: Provee el caso de uso para consultar detalles de un ticket por su número.
+    """
+    return ConsultarTicketUseCase(venta_repository=venta_repo)
