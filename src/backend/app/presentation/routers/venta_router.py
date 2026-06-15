@@ -1,10 +1,3 @@
-"""
-Router API REST
-Actualizamos el endpoint para recivir nuevos capos y
-mapearlos al CrearVentaCommand HU-01 y HU-05
-
-"""
-
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
 from app.application.use_cases.procesar_venta_use_case import ProcesarVentaUseCase
 from app.domain.ports.i_producto_repository import IProductoRepository
@@ -55,8 +48,11 @@ async def procesar_venta(
     use_case: ProcesarVentaUseCase = Depends(get_procesar_venta_use_case),
 ):
     """
-    Valida el stock de todos los items y la autorización de descuentos.
-    Si es válido, confirma la venta y descuenta el inventario en una sola transacción.
+    Valida stock, autoriza descuentos y procesa la venta.
+    Internamente (HU-08), descuenta el stock y registra el MovimientoStock
+    en una sola transacción atómica (ACID).
+
+    Cero bloques try/except. Las excepciones de dominio burbujean a handlers.py.
     """
     # Mapeo de Schema Pydantic a DTO de Aplicación
     command = CrearVentaCommand(
@@ -69,7 +65,7 @@ async def procesar_venta(
         gerente_autorizacion_id=request.gerente_autorizacion_id,
     )
 
-    # Ejecución del Caso de Uso. Las excepciones de dominio burbujearán automáticamente a handlers.py
+    # La ejecución atómica ocurre aquí. Si falla, el UoW hace rollback y handlers.py responde.
     venta = await use_case.execute(command)
 
     return VentaResponse(
