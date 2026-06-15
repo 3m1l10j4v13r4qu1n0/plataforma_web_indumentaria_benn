@@ -3,6 +3,11 @@ from typing import List
 
 
 @dataclass
+class BuscarProductosCommand:
+    query: str  # Término de búsqueda (código exacto o fragmento de nombre)
+
+
+@dataclass
 class ProductoStockResumenDTO:
     """
     Definimos aquí el DTO que el Caso de Uso devolverá,
