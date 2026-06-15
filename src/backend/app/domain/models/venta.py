@@ -1,14 +1,4 @@
-"""
-Actualización de la Entidad de Dominio:
-HU-01 implementacion de ventas y HU-05
-implementacion de descuento
-Para cumplir con la HU-04 y HU-07
-(que mencionan el número de ticket) y facilitar
-la validación de la HU-02, añadimos numero_ticket
-a la entidad Venta y un método de dominio que evalúe
-la elegibilidad para el cambio.
-
-"""
+import re
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -39,12 +29,13 @@ class Venta:
             raise ValueError("Una venta debe tener al menos un item.")
         if self.fecha_hora is None:
             raise ValueError("La fecha y hora de la venta son obligatorias.")
-        if not self.numero_ticket or not isinstance(self.numero_ticket, str):
-            raise ValueError(
-                "El número de ticket es obligatorio y debe ser una cadena de texto."
-            )
 
-    def confirmar(self) -> None:
+        
+       # Validación de invariante para HU-07: El número de ticket debe ser una cadena no vacía
+        if not self.numero_ticket or not isinstance(self.numero_ticket, str) or len(self.numero_ticket.strip()) == 0:
+            raise ValueError("El número de ticket es obligatorio y no puede estar vacío.")
+   
+   def confirmar(self) -> None:
         if self.estado != "PENDIENTE":
             raise ValueError("Solo se pueden confirmar ventas en estado PENDIENTE.")
         self.estado = "CONFIRMADA"
