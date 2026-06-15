@@ -3,11 +3,17 @@ from app.application.use_cases.consultar_ticket_use_case import ConsultarTicketU
 # Casos de Uso (Aplicación)
 from app.application.use_cases.procesar_venta_use_case import ProcesarVentaUseCase
 from app.application.use_cases.solicitar_cambio_use_case import SolicitarCambioUseCase
+from app.domain.ports.i_movimiento_stock_repository import (
+    IMovimientoStockRepository,
+)  # <-- NUEVO
 
 # Puertos (Interfaces del Dominio)
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.domain.ports.i_usuario_repository import IUsuarioRepository
 from app.domain.ports.i_venta_repository import IVentaRepository
+from app.infrastructure.database.repositories.movimiento_stock_repository import (
+    MovimientoStockRepository,
+)  # <-- NUEVO
 
 # Repositorios Concretos (Infraestructura)
 from app.infrastructure.database.repositories.producto_repository import (
@@ -49,6 +55,18 @@ def get_usuario_repository(
     return UsuarioRepository(session=session)
 
 
+def get_movimiento_stock_repository(  # <-- NUEVO
+    session: AsyncSession = Depends(get_async_session),
+) -> IMovimientoStockRepository:
+    """
+    Fábrica Transient: Provee una instancia del repositorio de movimientos de stock.
+    Al compartir la misma `session` que los otros repositorios, garantiza que todas
+    las operaciones (actualizar producto y registrar movimiento) se ejecuten en
+    la misma transacción atómica (ACID).
+    """
+    return MovimientoStockRepository(session=session)
+
+
 # ---------------- FACTORÍAS DE CASOS DE USO ----------------
 
 
@@ -56,12 +74,18 @@ def get_procesar_venta_use_case(
     producto_repo: IProductoRepository = Depends(get_producto_repository),
     venta_repo: IVentaRepository = Depends(get_venta_repository),
     usuario_repo: IUsuarioRepository = Depends(get_usuario_repository),
+    movimiento_stock_repo: IMovimientoStockRepository = Depends(
+        get_movimiento_stock_repository
+    ),  # <-- INYECTADO
 ) -> ProcesarVentaUseCase:
-    """Inyecta los contratos necesarios para HU-01 y HU-05."""
+    """
+    Inyecta los contratos necesarios para HU-01, HU-05 y HU-08.
+    """
     return ProcesarVentaUseCase(
         producto_repository=producto_repo,
         venta_repository=venta_repo,
         usuario_repository=usuario_repo,
+        movimiento_stock_repository=movimiento_stock_repo,
     )
 
 
