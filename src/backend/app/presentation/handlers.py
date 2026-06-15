@@ -1,3 +1,6 @@
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
+
 from app.domain.exceptions import (
     DescuentoExcedeLimiteError,
     DomainException,
@@ -9,10 +12,10 @@ from app.domain.exceptions import (
     StockInsuficienteError,
     UsuarioNoAutorizadoError,
     VentaNoEncontradaError,  # Nuevo para HU-02/04
+    TipoMovimientoInvalidoError,  # Nuevo para HU-08
+    CantidadMovimientoInvalidaError,  # Nuevo para HU-08
 )
 from app.presentation.schemas.cambio_schema import ErrorResponse
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 
 
 def register_exception_handlers(app: FastAPI):
@@ -136,6 +139,36 @@ def register_exception_handlers(app: FastAPI):
                 numero_ticket=exc.numero_ticket,
             ).model_dump(),
         )
+
+    # HU-08
+
+    @app.exception_handler(TipoMovimientoInvalidoError)
+    async def tipo_movimiento_invalido_handler(
+        request: Request, exc: TipoMovimientoInvalidoError
+    ):
+        # 500 Internal Server Error: Indica un error de programación en el Caso de Uso, no un error del cliente.
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=ErrorResponse(
+                error="ERROR_INTERNO_DE_DOMINIO",
+                mensaje=f"Violación de invariante: {str(exc)}",
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CantidadMovimientoInvalidaError)
+    async def cantidad_movimiento_invalida_handler(
+        request: Request, exc: CantidadMovimientoInvalidaError
+    ):
+        # 500 Internal Server Error: Indica un error de programación en el Caso de Uso.
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=ErrorResponse(
+                error="ERROR_INTERNO_DE_DOMINIO",
+                mensaje=f"Violación de invariante: {str(exc)}",
+            ).model_dump(),
+        )
+
+    # -------------------------------------------------------------------------------
 
     @app.exception_handler(DomainException)
     async def dominio_generico_handler(request: Request, exc: DomainException):
