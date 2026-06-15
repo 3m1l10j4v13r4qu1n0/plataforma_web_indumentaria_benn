@@ -126,3 +126,27 @@ class ProductoNoPerteneceAVentaError(DomainException):
         super().__init__(
             f"El producto con ID '{producto_id}' no se encuentra en el comprobante '{numero_ticket}'."
         )
+
+
+# HU-08 exceptions
+
+
+class TipoMovimientoInvalidoError(DomainException):
+    """Se lanza cuando se intenta registrar un movimiento con un tipo no permitido."""
+
+    def __init__(self, tipo: str):
+        self.tipo = tipo
+        super().__init__(
+            f"Tipo de movimiento '{tipo}' no es válido. "
+            f"Debe ser 'VENTA', 'DEVOLUCION', 'CAMBIO' o 'AJUSTE'."
+        )
+
+
+class CantidadMovimientoInvalidaError(DomainException):
+    """Se lanza cuando se intenta registrar un movimiento con cantidad cero."""
+
+    def __init__(self, cantidad: int):
+        self.cantidad = cantidad
+        super().__init__(
+            f"La cantidad del movimiento no puede ser cero. Valor recibido: {cantidad}."
+        )
