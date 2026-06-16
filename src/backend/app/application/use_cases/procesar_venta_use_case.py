@@ -18,6 +18,9 @@ from app.domain.ports.i_producto_repository import IProductoRepository
 from app.domain.ports.i_unit_of_work import IUnitOfWork
 from app.domain.ports.i_usuario_repository import IUsuarioRepository
 from app.domain.ports.i_venta_repository import IVentaRepository
+from app.domain.services.generador_ticket import (
+    generar_numero_ticket,
+)  # <-- NUEVO: Importación del servicio puro
 
 
 class ProcesarVentaUseCase:
@@ -72,6 +75,10 @@ class ProcesarVentaUseCase:
 
         # FASE 3: Preparación de Entidades de Dominio
         venta_id = str(uuid.uuid4())
+
+        # --- HU-07: Generación automática del número de ticket ---
+        numero_ticket = generar_numero_ticket()
+
         descuento = Descuento(
             porcentaje=command.porcentaje_descuento,
             gerente_autorizacion_id=command.gerente_autorizacion_id,
@@ -80,7 +87,7 @@ class ProcesarVentaUseCase:
             id=venta_id,
             fecha_hora=datetime.utcnow(),
             vendedor_id=command.vendedor_id,
-            numero_ticket=f"TKT-{datetime.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}",  # HU-07
+            numero_ticket=numero_ticket,  # <-- Asignación del ticket generado
             estado="CONFIRMADA",
             items=detalles,
             descuento=descuento,
