@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
@@ -152,6 +153,49 @@ async def test_rechazar_venta_descuento_alto_con_autorizacion_no_gerente(
 
     assert exc_info.value.usuario_id == "VENDEDOR-001"
     assert exc_info.value.rol_requerido == "GERENTE"
+
+
+# ✅ Escenario HU-07: La venta se procesa y se le asigna un número de ticket generado
+@pytest.mark.asyncio
+@patch("app.application.use_cases.procesar_venta_use_case.generar_numero_ticket")
+async def test_procesar_venta_genera_y_asigna_numero_ticket(
+    mock_generar_ticket,
+    use_case,
+    producto_repo,
+    venta_repo,
+    unit_of_work,
+    producto_activo_con_stock,
+):
+    # Arrange
+    # Mockeamos la función pura para devolver un valor predecible y aislado
+    mock_generar_ticket.return_value = "TKT-20231025-TEST01"
+
+    producto_repo.agregar_producto(producto_activo_con_stock)
+    usuario_repo.agregar_usuario("V-001", "VENDEDOR")
+
+    command = CrearVentaCommand(
+        vendedor_id="V-001",
+        items=[ItemVentaDTO(producto_id="P-001", cantidad=1)],
+        porcentaje_descuento=0.0,
+    )
+
+    # Act
+    venta = await use_case.execute(command)
+
+    # Assert
+    # 1. Verificar que la función de dominio fue llamada exactamente una vez
+    mock_generar_ticket.assert_called_once()
+
+    # 2. Verificar que la entidad Venta recibió el ticket mockeado
+    assert venta.numero_ticket == "TKT-20231025-TEST01"
+
+    # 3. Verificar que la venta se guardó en el repositorio con ese ticket
+    venta_guardada = await venta_repo.obtener_por_numero_ticket("TKT-20231025-TEST01")
+    assert venta_guardada is not None
+    assert venta_guardada.id == venta.id
+
+    # 4. Verificar atomicidad (HU-08)
+    assert unit_of_work.commit_called is True
 
 
 # ✅ Escenario HU-08.1: Venta exitosa con registro atómico de movimiento de stock
