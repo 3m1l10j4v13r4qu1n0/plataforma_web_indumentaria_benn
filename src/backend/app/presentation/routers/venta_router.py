@@ -24,11 +24,11 @@ async def procesar_venta(
     use_case: ProcesarVentaUseCase = Depends(get_procesar_venta_use_case),
 ):
     """
-    Valida stock, autoriza descuentos y procesa la venta.
-    Internamente (HU-08), descuenta el stock y registra el MovimientoStock
-    en una sola transacción atómica (ACID).
+    Procesa una venta: valida stock, autoriza descuentos si aplica,
+    genera automáticamente un número de ticket único (HU-07) y
+    descuenta el inventario de forma atómica (HU-08).
 
-    Cero bloques try/except. Las excepciones de dominio burbujean a handlers.py.
+    Las excepciones de dominio burbujean a handlers.py (sin try/except aquí).
     """
     command = CrearVentaCommand(
         vendedor_id=request.vendedor_id,
@@ -40,10 +40,12 @@ async def procesar_venta(
         gerente_autorizacion_id=request.gerente_autorizacion_id,
     )
 
+    # Ejecución del Caso de Uso. Si falla, handlers.py intercepta y responde.
     venta = await use_case.execute(command)
 
     return VentaResponse(
         id=venta.id,
+        numero_ticket=venta.numero_ticket,  # <-- Mapeo explícito del ticket generado (HU-07)
         fecha_hora=venta.fecha_hora,
         vendedor_id=venta.vendedor_id,
         estado=venta.estado,
