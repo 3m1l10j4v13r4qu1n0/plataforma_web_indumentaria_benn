@@ -1,8 +1,3 @@
-"""
-Exposicion y manejo de errores (capa de presentacion) HU-05
-Actualizacion de esquemas Pydantic
-"""
-
 from datetime import datetime
 from typing import List, Optional
 
@@ -23,8 +18,6 @@ class CrearVentaRequest(BaseModel):
     items: List[ItemVentaRequest] = Field(
         ..., min_length=1, description="Lista de productos a vender"
     )
-
-    # Nuevos campos para HU-05
     porcentaje_descuento: float = Field(
         default=0.0, ge=0.0, le=100.0, description="Porcentaje de descuento aplicado"
     )
@@ -38,8 +31,8 @@ class CrearVentaRequest(BaseModel):
             "example": {
                 "vendedor_id": "V-001",
                 "items": [{"producto_id": "123", "cantidad": 2}],
-                "porcentaje_descuento": 25.0,
-                "gerente_autorizacion_id": "G-001",
+                "porcentaje_descuento": 10.0,
+                "gerente_autorizacion_id": None,
             }
         }
     )
@@ -57,6 +50,9 @@ class DescuentoResponse(BaseModel):
 
 class VentaResponse(BaseModel):
     id: str
+    numero_ticket: str = Field(
+        ..., description="Número de comprobante único generado para esta venta (HU-07)"
+    )  # <-- NUEVO
     fecha_hora: datetime
     vendedor_id: str
     estado: str
