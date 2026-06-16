@@ -40,24 +40,10 @@ class VentaRepository(IVentaRepository):
             orm_venta.detalles.append(orm_detalle)
 
         self.session.add(orm_venta)
-        await self.session.commit()
+        # El commit se delega al Unit of Work (HU-08)
         await self.session.refresh(orm_venta)
 
-        return Venta(
-            id=orm_venta.id,
-            fecha_hora=orm_venta.fecha_hora,
-            vendedor_id=orm_venta.vendedor_id,
-            numero_ticket=orm_venta.numero_ticket,
-            estado=orm_venta.estado,
-            items=[
-                DetalleVenta(producto_id=d.producto_id, cantidad=d.cantidad)
-                for d in orm_venta.detalles
-            ],
-            descuento=Descuento(
-                porcentaje=orm_venta.porcentaje_descuento,
-                gerente_autorizacion_id=orm_venta.gerente_autorizacion_id,
-            ),
-        )
+        return self._map_to_domain(orm_venta)
 
     async def obtener_por_numero_ticket(self, numero_ticket: str) -> Optional[Venta]:
         """
@@ -72,12 +58,16 @@ class VentaRepository(IVentaRepository):
         if not orm_venta:
             return None
 
-        # Mapeo inverso: ORM -> Entidad de Dominio
+        return self._map_to_domain(orm_venta)
+
+    # --- DRY: Centralización del mapeo ORM -> Dominio ---
+    @staticmethod
+    def _map_to_domain(orm_venta: VentaORM) -> Venta:
         return Venta(
             id=orm_venta.id,
             fecha_hora=orm_venta.fecha_hora,
             vendedor_id=orm_venta.vendedor_id,
-            numero_ticket=orm_venta.numero_ticket,
+            numero_ticket=orm_venta.numero_ticket,  # <-- Recuperación HU-07
             estado=orm_venta.estado,
             items=[
                 DetalleVenta(producto_id=d.producto_id, cantidad=d.cantidad)
