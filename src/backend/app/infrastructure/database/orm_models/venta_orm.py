@@ -86,5 +86,5 @@ class VentaORM(Base):
 
     # 4. Definición del índice para el ticket (buena práctica en SQLAlchemy)
     __table_args__ = (
-        Index("ix_venta_numero_ticket", "numero_ticket"),  # <--- NUEVO
+        Index("ix_venta_numero_ticket", "numero_ticket", unique=True),  # <--- NUEVO
     )
