@@ -2,8 +2,7 @@
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-# Asumimos que Base ya está definida o importada desde un base.py compartido
-# from app.infrastructure.database.orm_models.base import Base
+from app.infrastructure.database.session import Base
 
 
 class UsuarioORM(Base):

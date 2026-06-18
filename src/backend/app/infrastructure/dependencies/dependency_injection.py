@@ -31,7 +31,8 @@ def get_producto_repository(
     """
     Fábrica Transient: Provee una instancia del repositorio de productos por request.
     Retorna la interfaz IProductoRepository para favorecer la Inversión de Dependencias (DIP).
-    """    return ProductoRepository(session=session)
+    """    
+    return ProductoRepository(session=session)
 
 
 def get_venta_repository(
