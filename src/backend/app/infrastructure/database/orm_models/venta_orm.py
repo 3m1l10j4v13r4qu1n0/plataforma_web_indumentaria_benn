@@ -1,12 +1,13 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Index, String, from sqlalchemy import String, DateTime, Float, ForeignKey, Index, UniqueConstraint
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, Float, ForeignKey, Index, String 
+from sqlalchemy import String, DateTime, Float, ForeignKey, Index, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase):
-    pass
+from app.infrastructure.database.session import Base
+from app.infrastructure.database.orm_models.detalle_venta_orm import DetalleVentaORM
+from app.infrastructure.database.orm_models.cambio_orm import CambioORM
 
 
 class VentaORM(Base):

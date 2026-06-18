@@ -3,10 +3,7 @@ from typing import Optional
 
 from sqlalchemy import CheckConstraint, Index, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-
-class Base(DeclarativeBase):
-    pass
+from app.infrastructure.database.session import Base
 
 
 class ProductoORM(Base):

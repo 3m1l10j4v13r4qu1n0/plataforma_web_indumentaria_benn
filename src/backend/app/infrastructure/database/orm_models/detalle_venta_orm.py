@@ -1,7 +1,7 @@
-# app/infrastructure/database/orm_models/detalle_venta_orm.py
 from sqlalchemy import ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
+from app.infrastructure.database.session import Base
+from app.infrastructure.database.orm_models.venta_orm import VentaORM
 
 class DetalleVentaORM(Base):
     __tablename__ = "detalles_venta"

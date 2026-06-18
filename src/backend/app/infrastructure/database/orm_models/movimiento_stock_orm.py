@@ -2,13 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Asumimos que Base se importa desde un módulo compartido, ej:
-# from app.infrastructure.database.orm_models.base import Base
+from app.infrastructure.database.session import Base
 
-
-class MovimientoStockORM(DeclarativeBase):  # O heredar de Base según tu estructura
+class MovimientoStockORM(Base):  # O heredar de Base según tu estructura
     """
     Registra cada vez que el stock cambia (venta, devolución, cambio, ajuste)
     para garantizar la trazabilidad y auditoría del inventario (HU-08).
