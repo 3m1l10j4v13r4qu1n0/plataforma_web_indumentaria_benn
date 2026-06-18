@@ -1,8 +1,6 @@
-import re
-
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import List, Optional
+from datetime import datetime
+from typing import List
 
 from app.domain.exceptions import PlazoDeCambioVencidoError
 from app.domain.models.descuento import Descuento
@@ -35,7 +33,7 @@ class Venta:
         if not self.numero_ticket or not isinstance(self.numero_ticket, str) or len(self.numero_ticket.strip()) == 0:
             raise ValueError("El número de ticket es obligatorio y no puede estar vacío.")
    
-   def confirmar(self) -> None:
+    def confirmar(self) -> None:
         if self.estado != "PENDIENTE":
             raise ValueError("Solo se pueden confirmar ventas en estado PENDIENTE.")
         self.estado = "CONFIRMADA"
