@@ -1,31 +1,33 @@
 # ==============================================================================
 # DEPENDENCIAS DEL PROYECTO RETAIL (Clean Architecture + Hexagonal)
 # ==============================================================================
+# Actualizado para compatibilidad con Python 3.14
 
 # ------------------------------------------------------------------------------
 # Framework Web y Servidor ASGI
 # ------------------------------------------------------------------------------
-fastapi>=0.111.0,<0.112.0      # Framework web moderno, rápido y basado en tipos
-uvicorn[standard]>=0.30.0,<0.31.0 # Servidor ASGI para ejecutar FastAPI en desarrollo/producción
+fastapi>=0.115.0,<0.126.0      # Framework web moderno; soporte Python 3.14 desde 0.115+
+uvicorn[standard]>=0.30.0,<0.35.0 # Servidor ASGI para ejecutar FastAPI en desarrollo/producción
 
 # ------------------------------------------------------------------------------
 # Base de Datos y ORM (Asíncrono)
 # ------------------------------------------------------------------------------
 sqlalchemy>=2.0.30,<3.0.0      # ORM y Core de SQLAlchemy (versión 2.x con typing moderno)
-asyncpg>=0.29.0,<0.30.0        # Driver asíncrono para PostgreSQL (recomendado para producción)
-alembic>=1.13.0,<2.0.0         # Herramienta de migraciones de base de datos para SQLAlchemy# aiosqlite>=0.20.0            # Descomentar si se usa SQLite para pruebas locales rápidas
+asyncpg>=0.31.0,<0.32.0        # Driver asíncrono para PostgreSQL; soporte Python 3.14 desde 0.31.0
+alembic>=1.13.0,<2.0.0         # Herramienta de migraciones de base de datos para SQLAlchemy
+# aiosqlite>=0.20.0            # Descomentar si se usa SQLite para pruebas locales rápidas
 
 # ------------------------------------------------------------------------------
 # Validación de Datos y Configuración
 # ------------------------------------------------------------------------------
-pydantic>=2.7.0,<3.0.0         # Validación de datos y serialización (V2)
-pydantic-settings>=2.2.0,<3.0.0 # Gestión de variables de entorno (.env) integrada con Pydantic V2
+pydantic>=2.10.0,<3.0.0        # Validación de datos y serialización (V2); soporte Python 3.14 desde 2.10+
+pydantic-settings>=2.6.0,<3.0.0 # Gestión de variables de entorno (.env) integrada con Pydantic V2
 python-dotenv>=1.0.0,<2.0.0    # Carga de variables de entorno desde archivo .env
 
 # ------------------------------------------------------------------------------
 # Testing y Calidad de Código (Developer Culture)
 # ------------------------------------------------------------------------------
 pytest>=8.2.0,<9.0.0           # Framework de pruebas unitarias
-pytest-asyncio>=0.23.0,<0.24.0 # Soporte para pruebas asíncronas (async/await) en pytest
+pytest-asyncio>=0.24.0,<0.26.0 # Soporte para pruebas asíncronas (async/await) en pytest; 0.24+ para Python 3.14
 ruff>=0.4.0,<0.5.0             # Linter y formateador ultrarrápido (reemplazo moderno de flake8/isort)
-black>=24.4.0,<25.0.0          # Formateador de código estándar (opcional si se usa solo ruff, pero recomendado)
+black>=24.4.0,<25.0.0          # Formateador de código estándar
