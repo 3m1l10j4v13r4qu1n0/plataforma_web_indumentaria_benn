@@ -4,8 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from app.infrastructure.database.session import Base
-from app.infrastructure.database.orm_models.venta_orm import VentaORM
-from app.infrastructure.database.orm_models.producto_orm import ProductoORM
+
 
 class CambioORM(Base):
     __tablename__ = "cambios"
@@ -26,5 +25,6 @@ class CambioORM(Base):
     motivo_rechazo: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     # Relaciones
-    venta: Mapped["VentaORM"] = relationship(back_populates="cambios")
-    producto: Mapped["ProductoORM"] = relationship()
+    venta: Mapped["VentaORM"] = relationship("VentaORM",back_populates="cambios")
+    
+    producto: Mapped["ProductoORM"] = relationship("ProductoORM")

@@ -38,4 +38,4 @@ class MovimientoStockORM(Base):  # O heredar de Base según tu estructura
         String(36), nullable=True, index=True
     )  # Quién realizó el movimiento (Trazabilidad de auditoría)
 
-    producto: Mapped["ProductoORM"] = relationship()  # type: ignore
+    producto: Mapped["ProductoORM"] = relationship("ProductoORM")  # type: ignore

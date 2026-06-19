@@ -6,8 +6,7 @@ from sqlalchemy import String, DateTime, Float, ForeignKey, Index, UniqueConstra
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.infrastructure.database.session import Base
-from app.infrastructure.database.orm_models.detalle_venta_orm import DetalleVentaORM
-from app.infrastructure.database.orm_models.cambio_orm import CambioORM
+
 
 
 class VentaORM(Base):
@@ -75,12 +74,14 @@ class VentaORM(Base):
 
     # 2. Relación con los detalles de la venta (ya existía, se mantiene)
     detalles: Mapped[List["DetalleVentaORM"]] = relationship(
+        "DetalleVentaORM", 
         back_populates="venta", 
         cascade="all, delete-orphan"
     )
 
     # 3. Relación con los cambios asociados a esta venta
     cambios: Mapped[List["CambioORM"]] = relationship(
+        "CambioORM",
         back_populates="venta", 
         cascade="all, delete-orphan"
     )  # <--- NUEVO: Permite hacer venta_orm.cambios para ver el historial
