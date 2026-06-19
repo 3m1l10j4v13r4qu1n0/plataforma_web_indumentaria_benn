@@ -39,3 +39,10 @@ class BuscarProductosResponseSchema(BaseModel):
             }
         }
     )
+
+class StockResponse(BaseModel):
+    producto_id: str
+    nombre: str
+    stock_actual: int
+
+    model_config = ConfigDict(from_attributes=True)
