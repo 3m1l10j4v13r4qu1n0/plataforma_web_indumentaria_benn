@@ -187,7 +187,7 @@ alembic revision --autogenerate -m "crear tablas plataforma web "
 alembic upgrade head
 
 # Levantar la API
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 ---
 
@@ -200,136 +200,157 @@ Este proyecto implementa una arquitectura basada en **Clean Architecture + Hexag
 ## 📦 Estructura General
 
 ```
-backend/
+backend
 │
-├── alembic/  
-│   ├── versions/
+├── alembic  
+│   ├── versions
 │   ├── env.py
 │   └── script.py.mako
 │   💬 migraciones de base de datos (versionado del esquema)
-│
-├── app/
-│
-│   ├── main.py  
-│   💬 punto de entrada de la aplicación (fastapi)
-│
-│   ├── presentation/  🟦 capa de presentación (delivery)
-│   │   ├── routers/
-│   │   │   ├── 
-│   │   │   └── 
-│   │   │   💬 define endpoints rest (http → use cases)
-│   │   │
-│   │   ├── schemas/
-│   │   │   ├── 
-│   │   │   └── 
-│   │   │   💬 dtos de entrada/salida (pydantic)
-│   │   │
-│   │   └── handlers.py
-│   │       💬 orquesta requests → casos de uso (opcional desacople de routers)
+│   
+├── application 🟩 capa de aplicación (use cases)
 │   │
-│   │   🎯 responsabilidad:
-│   │   - recibir requests http
-│   │   - validar formato (no reglas de negocio)
-│   │   - invocar casos de uso
-│
-│   ├── application/  🟩 capa de aplicación (use cases)
-│   │   └── use_cases/
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       ├──
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       └── 
-│   │
-│   │       💬 implementación de casos de uso del sistema
+│   │   💬 implementación de casos de uso del sistema
 │   │
 │   │   🎯 responsabilidad:
 │   │   - orquestar la lógica de negocio
 │   │   - coordinar servicios del dominio
 │   │   - usar repositorios (a través de puertos)
 │   │   - no depende de infraestructura concreta
-│
-│   ├── domain/  🟥 capa de dominio (core del negocio)
 │   │
-│   │   ├── models/
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   └── 
-│   │   │   💬 entidades y modelos del dominio (reglas puras)
-│   │   │
-│   │   ├── services/
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   └── 
-│   │   │   💬 lógica de negocio compleja desacoplada de entidades
-│   │   │
-│   │   ├── ports/
-│   │   │   ├── 
-    │   │   └── 
-│   │   │   💬 Interfaces (contratos) → patrón Ports & Adapters
-│   │   │
-│   │   ├── exceptions.py
-│   │   │   💬 Excepciones propias del dominio
+│   ├── dtos
+│   │   ├── cambio_dto.py
+│   │   ├── producto_dto.py
+│   │   ├── ticket_dto.py
+│   │   └── venta_dto.py
+│   │
+│   └── use_cases
+│       ├── buscar_productos_use_case.py
+│       ├── consultar_ticket_use_case.py
+│       ├── procesar_vantas_use_case.py
+│       ├── procesar_venta_use_case.py
+│       ├── solicitar_cambio_use_case.py
+│       └── validar_stock_venta_use_case.py
+│   
+├── domain  🟥 capa de dominio (core del negocio)
+│   │   
 │   │
 │   │   🎯 Responsabilidad:
 │   │   - Contener las reglas de negocio
 │   │   - Ser independiente de frameworks
 │   │   - Definir contratos (ports)
-│   
-│   ├── infrastructure/  🟨 CAPA DE INFRAESTRUCTURA (Adapters)
 │   │
-│   │   ├── core/
-│   │   │   └── 
-│   │   │   💬 Configuración global (env, settings)
-│   │   │
-│   │   ├── database/
-│   │   │   ├── 
-│   │   │   💬 Conexión a la base de datos
-│   │   │
-│   │   │   ├── orm_models/
-│   │   │   │   ├── 
-│   │   │   │   └── 
-│   │   │   │   💬 Modelos ORM (SQLAlchemy)
-│   │   │   │
-│   │   │   ├── repositories/
-│   │   │   │   ├── 
-│   │   │   │   └── 
-│   │   │   │   💬 Implementaciones de los ports (Adapters)
-│   │   │   │
-│   │   │   ├── seed.py                 ← datos iniciales
-│   │   │   └── seed_runner.py          ← script para ejecutar el seed
-│   │   │   💬 Datos iniciales para la BD
-│   │   │
-│   │   │
-│   │   ├── dependencies/
-│   │   │   └── dependency_injection.py
-│   │   │   💬 Inyección de dependencias (wiring de la app)
+│   │
+│   ├── exceptions.py 💬 Excepciones propias del dominio
+│   │
+│   │
+│   ├── models
+│   │   ├── condicion_producto.py
+│   │   ├── descuento.py
+│   │   ├── detalle_vanta.py
+│   │   ├── detalle_venta.py
+│   │   ├── movimiento_stock.py
+│   │   ├── producto.py
+│   │   └── venta.py
+│   │
+│   ├── ports 💬 Interfaces (contratos) → patrón Ports & Adapters
+│   │   ├── i_movimiento_stock_repository.py
+│   │   ├── i_producto_repository.py
+│   │   ├── i_unit_of_work.py
+│   │   ├── i_usuario_repository.py
+│   │   └── i_venta_repository.py
+│   │
+│   └── services  💬 lógica de negocio compleja desacoplada de entidades
+│       └── generador_ticket.py
+│   
+│   
+├── infrastructure  🟨 CAPA DE INFRAESTRUCTURA (Adapters)
+│   │
 │   │
 │   │   🎯 Responsabilidad:
 │   │   - Implementar detalles técnicos (DB, APIs externas)
 │   │   - Adaptar interfaces del dominio
 │   │   - NO contener lógica de negocio
+│   │
+│   │
+│   ├── core 💬 Configuración global (env, settings)
+│   │   └── config.py
+│   │
+│   ├── database 💬 Conexión a la base de datos
+│   │   │
+│   │   ├── orm_models 💬 Modelos ORM (SQLAlchemy)
+│   │   │   ├── cambio_orm.py
+│   │   │   ├── detalle_venta_orm.py
+│   │   │   ├── movimiento_stock_orm.py
+│   │   │   ├── producto_orm.py
+│   │   │   ├── usuario_orm.py
+│   │   │   └── venta_orm.py
+│   │   │   
+│   │   ├── repositories 💬 Implementaciones de los ports (Adapters)
+│   │   │   ├── movimiento_stock_repository.py
+│   │   │   ├── producto_repository.py
+│   │   │   ├── usuario_repository.py
+│   │   │   └── venta_repository.py
+│   │   │   
+│   │   ├── session.py
+│   │   └── unit_of_work.py
+│   │   
+│   └── dependencies
+│       └── dependency_injection.py
+│   
+│   
 │
-│   └── requirements.txt
+│                                     
+├── presentation 🟦 capa de presentación (delivery)
+│   │
+│   │    🎯 responsabilidad:
+│   │    - recibir requests http
+│   │    - validar formato (no reglas de negocio)
+│   │    - invocar casos de uso
+│   │
+│   │
+│   ├── handlers.py  💬 orquesta requests → casos de uso (opcional desacople de routers)
+│   │
+│   ├── routers  💬 define endpoints rest (http → use cases)
+│   │   ├── cambio_router.py
+│   │   ├── producto_router.py
+│   │   ├── ticket_router.py
+│   │   └── venta_router.py
+│   │   
+│   └── schemas 💬 dtos de entrada/salida (pydantic)
+│       ├── cambio_schema.py                  
+│       ├── producto_schema.py
+│       ├── ticket_schema.py
+│       └── venta_schema.py
+│        
+├── main.py  💬 punto de entrada de la aplicación (fastapi)        
+│   
+├── requirements.txt
 │
-
-├── tests/  🧪 TESTING
-│   └──  unit/
-│        └── domian/
-│            └── services/
-│                ├── 
-                 └── 
-│   💬 Tests unitarios del dominio (normalización, validación, etc.)
+├── tests/  🧪 TESTING 
+│       │   💬 Tests unitarios del dominio (normalización, validación, etc.)             
+│       │
+│       │   🎯 Responsabilidad:
+│       │   - Validar reglas de negocio
+│       │   - Asegurar comportamiento correcto del sistema   
+│       │
+│       ├── unit
+│       │   ├── fakes
+│       │   ├── fake_movimiento_repository.py
+│       │   ├── fake_movimiento_stock_repository.py
+│       │   ├── fake_producto_repository.py
+│       │   ├── fake_producto_reposity.py
+│       │   ├── fake_unit_of_work.py
+│       │   ├── fake_usuario_repository.py
+│       │   └── fake_venta_repository.py
+│       │
+│       └── use_cases
+│            ├── test_buscar_productos_use_case.py
+│            ├── test_consultar_ticket_use_case.py
+│            ├── test_procesar_venta_use_case.py
+│            ├── test_solicitar_cambio_use_case.py
+│            └── test_validador_stock_venta_use_case.py
 │
-│   🎯 Responsabilidad:
-│   - Validar reglas de negocio
-│   - Asegurar comportamiento correcto del sistema
 │
 │
 ├── README.md  
@@ -337,6 +358,7 @@ backend/
 │
 └── alembic.ini  
     💬 Configuración de migraciones
+
 ```
 
 ---
@@ -376,8 +398,8 @@ Infrastructure (DB, APIs externas)
 
 ## 🗺️ Roadmap
 
-- Fase 1: Análisis funcional ✔
-- Fase 2: Diseño técnico y arquitectura ✔
+- Fase 1: Análisis funcional 
+- Fase 2: Diseño técnico y arquitectura 
 - Fase 3: Implementación del módulo de productos
 - Fase 4: Implementación del módulo de inventario
 - Fase 5: Implementación del módulo de ventas
@@ -392,12 +414,14 @@ Infrastructure (DB, APIs externas)
 Este proyecto está pensado como material demostrativo para:
 
 ---
+## 👥 Integrantes (Grupo 7)
 
-## Participantes
+- Aquino Emilio Javier  
+- Brian Maigua   
+- Nelida Fernandes  
+- Nicol Vargas  
 
-Emilio Javier Aquino   
-
-
+---
 ## 📄 Licencia
 
 Proyecto de uso educativo y demostrativo.
