@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.infrastructure.core.config import settings
-from app.presentation.handlers import registrar_handlers
+from app.presentation.handlers import register_exception_handlers
 from app.presentation.routers.cambio_router import router as cambio_router
 from app.presentation.routers.producto_router import router as producto_router
 from app.presentation.routers.ticket_router import router as ticket_router
@@ -36,7 +36,7 @@ app = FastAPI(
 )
 
 # ── Handlers de errores ──────────────────────────────────────────────
-registrar_handlers(app)
+register_exception_handlers(app)
 
 # ── Routers ──────────────────────────────────────────────────────────
 app.include_router(cambio_router)
