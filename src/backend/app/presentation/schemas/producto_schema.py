@@ -7,6 +7,8 @@ class ProductoStockResumenSchema(BaseModel):
     producto_id: str = Field(..., description="Identificador único del producto")
     codigo: str = Field(..., description="Código de barras o SKU")
     nombre: str = Field(..., description="Nombre descriptivo del producto")
+    precio: float = Field(..., gt=0, description="Precio de venta del producto")
+    categoria: str = Field(..., description="Categoría del producto")
     stock_actual: int = Field(
         ..., ge=0, description="Cantidad disponible en inventario"
     )

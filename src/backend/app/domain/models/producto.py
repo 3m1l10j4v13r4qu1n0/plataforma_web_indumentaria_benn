@@ -9,6 +9,8 @@ class Producto:
     id: str
     codigo: str
     nombre: str
+    precio: float
+    categoria: str
     stock_actual: int
     estado: Literal["ACTIVO", "INACTIVO"]
 
@@ -19,6 +21,8 @@ class Producto:
             raise DomainException(
                 "El estado del producto debe ser 'ACTIVO' o 'INACTIVO'."
             )
+        if not self.categoria.strip():
+            raise DomainException("La categoría no puede estar vacía.")
 
     def hay_stock_suficiente(self, cantidad: int) -> bool:
         return self.estado == "ACTIVO" and self.stock_actual >= cantidad
