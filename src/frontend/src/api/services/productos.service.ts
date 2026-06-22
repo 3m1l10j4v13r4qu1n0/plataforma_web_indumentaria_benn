@@ -3,24 +3,16 @@ import { API_ENDPOINTS } from '@/api/endpoints';
 import type {
   ProductoBusquedaParams,
   ProductoBusquedaResponse,
+  StockResponse,
 } from '@/types/api';
 
 /**
  * Servicio HTTP para operaciones de productos.
- *
- * SRP: Única capa que conoce los endpoints y formatos del backend
- *      para el dominio de productos.
- * DIP: Expone funciones tipadas; los hooks dependen de estas, no de Axios.
- *
- * ⚠️ Anti-alucinación: Solo consume endpoints de la lista oficial.
  */
 export const productosService = {
   /**
    * Busca productos por nombre o código.
    * Endpoint: GET /api/v1/productos/buscar?query=...
-   * HU asociada: HU-06
-   *
-   * @throws {AxiosError} si la petición falla (manejado por interceptor global)
    */
   async buscarProductos(
     params: ProductoBusquedaParams,
@@ -28,6 +20,20 @@ export const productosService = {
     const response = await apiClient.get<ProductoBusquedaResponse>(
       API_ENDPOINTS.PRODUCTOS.BUSCAR,
       { params },
+    );
+    return response.data;
+  },
+
+  /**
+   * Consulta el stock de un producto por su código.
+   * Endpoint: GET /api/v1/productos/{codigo}/stock
+   * HU asociada: HU-01
+   *
+   * @throws {AxiosError} con código 404 si el producto no existe
+   */
+  async obtenerStock(codigo: string): Promise<StockResponse> {
+    const response = await apiClient.get<StockResponse>(
+      API_ENDPOINTS.PRODUCTOS.STOCK(codigo),
     );
     return response.data;
   },
