@@ -1,9 +1,6 @@
-// En AppRouter.tsx, opcional:
-import { ROUTES } from '@/constants/routes';
-
-// <Route path={ROUTES.PRODUCTOS_STOCK} element={<ConsultarStockPage />} />
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
+import { NuevaVentaPage } from '@/pages/ventas/NuevaVentaPage';
 
 /**
  * Router principal de la aplicación SGVIR.
@@ -11,19 +8,20 @@ import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
  * ⚠️ Nota sobre autenticación:
  * El backend AÚN no tiene endpoints de auth implementados.
  * Por YAGNI, NO envolvemos rutas en <ProtectedRoute /> todavía.
- * Cuando el backend exponga /auth/login, se activará la protección aquí.
  */
 export function AppRouter() {
   return (
     <Routes>
       {/* Redirección raíz → primera pantalla disponible */}
-      <Route path="/" element={<Navigate to="/productos/stock" replace />} />
+      <Route path="/" element={<Navigate to="/ventas/nueva" replace />} />
+
+      {/* HU-01: Nueva Venta (pantalla principal) */}
+      <Route path="/ventas/nueva" element={<NuevaVentaPage />} />
 
       {/* HU-06: Consultar stock disponible */}
       <Route path="/productos/stock" element={<ConsultarStockPage />} />
 
-      {/* Placeholders para futuras HUs (se completarán en sus respectivos pasos) */}
-      <Route path="/ventas" element={<Placeholder page="Ventas" />} />
+      {/* Placeholders para futuras HUs */}
       <Route path="/cambios" element={<Placeholder page="Cambios" />} />
 
       {/* Fallback 404 */}
@@ -32,10 +30,6 @@ export function AppRouter() {
   );
 }
 
-/**
- * Placeholder temporal para rutas aún no implementadas.
- * SRP: solo informa el estado de la ruta, sin lógica de negocio.
- */
 function Placeholder({ page }: { page: string }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -58,10 +52,10 @@ function NotFoundPage() {
         <h1 className="text-4xl font-bold text-slate-800">404</h1>
         <p className="mt-2 text-slate-500">Ruta no encontrada</p>
         <a
-          href="/productos/stock"
+          href="/ventas/nueva"
           className="mt-4 inline-block text-sm font-medium text-brand-600 hover:underline"
         >
-          Volver a Consultar Stock
+          Volver a Nueva Venta
         </a>
       </div>
     </div>
