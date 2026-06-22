@@ -217,14 +217,13 @@ Las entidades principales identificadas en el relevamiento son:
 ---
 
 ## 11. Equipo de Trabajo
-*(Nota: [COMPLETAR] con los datos reales del equipo académico)*
 
 | Nombre | Rol en el Proyecto | Responsabilidades Principales |
 | :--- | :--- | :--- |
-| [Nombre Apellido] | Analista Funcional / Product Owner | Relevamiento, redacción de HU, criterios de aceptación. |
-| [Nombre Apellido] | Desarrollador Backend | Diseño de API, modelos de datos, lógica de negocio, TDD. |
-| [Nombre Apellido] | Desarrollador Frontend | Implementación de UI/UX, validaciones en cliente, integración con API. |
-| [Nombre Apellido] | QA / Tester | Diseño de casos de prueba, ejecución de SbE, validación de DoD. |
+| [Aquino, Emilio Javier] | Analista Funcional / Product Owner | Relevamiento, redacción de HU, criterios de aceptación. |
+| [Brian, Maigua] | Desarrollador Backend | Diseño de API, modelos de datos, lógica de negocio, TDD. |
+| [Nelida, Fernandez] | Desarrollador Frontend | Implementación de UI/UX, validaciones en cliente, integración con API. |
+| [Nicol, Vargas] | QA / Tester | Diseño de casos de prueba, ejecución de SbE, validación de DoD. |
 
 ---
 
