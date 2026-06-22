@@ -13,3 +13,4 @@ export { CartTable } from './CartTable';
 export { StockAlert, type StockAlertItem } from './StockAlert';
 export { SaleSummary } from './SaleSummary';
 export { SaleActionBar } from './SaleActionBar';
+export { SaleSuccessModal } from './SaleSuccessModal';
