@@ -77,5 +77,8 @@ async def consultar_stock(
     return StockResponse(
         producto_id=producto.id,
         nombre=producto.nombre,
+        codigo=producto.codigo,
+        categoria=producto.categoria,
+        precio=producto.precio,
         stock_actual=producto.stock_actual,
     )

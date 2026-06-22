@@ -64,8 +64,12 @@ class VentaResponse(BaseModel):
 
 class StockResponse(BaseModel):
     producto_id: str
+    codigo: str  # ← NUEVO: SKU del producto
     nombre: str
+    categoria: str  # ← NUEVO: Categoría del producto
+    precio: float  # ← NUEVO: Precio unitario
     stock_actual: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ErrorResponse(BaseModel):
