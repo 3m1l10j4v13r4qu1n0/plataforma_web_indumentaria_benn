@@ -14,3 +14,8 @@ export { StockAlert, type StockAlertItem } from './StockAlert';
 export { SaleSummary } from './SaleSummary';
 export { SaleActionBar } from './SaleActionBar';
 export { SaleSuccessModal } from './SaleSuccessModal';
+
+// HU-07
+export { ReceiptTicket } from './ReceiptTicket';
+export { PrinterStatusIndicator } from './PrinterStatusIndicator';
+export { PrintErrorModal } from './PrintErrorModal';
