@@ -29,6 +29,7 @@ export interface StockProducto {
   codigo: string;
   nombre: string;
   categoria?: string; // Opcional: el backend puede no devolverlo siempre
+  precio?: number; // ← NUEVO: disponible en el endpoint de búsqueda
   stockActual: number;
   stockMinimo: number;
   disponible: boolean;
