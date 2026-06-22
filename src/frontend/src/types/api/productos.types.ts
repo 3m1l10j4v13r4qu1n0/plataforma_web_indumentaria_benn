@@ -1,58 +1,50 @@
 import type { StockProducto } from '@/types/domain';
 
 /**
- * Response de GET /api/v1/productos/{codigo}/stock
- * Espejo del esquema Pydantic StockResponse del backend.
+ * Response de GET /api/v1/productos/buscar?query=...
+ *
+ * ⚠️ Alineado con el endpoint oficial documentado:
+ * GET /api/v1/productos/buscar?query=...
+ *
+ * Nota: Los nombres de campos en snake_case reflejan los esquemas Pydantic
+ * del backend. El mapper toStockProducto() los convierte a camelCase del dominio.
  */
-export interface StockResponse {
+export interface ProductoBusquedaResponse {
+  productos: ProductoBusquedaItem[];
+  total: number;
+}
+
+export interface ProductoBusquedaItem {
   codigo: string;
   nombre: string;
+  categoria: string;
   stock_actual: number;
   stock_minimo: number;
-  disponible: boolean;
-  bajo_stock: boolean;
-}
-
-/**
- * Response de GET /api/v1/productos/buscar
- * Espejo del esquema Pydantic ProductoSearchResponse del backend.
- */
-export interface ProductoSearchResponse {
-  productos: ProductoItem[];
-  total: number;
-  pagina: number;
-  por_pagina: number;
-}
-
-export interface ProductoItem {
-  id: string;
-  codigo: string;
-  nombre: string;
-  precio: number;
-  stock_actual: number;
-  disponible: boolean;
+  actualizado_en: string; // ISO 8601
 }
 
 /**
  * Query params de GET /api/v1/productos/buscar
+ *
+ * ⚠️ El parámetro oficial es `query` (no `q`).
+ * Ver tabla oficial de endpoints en FE-Architect-Scaffold.md.
  */
-export interface ProductoSearchParams {
-  q?: string;
-  categoria?: string;
-  pagina?: number;
-  por_pagina?: number;
+export interface ProductoBusquedaParams {
+  query: string;
 }
 
 /**
- * Mapper: API → Domain
+ * Mapper: API (snake_case) → Domain (camelCase)
+ *
+ * SRP: Única función responsable del mapeo de la respuesta de búsqueda.
  */
-export function toStockProducto(response: StockResponse): StockProducto {
+export function toStockProducto(item: ProductoBusquedaItem): StockProducto {
   return {
-    codigo: response.codigo,
-    nombre: response.nombre,
-    stockActual: response.stock_actual,
-    stockMinimo: response.stock_minimo,
-    disponible: response.disponible,
-    bajoStock: response.bajo_stock,
+    codigo: item.codigo,
+    nombre: item.nombre,
+    stockActual: item.stock_actual,
+    stockMinimo: item.stock_minimo,
+    disponible: item.stock_actual > 0,
+    bajoStock: item.stock_actual > 0 && item.stock_actual < item.stock_minimo,
   };
 }
