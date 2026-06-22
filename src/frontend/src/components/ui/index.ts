@@ -13,7 +13,7 @@ export { CartTable } from './CartTable';
 export { StockAlert, type StockAlertItem } from './StockAlert';
 export { SaleSummary } from './SaleSummary';
 export { SaleActionBar } from './SaleActionBar';
-export { SaleSuccessModal } from './SaleSuccessModal';
+// ❌ SaleSuccessModal eliminado (reemplazado por SaleTicketView en HU-07)
 
 // HU-07
 export { ReceiptTicket } from './ReceiptTicket';
