@@ -11,6 +11,7 @@ from app.presentation.schemas.venta_schema import (
     CrearVentaRequest,
     StockResponse,
     VentaResponse,
+    ItemVentaResponse
 )
 from fastapi import APIRouter, Depends, status
 
@@ -76,7 +77,10 @@ async def procesar_venta(
         vendedor_id=venta.vendedor_id,
         estado=venta.estado,
         items=[
-            ItemVentaResponse(producto_id=item.producto_id, cantidad=item.cantidad)
-            for item in venta.items
-        ],
+            ItemVentaResponse(
+                producto_id=item.producto_id, 
+                cantidad=item.cantidad
+                ) 
+                for item in venta.items
+                ]
     )

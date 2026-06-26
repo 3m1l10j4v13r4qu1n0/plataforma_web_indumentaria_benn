@@ -4,7 +4,7 @@ from typing import List
 
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
 from app.domain.exceptions import (
-    EstadoProductoInvalidoError,
+    ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
@@ -45,7 +45,7 @@ class ValidarStockVentaUseCase:
                 raise ProductoNoEncontradoError(item.producto_id)
 
             if producto.estado != "ACTIVO":
-                raise EstadoProductoInvalidoError(item.producto_id, producto.estado)
+                raise ProductoInvalidoError(item.producto_id, producto.estado)
 
             if producto.stock_actual < item.cantidad:
                 raise StockInsuficienteError(

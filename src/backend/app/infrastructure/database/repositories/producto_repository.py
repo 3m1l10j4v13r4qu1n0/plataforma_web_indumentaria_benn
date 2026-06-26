@@ -1,7 +1,7 @@
 from typing import Optional
 
 from app.domain.exceptions import (
-    EstadoProductoInvalidoError,
+    ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
@@ -62,7 +62,7 @@ class ProductoRepository(IProductoRepository):
             raise ProductoNoEncontradoError(producto_id)
 
         if orm_producto.estado != "ACTIVO":
-            raise EstadoProductoInvalidoError(producto_id, orm_producto.estado)
+            raise ProductoInvalidoError(producto_id, orm_producto.estado)
 
         if nuevo_stock < 0:
             # La restricción CHECK de la BD lo atraparía, pero lo validamos a nivel de dominio primero

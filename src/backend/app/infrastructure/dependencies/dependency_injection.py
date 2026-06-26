@@ -1,15 +1,11 @@
-# Importamos el Caso de Uso que se creará en el Paso 4.
-# (Se usa importación relativa o absoluta según la estructura final del proyecto)
-from app.application.use_cases.validar_stock_venta_use_case import (
-    ValidarStockVentaUseCase,
-)
-from app.infrastructure.database.repositories.producto_repository import (
-    ProductoRepository,
-)
-from app.infrastructure.database.repositories.venta_repository import VentaRepository
-from app.infrastructure.database.session import get_async_session
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.application.use_cases.validar_stock_venta_use_case import ValidarStockVentaUseCase
+from app.infrastructure.database.repositories.producto_repository import ProductoRepository
+
+from app.infrastructure.database.repositories.venta_repository import VentaRepository
+from app.infrastructure.database.session import get_async_session
 
 
 def get_producto_repository(

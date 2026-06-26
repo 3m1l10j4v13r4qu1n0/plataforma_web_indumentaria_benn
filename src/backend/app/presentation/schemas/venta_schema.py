@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,7 +14,7 @@ class CrearVentaRequest(BaseModel):
     vendedor_id: str = Field(
         ..., description="ID del vendedor que realiza la operación"
     )
-    items: List[ItemVentaRequest] = Field(
+    items: list[ItemVentaRequest] = Field(
         ..., min_length=1, description="Lista de productos a vender"
     )
 
@@ -39,7 +38,7 @@ class VentaResponse(BaseModel):
     fecha_hora: datetime
     vendedor_id: str
     estado: str
-    items: List[ItemVentaResponse]
+    items: list[ItemVentaResponse]
 
     model_config = ConfigDict(from_attributes=True)
 
