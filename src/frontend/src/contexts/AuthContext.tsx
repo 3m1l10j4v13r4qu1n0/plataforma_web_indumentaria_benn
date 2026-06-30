@@ -31,13 +31,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((nextUser: AuthUser, nextToken: string) => {
     setUser(nextUser);
     setToken(nextToken);
-    localStorage.setItem('auth_token', nextToken);
+    // localStorage.setItem('auth_token', nextToken); // activar cuando backend tenga auth
+
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('auth_token');
+    // localStorage.removeItem('auth_token'); // activar cuando backend tenga auth
   }, []);
 
   return (
