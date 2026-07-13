@@ -154,6 +154,29 @@ Esto permite mantener el sistema modular y mantenible.
 ---
 
 ## 🚀 Instalación y configuración
+
+### Requisitos
+
+- Python 3.11.5
+- Git
+- pyenv (recomendado)
+
+Este proyecto incluye un archivo `.python-version` que indica la versión de Python utilizada durante el desarrollo.
+
+Si utilizás **pyenv**, la versión correcta se seleccionará automáticamente al ingresar al directorio del proyecto.
+
+```bash
+pyenv install 3.11.5   # Solo si aún no la tenés instalada
+pyenv local 3.11.5
+```
+
+Verificá la versión con:
+
+```bash
+python --version
+```
+---
+
 ```
 # Clonar el repo
 
@@ -162,6 +185,7 @@ git clone ...
 
 # posicionarse en la carpeta Backend
 cd ./src/backend/
+
 
 # Crear entorno virtual
 python -m venv venv
@@ -215,13 +239,11 @@ backend/
 │
 │   ├── presentation/  🟦 capa de presentación (delivery)
 │   │   ├── routers/
-│   │   │   ├── 
-│   │   │   └── 
+│   │   │   └── venta_router.py  
 │   │   │   💬 define endpoints rest (http → use cases)
 │   │   │
 │   │   ├── schemas/
-│   │   │   ├── 
-│   │   │   └── 
+│   │   │   └──venta_schema.py
 │   │   │   💬 dtos de entrada/salida (pydantic)
 │   │   │
 │   │   └── handlers.py
@@ -233,16 +255,12 @@ backend/
 │   │   - invocar casos de uso
 │
 │   ├── application/  🟩 capa de aplicación (use cases)
+│   │   │
+│   │   ├── dtos
+│   │   │   └── venta_dtos.py
+│   │   │
 │   │   └── use_cases/
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       ├──
-│   │       ├── 
-│   │       ├── 
-│   │       ├── 
-│   │       └── 
+│   │       └── validar_stock_venta_use_case.py 
 │   │
 │   │       💬 implementación de casos de uso del sistema
 │   │
@@ -255,23 +273,14 @@ backend/
 │   ├── domain/  🟥 capa de dominio (core del negocio)
 │   │
 │   │   ├── models/
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   └── 
+│   │   │   ├── detalle_venta.py
+│   │   │   ├── producto.py
+│   │   │   └── venta.py
 │   │   │   💬 entidades y modelos del dominio (reglas puras)
 │   │   │
-│   │   ├── services/
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   └── 
-│   │   │   💬 lógica de negocio compleja desacoplada de entidades
-│   │   │
 │   │   ├── ports/
-│   │   │   ├── 
-    │   │   └── 
+│   │   │   ├── i_producto_repository.py
+│   │   │   └── i_venta_repository.py
 │   │   │   💬 Interfaces (contratos) → patrón Ports & Adapters
 │   │   │
 │   │   ├── exceptions.py
@@ -285,26 +294,24 @@ backend/
 │   ├── infrastructure/  🟨 CAPA DE INFRAESTRUCTURA (Adapters)
 │   │
 │   │   ├── core/
-│   │   │   └── 
+│   │   │   └── config.py
 │   │   │   💬 Configuración global (env, settings)
 │   │   │
 │   │   ├── database/
-│   │   │   ├── 
+│   │   │   ├── session.py
 │   │   │   💬 Conexión a la base de datos
 │   │   │
 │   │   │   ├── orm_models/
-│   │   │   │   ├── 
-│   │   │   │   └── 
+│   │   │   │   ├── detalle_venta_orm.py
+│   │   │   │   ├── venta_orm.py
+│   │   │   │   └── producto_orm.py
 │   │   │   │   💬 Modelos ORM (SQLAlchemy)
 │   │   │   │
-│   │   │   ├── repositories/
-│   │   │   │   ├── 
-│   │   │   │   └── 
-│   │   │   │   💬 Implementaciones de los ports (Adapters)
-│   │   │   │
-│   │   │   ├── seed.py                 ← datos iniciales
-│   │   │   └── seed_runner.py          ← script para ejecutar el seed
-│   │   │   💬 Datos iniciales para la BD
+│   │   │   └── repositories/
+│   │   │       ├── producto_repository.py
+│   │   │       └── venta_repository.py
+│   │   │      💬 Implementaciones de los ports (Adapters)
+│   │   │   
 │   │   │
 │   │   │
 │   │   ├── dependencies/
@@ -315,16 +322,17 @@ backend/
 │   │   - Implementar detalles técnicos (DB, APIs externas)
 │   │   - Adaptar interfaces del dominio
 │   │   - NO contener lógica de negocio
-│
-│   └── requirements.txt
-│
-
-├── tests/  🧪 TESTING
-│   └──  unit/
-│        └── domian/
-│            └── services/
-│                ├── 
-                 └── 
+│   │
+│   ├── requirements.txt
+│   │
+│   │
+│   └── tests
+│       └── unit
+│           ├── fakes
+│           │   ├── fake_producto_repository.py
+│           │   └── fake_venta_repository.py
+│           └── use_cases
+│               └── test_validador_stock_venta_use_case.py
 │   💬 Tests unitarios del dominio (normalización, validación, etc.)
 │
 │   🎯 Responsabilidad:
@@ -386,6 +394,13 @@ Infrastructure (DB, APIs externas)
 - Fase 8: Pruebas unitarias e integración
 - Fase 9: Documentación técnica
 ---
+
+## Tags
+
+- `hu-01-validar-stock-antes-de-vender` 
+:+1:
+
+
 
 ## 🧠 Perfil objetivo
 
