@@ -8,6 +8,28 @@
 🐍 Python  
 🐘 PostgreSQL
 
+
+---
+
+## 📋 Tabla de Contenidos
+
+- [Descripción general](#-descripción-general)
+- [Objetivos del proyecto](#-objetivos-del-proyecto)
+- [Documentación funcional](#-documentación-funcional)
+- [Funcionalidades principales](#-funcionalidades-principales)
+- [Alcance del Sistema](#-alcance-del-sistema)
+- [Arquitectura](#-arquitectura)
+- [Instalación y configuración](#-instalación-y-configuración)
+- [Estructura del Proyecto — API REST](#️-estructura-del-proyecto--api-rest)
+- [Resumen de Arquitectura](#-resumen-de-arquitectura)
+- [Principios Aplicados](#-principios-aplicados)
+- [Beneficios](#-beneficios)
+- [Roadmap](#️-roadmap)
+- [Tags](#-tags)
+
+
+
+
 ---
 
 ## 📌 Descripción general
@@ -129,9 +151,11 @@ Esta documentación simula los artefactos generados por un **Analista de Sistema
 - Facturación electrónica.
 - Gestión de proveedores.
 - Gestión de compras.
-- Integraciones con sistemas ERP externos.---
+- Integraciones con sistemas ERP externos.
 
-## Arquitectura
+---
+
+## 🎯 Arquitectura
 
 El proyecto sigue principios de **Clean Architecture**, separando:
 
@@ -157,7 +181,7 @@ Esto permite mantener el sistema modular y mantenible.
 
 ### Requisitos
 
-- Python 3.11.5
+- Python 3.14.6
 - Git
 - pyenv (recomendado)
 
@@ -166,8 +190,8 @@ Este proyecto incluye un archivo `.python-version` que indica la versión de Pyt
 Si utilizás **pyenv**, la versión correcta se seleccionará automáticamente al ingresar al directorio del proyecto.
 
 ```bash
-pyenv install 3.11.5   # Solo si aún no la tenés instalada
-pyenv local 3.11.5
+pyenv install 3.14.6   # Solo si aún no la tenés instalada
+pyenv local 3.14.6
 ```
 
 Verificá la versión con:
@@ -180,7 +204,7 @@ python --version
 ```
 # Clonar el repo
 
-git clone ...
+git clone git@github.com:3m1l10j4v13r4qu1n0/plataforma_web_indumentaria_benn.git
 
 
 # posicionarse en la carpeta Backend
@@ -395,10 +419,19 @@ Infrastructure (DB, APIs externas)
 - Fase 9: Documentación técnica
 ---
 
-## Tags
+## 🔖 Tags
 
-- `hu-01-validar-stock-antes-de-vender` 
-:+1:
+- `hu-01-validar-stock-antes-de-vender` 👍
+- `hu-02-validar-plazo-cambios`         
+- `hu-03-validar-estado-producto-cambio`
+- `hu-04-consultar-ticket-compra`
+- `hu-05-controlar-descuentos`
+- `hu-06-consulta-stock-disponible`
+- `hu-07-generacion-ticket-venta`
+- `hu-08-actualizacion-automatica-stock`  
+
+
+
 
 
 

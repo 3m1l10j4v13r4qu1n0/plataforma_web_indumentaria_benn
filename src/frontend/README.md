@@ -1,8 +1,5 @@
 # 📄 README.md para el Frontend de SGVIR
 
-Aquí tienes un README.md profesional y completo, alineado con la arquitectura real del proyecto y las HUs ya implementadas:
-
-```markdown
 # 🛍️ SGVIR Frontend — Sistema de Gestión de Ventas e Inventario Retail
 
 > **Proyecto Académico de Ingeniería de Software**
@@ -23,7 +20,7 @@ Aquí tienes un README.md profesional y completo, alineado con la arquitectura r
 - [Scripts Disponibles](#-scripts-disponibles)
 - [Convenciones de Código](#-convenciones-de-código)
 - [Estado del Proyecto](#-estado-del-proyecto)
-- [Roadmap](#-roadmap)
+- [Roadmap](#️-roadmap)
 
 ---
 
@@ -51,7 +48,7 @@ Este frontend consume una API REST construida con **FastAPI + Clean Architecture
 
 ---
 
-## 🏛️ Arquitectura
+## 🎯 Arquitectura
 
 El frontend sigue los principios de **Clean Architecture adaptados a React**, con estricta separación de responsabilidades:
 
@@ -82,7 +79,7 @@ El frontend sigue los principios de **Clean Architecture adaptados a React**, co
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🎯 Stack Tecnológico
 
 | Categoría | Tecnología | Versión | Justificación |
 |---|---|---|---|
