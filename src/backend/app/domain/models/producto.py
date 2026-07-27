@@ -11,7 +11,7 @@ class EstadoProducto(str, Enum):
 
 @dataclass
 class Producto:
-    id: int
+    id: str
     codigo: str
     nombre: str
     categoria_id: int
