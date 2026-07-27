@@ -41,3 +41,30 @@ class ProductoInvalidoError(DomainException):
         super().__init__(
             f"El producto con ID '{producto_id}' no está activo (Estado: {estado})."
         )
+
+
+class CategoriaInvalidaError(DomainException):
+    """Se lanza cuando los datos de una categoría no cumplen sus invariantes."""
+
+    def __init__(self, mensaje: str):
+        super().__init__(mensaje)
+
+
+class CategoriaNoEncontradaError(DomainException):
+    """Se lanza cuando se referencia una categoría que no existe."""
+
+    def __init__(self, categoria_id: int):
+        self.categoria_id = categoria_id
+        super().__init__(
+            f"No se encontró la categoría con id '{categoria_id}'."
+        )
+
+
+class CategoriaYaExisteError(DomainException):
+    """Se lanza cuando se intenta crear una categoría con un nombre ya existente."""
+
+    def __init__(self, nombre: str):
+        self.nombre = nombre
+        super().__init__(
+            f"Ya existe una categoría con el nombre '{nombre}'."
+        )
