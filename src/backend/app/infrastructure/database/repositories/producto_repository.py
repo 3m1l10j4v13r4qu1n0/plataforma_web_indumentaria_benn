@@ -8,7 +8,7 @@ from app.domain.exceptions import (
 from app.domain.models.producto import Producto
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.infrastructure.database.orm_models.producto_orm import ProductoORM
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -75,4 +75,38 @@ class ProductoRepository(IProductoRepository):
             )
 
         orm_producto.stock_actual = nuevo_stock
-        await self.session.commit()
+        # Nota: El commit se delega al Unit of Work (HU-08) para garantizar atomicidad.
+
+    # --- NUEVO MÉTODO PARA HU-06 ---
+    async def buscar_por_nombre_o_codigo(self, query: str) -> list[Producto]:
+        """
+        Busca productos que coincidan con la consulta.
+        Prioriza coincidencia exacta en código y coincidencia parcial (case-insensitive) en nombre.
+        """
+        # Normalizamos la consulta para evitar problemas de espacios
+        query_normalizada = query.strip()
+        
+        stmt = select(ProductoORM).where(
+            or_(
+                ProductoORM.codigo == query_normalizada,
+                ProductoORM.nombre.ilike(f"%{query_normalizada}%")
+            )
+        ).order_by(ProductoORM.nombre) # Ordenamos alfabéticamente para mejor UX
+        
+        result = await self.session.execute(stmt)
+        orm_productos = result.scalars().all()
+        
+        return [self._map_to_domain(orm_prod) for orm_prod in orm_productos]
+
+    # --- MÉTODO AUXILIAR DE MAPEO (DRY) ---
+    def _map_to_domain(self, orm_producto: ProductoORM) -> Producto:
+        """Mapea una instancia ORM a una Entidad de Dominio pura."""
+        return Producto(
+            id=orm_producto.id,
+            codigo=orm_producto.codigo,
+            nombre=orm_producto.nombre,
+            categoria_id=orm_producto.categoria_id,
+            precio=orm_producto.precio,
+            stock_actual=orm_producto.stock_actual,
+            estado=orm_producto.estado
+        )
