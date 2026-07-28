@@ -66,8 +66,13 @@ class ValidarStockVentaUseCase:
         # sesión de SQLAlchemy y maneja la atomicidad.
 
         for item in command.items:
+            producto = await self._producto_repository.obtener_por_id(item.producto_id)
+            if not producto:
+                raise ProductoNoEncontradoError(item.producto_id)
+
+            nuevo_stock = producto.stock_actual - item.cantidad
             await self._producto_repository.actualizar_stock(
-                item.producto_id, item.cantidad
+                item.producto_id, nuevo_stock
             )
 
         # FASE 3: Creación de la Entidad de Dominio y Persistencia
