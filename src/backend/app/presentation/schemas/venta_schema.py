@@ -49,6 +49,11 @@ class StockResponse(BaseModel):
     stock_actual: int
 
 
+class StockSearchResponse(BaseModel):
+    productos: list[StockResponse]
+    mensaje: str
+
+
 class ErrorResponse(BaseModel):
     error: str
     mensaje: str
