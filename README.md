@@ -34,6 +34,7 @@
 
 
 
+
 ---
 
 ## 1. Descripción General
@@ -191,7 +192,7 @@ Hoja de ruta basada en las Historias de Usuario, agrupadas por módulos funciona
 ### Fase 1: Núcleo de Ventas e Inventario
 
 - [x] [HU-01: Validar stock antes de vender](docs/04_historias_usuario/HU-01/HU-01.md)
-- [ ] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06.md)
+- [x] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06.md)
 - [ ] [HU-07: Generar ticket de venta](docs/04_historias_usuario/HU-07/HU-07.md)
 - [ ] [HU-08: Actualizar stock automáticamente](docs/04_historias_usuario/HU-08/HU-08.md)
 
@@ -235,7 +236,7 @@ El sistema sigue una arquitectura en capas de tipo **Cliente-Servidor**:
 Las entidades principales identificadas en el relevamiento son:
 
 - **Usuario**: `id`, `nombre`, `rol` (Vendedor, Cajero, Gerente).
-- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `presio`, `camtidad`.
+- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `presio`, `camtidad_id`.
 - **Venta**: `id`, `numero_ticket` (único), `fecha_hora`, `vendedor_id`, `cajero_id`, `total`, `estado`.
 - **Detalle_Venta**: `venta_id`, `producto_id`, `cantidad`, `precio_unitario`.
 - **Cambio**: `id`, `venta_original_id`, `fecha_cambio`, `estado_producto` (Nuevo/Usado/Dañado), `tiene_etiqueta` (Boolean), `cajero_id`.
@@ -336,5 +337,27 @@ Tienes dos opciones para revisar los diseños:
    - Abre el archivo `.html` con un editor de texto (como VS Code o el Bloc de notas).
    - Copia todo el código.
    - Pégalo en [https://play.tailwindcss.com/](https://play.tailwindcss.com/) para verlo renderizado al instante y experimentar con los estados comentados en el código.
+
+
+## 16. Rol de la Ia en el Proyecto.
+
+### Primera face Backend Usamos el Agente Qwen3.7-plus
+- [Rol del Agente en la codificacion del Backend](docs/06_uso_ia/rol/rol_ia_backend.md)
+
+### Primera face Frontend Usamos los agentes Qwen3.7-plus y Claude
+- [Rol de los Agentes en la codificacion del Frontend](docs/06_uso_ia/rol/rol_ia_frontend.md)
+
+### Utilizacion de SKILLS y PROMTS
+
+#### **Backend**
+- [Promt Activador di-architect-scaffold](docs/06_uso_ia/promt/promt_activador_DI-Architect-Scaffold.md)
+- [Promt de Intrucciones del Backend](docs/06_uso_ia/promt/promt_intrucciones_backend.md)
+- [SKILL di-architect-scaffold](.claude/skills/di-architect-scaffold/SKILL.md)
+
+#### **Frontend**
+- [Promt Activador fe-architect-scaffold](docs/06_uso_ia/promt/promt_activador_fe-architect-scaffold.md)
+- [SKILL fe-architect-scaffold](.claude/skills/fe-architect-scaffold/SKILL.md)
+
+
 
 _Documento generado para fines académicos. Última actualización: Junio 2026._
