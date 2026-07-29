@@ -9,6 +9,7 @@ class ProductoNoEncontradoError(DomainException):
 
     def __init__(self, codigo: str):
         self.codigo = codigo
+        self.producto_id = codigo
         super().__init__(f"El producto con código '{codigo}' no existe en el sistema.")
 
 
