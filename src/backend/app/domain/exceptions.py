@@ -1,6 +1,3 @@
-# HU-01 exceptions
-
-
 class DomainException(Exception):
     """Excepción base para todas las excepciones de dominio."""
 
@@ -12,6 +9,7 @@ class ProductoNoEncontradoError(DomainException):
 
     def __init__(self, codigo: str):
         self.codigo = codigo
+        self.producto_id = codigo
         super().__init__(f"El producto con código '{codigo}' no existe en el sistema.")
 
 
@@ -35,7 +33,7 @@ class StockInsuficienteError(DomainException):
         )
 
 
-class EstadoProductoInvalidoError(DomainException):
+class ProductoInvalidoError(DomainException):
     """Se lanza cuando el producto no está en estado ACTIVO."""
 
     def __init__(self, producto_id: str, estado: str):
@@ -46,107 +44,28 @@ class EstadoProductoInvalidoError(DomainException):
         )
 
 
-# HU-05 exceptions
+class CategoriaInvalidaError(DomainException):
+    """Se lanza cuando los datos de una categoría no cumplen sus invariantes."""
+
+    def __init__(self, mensaje: str):
+        super().__init__(mensaje)
 
 
-class DescuentoExcedeLimiteError(DomainException):
-    """Se lanza cuando el descuento supera el límite permitido sin autorización."""
+class CategoriaNoEncontradaError(DomainException):
+    """Se lanza cuando se referencia una categoría que no existe."""
 
-    def __init__(self, porcentaje_solicitado: float, limite_permitido: float):
-        self.porcentaje_solicitado = porcentaje_solicitado
-        self.limite_permitido = limite_permitido
+    def __init__(self, categoria_id: int):
+        self.categoria_id = categoria_id
         super().__init__(
-            f"El descuento del {porcentaje_solicitado}% excede el límite permitido del {limite_permitido}%. "
-            f"Se requiere autorización de un Gerente."
+            f"No se encontró la categoría con id '{categoria_id}'."
         )
 
 
-class UsuarioNoAutorizadoError(DomainException):
-    """Se lanza cuando un usuario intenta autorizar una operación sin tener el rol requerido."""
+class CategoriaYaExisteError(DomainException):
+    """Se lanza cuando se intenta crear una categoría con un nombre ya existente."""
 
-    def __init__(self, usuario_id: str, rol_requerido: str):
-        self.usuario_id = usuario_id
-        self.rol_requerido = rol_requerido
+    def __init__(self, nombre: str):
+        self.nombre = nombre
         super().__init__(
-            f"El usuario con ID '{usuario_id}' no tiene el rol '{rol_requerido}' "
-            f"necesario para autorizar esta operación."
-        )
-
-
-# HU-02 exceptions
-
-
-class PlazoDeCambioVencidoError(DomainException):
-    """Se lanza cuando se intenta solicitar un cambio fuera del plazo de 15 días."""
-
-    def __init__(self, numero_ticket: str, fecha_compra: str, dias_transcurridos: int):
-        self.numero_ticket = numero_ticket
-        self.fecha_compra = fecha_compra
-        self.dias_transcurridos = dias_transcurridos
-        super().__init__(
-            f"El plazo para cambiar el producto del ticket '{numero_ticket}' ha vencido. "
-            f"Fecha de compra: {fecha_compra}. Días transcurridos: {dias_transcurridos}. "
-            f"El límite máximo es de 15 días calendario."
-        )
-
-
-class VentaNoEncontradaError(DomainException):
-    """Se lanza cuando se intenta operar con una venta/ticket que no existe."""
-
-    def __init__(self, identificador: str):
-        self.identificador = identificador
-        super().__init__(
-            f"No se encontró ninguna venta o ticket con el identificador '{identificador}'."
-        )
-
-
-# HU-03 exceptions
-
-
-class ProductoNoAptoParaCambioError(DomainException):
-    """Se lanza cuando el producto no cumple con las condiciones para ser cambiado."""
-
-    def __init__(self, condicion: str):
-        self.condicion = condicion
-        super().__init__(
-            f"El producto no cumple con las condiciones para cambio. "
-            f"Debe estar 'NUEVO_CON_ETIQUETA'. Estado declarado: '{condicion}'."
-        )
-
-
-# HU-04 exceptions
-
-
-class ProductoNoPerteneceAVentaError(DomainException):
-    """Se lanza cuando se intenta cambiar un producto que no está en el ticket original."""
-
-    def __init__(self, producto_id: str, numero_ticket: str):
-        self.producto_id = producto_id
-        self.numero_ticket = numero_ticket
-        super().__init__(
-            f"El producto con ID '{producto_id}' no se encuentra en el comprobante '{numero_ticket}'."
-        )
-
-
-# HU-08 exceptions
-
-
-class TipoMovimientoInvalidoError(DomainException):
-    """Se lanza cuando se intenta registrar un movimiento con un tipo no permitido."""
-
-    def __init__(self, tipo: str):
-        self.tipo = tipo
-        super().__init__(
-            f"Tipo de movimiento '{tipo}' no es válido. "
-            f"Debe ser 'VENTA', 'DEVOLUCION', 'CAMBIO' o 'AJUSTE'."
-        )
-
-
-class CantidadMovimientoInvalidaError(DomainException):
-    """Se lanza cuando se intenta registrar un movimiento con cantidad cero."""
-
-    def __init__(self, cantidad: int):
-        self.cantidad = cantidad
-        super().__init__(
-            f"La cantidad del movimiento no puede ser cero. Valor recibido: {cantidad}."
+            f"Ya existe una categoría con el nombre '{nombre}'."
         )

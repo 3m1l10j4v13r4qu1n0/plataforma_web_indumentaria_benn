@@ -8,6 +8,28 @@
 🐍 Python  
 🐘 PostgreSQL
 
+
+---
+
+## 📋 Tabla de Contenidos
+
+- [Descripción general](#-descripción-general)
+- [Objetivos del proyecto](#-objetivos-del-proyecto)
+- [Documentación funcional](#-documentación-funcional)
+- [Funcionalidades principales](#-funcionalidades-principales)
+- [Alcance del Sistema](#-alcance-del-sistema)
+- [Arquitectura](#-arquitectura)
+- [Instalación y configuración](#-instalación-y-configuración)
+- [Estructura del Proyecto — API REST](#️-estructura-del-proyecto--api-rest)
+- [Resumen de Arquitectura](#-resumen-de-arquitectura)
+- [Principios Aplicados](#-principios-aplicados)
+- [Beneficios](#-beneficios)
+- [Roadmap](#️-roadmap)
+- [Tags](#-tags)
+
+
+
+
 ---
 
 ## 📌 Descripción general
@@ -129,9 +151,11 @@ Esta documentación simula los artefactos generados por un **Analista de Sistema
 - Facturación electrónica.
 - Gestión de proveedores.
 - Gestión de compras.
-- Integraciones con sistemas ERP externos.---
+- Integraciones con sistemas ERP externos.
 
-## Arquitectura
+---
+
+## 🎯 Arquitectura
 
 El proyecto sigue principios de **Clean Architecture**, separando:
 
@@ -154,14 +178,38 @@ Esto permite mantener el sistema modular y mantenible.
 ---
 
 ## 🚀 Instalación y configuración
+
+### Requisitos
+
+- Python 3.14.6
+- Git
+- pyenv (recomendado)
+
+Este proyecto incluye un archivo `.python-version` que indica la versión de Python utilizada durante el desarrollo.
+
+Si utilizás **pyenv**, la versión correcta se seleccionará automáticamente al ingresar al directorio del proyecto.
+
+```bash
+pyenv install 3.14.6   # Solo si aún no la tenés instalada
+pyenv local 3.14.6
+```
+
+Verificá la versión con:
+
+```bash
+python --version
+```
+---
+
 ```
 # Clonar el repo
 
-git clone ...
+git clone git@github.com:3m1l10j4v13r4qu1n0/plataforma_web_indumentaria_benn.git
 
 
 # posicionarse en la carpeta Backend
 cd ./src/backend/
+
 
 # Crear entorno virtual
 python -m venv venv
@@ -207,10 +255,38 @@ backend
 │   ├── env.py
 │   └── script.py.mako
 │   💬 migraciones de base de datos (versionado del esquema)
-│   
-├── application 🟩 capa de aplicación (use cases)
+│
+├── app/
+│
+│   ├── main.py  
+│   💬 punto de entrada de la aplicación (fastapi)
+│
+│   ├── presentation/  🟦 capa de presentación (delivery)
+│   │   ├── routers/
+│   │   │   └── venta_router.py  
+│   │   │   💬 define endpoints rest (http → use cases)
+│   │   │
+│   │   ├── schemas/
+│   │   │   └──venta_schema.py
+│   │   │   💬 dtos de entrada/salida (pydantic)
+│   │   │
+│   │   └── handlers.py
+│   │       💬 orquesta requests → casos de uso (opcional desacople de routers)
 │   │
-│   │   💬 implementación de casos de uso del sistema
+│   │   🎯 responsabilidad:
+│   │   - recibir requests http
+│   │   - validar formato (no reglas de negocio)
+│   │   - invocar casos de uso
+│
+│   ├── application/  🟩 capa de aplicación (use cases)
+│   │   │
+│   │   ├── dtos
+│   │   │   └── venta_dtos.py
+│   │   │
+│   │   └── use_cases/
+│   │       └── validar_stock_venta_use_case.py 
+│   │
+│   │       💬 implementación de casos de uso del sistema
 │   │
 │   │   🎯 responsabilidad:
 │   │   - orquestar la lógica de negocio
@@ -218,138 +294,66 @@ backend
 │   │   - usar repositorios (a través de puertos)
 │   │   - no depende de infraestructura concreta
 │   │
-│   ├── dtos
-│   │   ├── cambio_dto.py
-│   │   ├── producto_dto.py
-│   │   ├── ticket_dto.py
-│   │   └── venta_dto.py
-│   │
-│   └── use_cases
-│       ├── buscar_productos_use_case.py
-│       ├── consultar_ticket_use_case.py
-│       ├── procesar_vantas_use_case.py
-│       ├── procesar_venta_use_case.py
-│       ├── solicitar_cambio_use_case.py
-│       └── validar_stock_venta_use_case.py
-│   
-├── domain  🟥 capa de dominio (core del negocio)
-│   │   
+│   │   ├── models/
+│   │   │   ├── detalle_venta.py
+│   │   │   ├── producto.py
+│   │   │   └── venta.py
+│   │   │   💬 entidades y modelos del dominio (reglas puras)
+│   │   │
+│   │   ├── ports/
+│   │   │   ├── i_producto_repository.py
+│   │   │   └── i_venta_repository.py
+│   │   │   💬 Interfaces (contratos) → patrón Ports & Adapters
+│   │   │
+│   │   ├── exceptions.py
+│   │   │   💬 Excepciones propias del dominio
 │   │
 │   │   🎯 Responsabilidad:
 │   │   - Contener las reglas de negocio
 │   │   - Ser independiente de frameworks
 │   │   - Definir contratos (ports)
 │   │
-│   │
-│   ├── exceptions.py 💬 Excepciones propias del dominio
-│   │
-│   │
-│   ├── models
-│   │   ├── condicion_producto.py
-│   │   ├── descuento.py
-│   │   ├── detalle_vanta.py
-│   │   ├── detalle_venta.py
-│   │   ├── movimiento_stock.py
-│   │   ├── producto.py
-│   │   └── venta.py
-│   │
-│   ├── ports 💬 Interfaces (contratos) → patrón Ports & Adapters
-│   │   ├── i_movimiento_stock_repository.py
-│   │   ├── i_producto_repository.py
-│   │   ├── i_unit_of_work.py
-│   │   ├── i_usuario_repository.py
-│   │   └── i_venta_repository.py
-│   │
-│   └── services  💬 lógica de negocio compleja desacoplada de entidades
-│       └── generador_ticket.py
-│   
-│   
-├── infrastructure  🟨 CAPA DE INFRAESTRUCTURA (Adapters)
-│   │
+│   │   ├── core/
+│   │   │   └── config.py
+│   │   │   💬 Configuración global (env, settings)
+│   │   │
+│   │   ├── database/
+│   │   │   ├── session.py
+│   │   │   💬 Conexión a la base de datos
+│   │   │
+│   │   │   ├── orm_models/
+│   │   │   │   ├── detalle_venta_orm.py
+│   │   │   │   ├── venta_orm.py
+│   │   │   │   └── producto_orm.py
+│   │   │   │   💬 Modelos ORM (SQLAlchemy)
+│   │   │   │
+│   │   │   └── repositories/
+│   │   │       ├── producto_repository.py
+│   │   │       └── venta_repository.py
+│   │   │      💬 Implementaciones de los ports (Adapters)
+│   │   │   
+│   │   │
+│   │   │
+│   │   ├── dependencies/
+│   │   │   └── dependency_injection.py
+│   │   │   💬 Inyección de dependencias (wiring de la app)
 │   │
 │   │   🎯 Responsabilidad:
 │   │   - Implementar detalles técnicos (DB, APIs externas)
 │   │   - Adaptar interfaces del dominio
 │   │   - NO contener lógica de negocio
 │   │
-│   │
-│   ├── core 💬 Configuración global (env, settings)
-│   │   └── config.py
-│   │
-│   ├── database 💬 Conexión a la base de datos
-│   │   │
-│   │   ├── orm_models 💬 Modelos ORM (SQLAlchemy)
-│   │   │   ├── cambio_orm.py
-│   │   │   ├── detalle_venta_orm.py
-│   │   │   ├── movimiento_stock_orm.py
-│   │   │   ├── producto_orm.py
-│   │   │   ├── usuario_orm.py
-│   │   │   └── venta_orm.py
-│   │   │   
-│   │   ├── repositories 💬 Implementaciones de los ports (Adapters)
-│   │   │   ├── movimiento_stock_repository.py
-│   │   │   ├── producto_repository.py
-│   │   │   ├── usuario_repository.py
-│   │   │   └── venta_repository.py
-│   │   │   
-│   │   ├── session.py
-│   │   └── unit_of_work.py
-│   │   
-│   └── dependencies
-│       └── dependency_injection.py
-│   
-│   
-│
-│                                     
-├── presentation 🟦 capa de presentación (delivery)
-│   │
-│   │    🎯 responsabilidad:
-│   │    - recibir requests http
-│   │    - validar formato (no reglas de negocio)
-│   │    - invocar casos de uso
+│   ├── requirements.txt
 │   │
 │   │
-│   ├── handlers.py  💬 orquesta requests → casos de uso (opcional desacople de routers)
-│   │
-│   ├── routers  💬 define endpoints rest (http → use cases)
-│   │   ├── cambio_router.py
-│   │   ├── producto_router.py
-│   │   ├── ticket_router.py
-│   │   └── venta_router.py
-│   │   
-│   └── schemas 💬 dtos de entrada/salida (pydantic)
-│       ├── cambio_schema.py                  
-│       ├── producto_schema.py
-│       ├── ticket_schema.py
-│       └── venta_schema.py
-│        
-├── main.py  💬 punto de entrada de la aplicación (fastapi)        
-│   
-├── requirements.txt
-│
-├── tests/  🧪 TESTING 
-│       │   💬 Tests unitarios del dominio (normalización, validación, etc.)             
-│       │
-│       │   🎯 Responsabilidad:
-│       │   - Validar reglas de negocio
-│       │   - Asegurar comportamiento correcto del sistema   
-│       │
-│       ├── unit
-│       │   ├── fakes
-│       │   ├── fake_movimiento_repository.py
-│       │   ├── fake_movimiento_stock_repository.py
-│       │   ├── fake_producto_repository.py
-│       │   ├── fake_producto_reposity.py
-│       │   ├── fake_unit_of_work.py
-│       │   ├── fake_usuario_repository.py
-│       │   └── fake_venta_repository.py
-│       │
-│       └── use_cases
-│            ├── test_buscar_productos_use_case.py
-│            ├── test_consultar_ticket_use_case.py
-│            ├── test_procesar_venta_use_case.py
-│            ├── test_solicitar_cambio_use_case.py
-│            └── test_validador_stock_venta_use_case.py
+│   └── tests
+│       └── unit
+│           ├── fakes
+│           │   ├── fake_producto_repository.py
+│           │   └── fake_venta_repository.py
+│           └── use_cases
+│               └── test_validador_stock_venta_use_case.py
+│   💬 Tests unitarios del dominio (normalización, validación, etc.)
 │
 │
 │
@@ -408,6 +412,22 @@ Infrastructure (DB, APIs externas)
 - Fase 8: Pruebas unitarias e integración
 - Fase 9: Documentación técnica
 ---
+
+## 🔖 Tags
+
+- `hu-01-validar-stock-antes-de-vender` 👍
+- `hu-02-validar-plazo-cambios`         
+- `hu-03-validar-estado-producto-cambio`
+- `hu-04-consultar-ticket-compra`
+- `hu-05-controlar-descuentos`
+- `hu-06-consulta-stock-disponible`
+- `hu-07-generacion-ticket-venta`
+- `hu-08-actualizacion-automatica-stock`  
+
+
+
+
+
 
 ## 🧠 Perfil objetivo
 

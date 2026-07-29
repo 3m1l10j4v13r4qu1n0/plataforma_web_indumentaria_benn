@@ -8,7 +8,9 @@
   ```json
   {
     "producto_id": "123",
+    "categoria": "Camisas ",
     "nombre": "Camiseta Básica",
+    "precio": 100,
     "stock_actual": 5
   }
   

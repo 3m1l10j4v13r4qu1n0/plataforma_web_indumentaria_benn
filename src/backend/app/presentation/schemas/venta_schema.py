@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,7 +14,7 @@ class CrearVentaRequest(BaseModel):
     vendedor_id: str = Field(
         ..., description="ID del vendedor que realiza la operación"
     )
-    items: List[ItemVentaRequest] = Field(
+    items: list[ItemVentaRequest] = Field(
         ..., min_length=1, description="Lista de productos a vender"
     )
     porcentaje_descuento: float = Field(
@@ -56,8 +55,7 @@ class VentaResponse(BaseModel):
     fecha_hora: datetime
     vendedor_id: str
     estado: str
-    items: List[ItemVentaResponse]
-    descuento: DescuentoResponse
+    items: list[ItemVentaResponse]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -70,6 +68,11 @@ class StockResponse(BaseModel):
     precio: float  # ← NUEVO: Precio unitario
     stock_actual: int
     model_config = ConfigDict(from_attributes=True)
+
+
+class StockSearchResponse(BaseModel):
+    productos: list[StockResponse]
+    mensaje: str
 
 
 class ErrorResponse(BaseModel):

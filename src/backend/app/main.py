@@ -3,11 +3,9 @@ from contextlib import asynccontextmanager
 
 from app.infrastructure.core.config import settings
 from app.presentation.handlers import register_exception_handlers
-from app.presentation.routers.cambio_router import router as cambio_router
-from app.presentation.routers.producto_router import router as producto_router
-from app.presentation.routers.ticket_router import router as ticket_router
-from app.presentation.routers.venta_router import router as venta_router
 
+#routers
+from app.presentation.routers.venta_router import router as venta_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,9 +37,6 @@ app = FastAPI(
 register_exception_handlers(app)
 
 # ── Routers ──────────────────────────────────────────────────────────
-app.include_router(cambio_router)
-app.include_router(producto_router)
-app.include_router(ticket_router)
 app.include_router(venta_router)
 
 # ── Health check ─────────────────────────────────────────────────────

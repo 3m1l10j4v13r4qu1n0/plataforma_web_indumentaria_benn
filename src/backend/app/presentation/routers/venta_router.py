@@ -1,16 +1,52 @@
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
-from app.application.use_cases.procesar_venta_use_case import ProcesarVentaUseCase
+from app.application.use_cases.consultar_stock_producto_use_case import (
+    ConsultarStockProductoUseCase,
+)
+from app.application.use_cases.validar_stock_venta_use_case import (
+    ValidarStockVentaUseCase,
+)
 from app.infrastructure.dependencies.dependency_injection import (
-    get_procesar_venta_use_case,
+    get_consultar_stock_producto_use_case,
+    get_validar_stock_venta_use_case,
 )
 from app.presentation.schemas.venta_schema import (
     CrearVentaRequest,
     ItemVentaResponse,
+    StockResponse,
+    StockSearchResponse,
     VentaResponse,
 )
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
-router = APIRouter(prefix="/api/v1/ventas", tags=["Ventas"])
+router = APIRouter(prefix="/api/v1", tags=["Ventas y Stock"])
+
+
+@router.get(
+    "/productos/stock",
+    response_model=StockSearchResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Consultar Stock en tiempo real",
+)
+async def consultar_stock(
+    query: str = Query(..., description="Nombre o código del producto a buscar"),
+    use_case: ConsultarStockProductoUseCase = Depends(
+        get_consultar_stock_producto_use_case
+    ),
+):
+    """Busca productos por nombre o código y devuelve su stock disponible."""
+    productos = await use_case.execute(query)
+
+    return StockSearchResponse(
+        productos=[
+            StockResponse(
+                producto_id=producto.id,
+                nombre=producto.nombre,
+                stock_actual=producto.stock_actual,
+            )
+            for producto in productos
+        ],
+        mensaje=f"Se encontraron {len(productos)} producto(s) coincidente(s).",
+    )
 
 
 @router.post(
@@ -50,11 +86,10 @@ async def procesar_venta(
         vendedor_id=venta.vendedor_id,
         estado=venta.estado,
         items=[
-            ItemVentaResponse(producto_id=item.producto_id, cantidad=item.cantidad)
-            for item in venta.items
-        ],
-        descuento={
-            "porcentaje": venta.descuento.porcentaje,
-            "gerente_autorizacion_id": venta.descuento.gerente_autorizacion_id,
-        },
+            ItemVentaResponse(
+                producto_id=item.producto_id, 
+                cantidad=item.cantidad
+                ) 
+                for item in venta.items
+                ]
     )

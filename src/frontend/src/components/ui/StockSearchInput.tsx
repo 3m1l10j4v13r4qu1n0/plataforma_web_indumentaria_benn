@@ -1,16 +1,11 @@
 import { forwardRef, type InputHTMLAttributes } from 'react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/utils/cn';
 
 interface StockSearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Valor actual del input */
   value: string;
   /** Callback cuando cambia el valor */
-  onChange: (value: string) => void;
+  onValueChange: (value: string) => void;
   /** Callback cuando se presiona Enter */
   onSearch: (value: string) => void;
   /** Placeholder del input */
@@ -33,7 +28,7 @@ interface StockSearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
  * SRP: Solo maneja la UI del input, no la lógica de búsqueda.
  */
 export const StockSearchInput = forwardRef<HTMLInputElement, StockSearchInputProps>(
-  ({ value, onChange, onSearch, placeholder, disabled, className, ...props }, ref) => {
+  ({ value, onValueChange, onSearch, placeholder, disabled, className, ...props }, ref) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && value.trim()) {
         onSearch(value.trim());
@@ -63,7 +58,7 @@ export const StockSearchInput = forwardRef<HTMLInputElement, StockSearchInputPro
           ref={ref}
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onValueChange(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={placeholder || 'Buscar por nombre o código...'}

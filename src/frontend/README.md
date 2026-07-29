@@ -1,8 +1,5 @@
 # 📄 README.md para el Frontend de SGVIR
 
-Aquí tienes un README.md profesional y completo, alineado con la arquitectura real del proyecto y las HUs ya implementadas:
-
-```markdown
 # 🛍️ SGVIR Frontend — Sistema de Gestión de Ventas e Inventario Retail
 
 > **Proyecto Académico de Ingeniería de Software**
@@ -23,7 +20,7 @@ Aquí tienes un README.md profesional y completo, alineado con la arquitectura r
 - [Scripts Disponibles](#-scripts-disponibles)
 - [Convenciones de Código](#-convenciones-de-código)
 - [Estado del Proyecto](#-estado-del-proyecto)
-- [Roadmap](#-roadmap)
+- [Roadmap](#️-roadmap)
 
 ---
 
@@ -51,7 +48,7 @@ Este frontend consume una API REST construida con **FastAPI + Clean Architecture
 
 ---
 
-## 🏛️ Arquitectura
+## 🎯 Arquitectura
 
 El frontend sigue los principios de **Clean Architecture adaptados a React**, con estricta separación de responsabilidades:
 
@@ -82,7 +79,7 @@ El frontend sigue los principios de **Clean Architecture adaptados a React**, co
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🎯 Stack Tecnológico
 
 | Categoría | Tecnología | Versión | Justificación |
 |---|---|---|---|
@@ -115,47 +112,36 @@ Antes de comenzar, asegúrate de tener instalado:
 > 💡 **Recomendado**: Usa [nvm](https://github.com/nvm-sh/nvm) para gestionar versiones de Node.js.
 
 ---
-
 ## 🚀 Instalación desde Cero
-
 Si estás creando el proyecto desde cero (no clonando):
 
 ### Paso 1: Crear el proyecto con Vite
-
 ```bash
 # Posicionarse en la carpeta src del monorepo
 cd src
-
 # Crear el proyecto frontend con Vite (React + TypeScript)
 npm create vite@latest frontend -- --template react-ts
-
 # Entrar al proyecto
 cd frontend
-
 # Instalar dependencias base
 npm install
 ```
 
 ### Paso 2: Instalar dependencias del stack
-
 ```bash
 # Routing
 npm install react-router-dom
-
 # HTTP Client
 npm install axios
-
 # Formularios + Validación
 npm install react-hook-form @hookform/resolvers zod
-
 # Estado global de API
 npm install @tanstack/react-query
-
 # Utilidades
 npm install clsx tailwind-merge date-fns
-
+# Tailwind CSS v4 + plugin de Vite
+npm install tailwindcss @tailwindcss/vite
 # Dev dependencies
-npm install -D tailwindcss postcss autoprefixer
 npm install -D eslint prettier eslint-config-prettier \
   eslint-plugin-react-hooks eslint-plugin-react-refresh
 npm install -D @testing-library/react @testing-library/jest-dom \
@@ -163,32 +149,37 @@ npm install -D @testing-library/react @testing-library/jest-dom \
 npm install -D vitest jsdom @types/node
 ```
 
-### Paso 3: Inicializar Tailwind CSS
+### Paso 3: Configurar Tailwind CSS v4
+Agregar el plugin en `vite.config.ts`:
+```ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-```bash
-npx tailwindcss init -p
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+})
 ```
 
-Configurar `tailwind.config.js`:
+Reemplazar el contenido de `src/index.css`:
+```css
+@import "tailwindcss";
+```
 
-```js
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    extend: {
-      colors: {
-        brand: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-        },
-      },
-    },
-  },
-  plugins: [],
-};
+> ⚠️ Tailwind v4 no requiere `tailwind.config.js` ni `postcss.config.js`.
+> La configuración de tema se hace directamente en el CSS con `@theme`.
+
+### Paso 4: Verificar instalación
+```bash
+npm run dev
+```
+Abre tu navegador en `http://localhost:5173` y deberías ver la pantalla inicial de Vite + React.
+
+---
+
 ```
 
 ### Paso 4: Verificar instalación
@@ -209,10 +200,10 @@ Si ya existe el repositorio y vas a clonarlo:
 
 ```bash
 # Clonar el repositorio completo
-git clone https://github.com/tu-usuario/proyecto-retail.git
+git clone https://github.com/3m1l10j4v13r4qu1n0/plataforma_web_indumentaria_benn/
 
 # Entrar al repositorio
-cd proyecto-retail
+cd plataforma_web_indumentaria_benn
 ```
 
 ### Paso 2: Instalar dependencias del frontend

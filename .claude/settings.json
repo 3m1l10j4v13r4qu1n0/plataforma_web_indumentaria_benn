@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "ask": [
+      "Write(**)",
+      "Edit(**)",
+      "Bash(git commit*)",
+      "Bash(git push*)"
+    ],
+    "allow": [
+      "Read(**)",
+      "Grep(**)",
+      "Glob(**)",
+      "Bash(npm run *)",
+      "Bash(pytest*)",
+      "Bash(python -m pytest*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)"
+    ]
+  }
+}
