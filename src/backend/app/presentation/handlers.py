@@ -2,6 +2,14 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
+    DomainException,
+    ProductoInvalidoError,
+    ProductoNoEncontradoError,
+    StockInsuficienteError,
+)
+from app.presentation.schemas.venta_schema import ErrorResponse
+
+from app.domain.exceptions import (
     DescuentoExcedeLimiteError,
     DomainException,
     EstadoProductoInvalidoError,
@@ -49,9 +57,9 @@ def register_exception_handlers(app: FastAPI):
             ).model_dump(),
         )
 
-    @app.exception_handler(EstadoProductoInvalidoError)
+    @app.exception_handler(ProductoInvalidoError)
     async def estado_invalido_handler(
-        request: Request, exc: EstadoProductoInvalidoError
+        request: Request, exc: ProductoInvalidoError
     ):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,

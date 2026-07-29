@@ -1,30 +1,37 @@
-from dataclasses import dataclass
-from typing import List
+from pydantic import BaseModel, ConfigDict
 
 
-@dataclass
-class BuscarProductosCommand:
-    query: str  # Término de búsqueda (código exacto o fragmento de nombre)
+class ProductoStockResumenDTO(BaseModel):
+    """Representa el resumen de stock de un producto para consulta.
 
-
-@dataclass
-class ProductoStockResumenDTO:
+    Attributes:
+        producto_id: Identificador único del producto (UUID).
+        codigo: Código de barras o SKU del producto.
+        nombre: Nombre descriptivo del producto.
+        categoria_id: Identificador de la categoría del producto.
+        precio: Precio unitario del producto.
+        stock_actual: Cantidad disponible en inventario.
+        estado: Estado actual del producto como string.
     """
-    Definimos aquí el DTO que el Caso de Uso devolverá,
-    para no exponer la entidad de dominio completa
-    (que podría tener campos internos) en la capa de
-    presentación, cumpliendo con el principio de
-    bajo acoplamiento.
-    """
+
+    model_config = ConfigDict(from_attributes=True)
 
     producto_id: str
     codigo: str
     nombre: str
+    categoria_id: int
+    precio: int
     stock_actual: int
     estado: str
 
 
-@dataclass
-class BuscarProductosResponseDTO:
-    productos: List[ProductoStockResumenDTO]
+class BuscarProductosResponseDTO(BaseModel):
+    """Respuesta de la búsqueda de productos por stock (HU-06).
+
+    Attributes:
+        productos: Lista de resúmenes de stock encontrados.
+        mensaje: Mensaje descriptivo del resultado de la búsqueda.
+    """
+
+    productos: list[ProductoStockResumenDTO]
     mensaje: str

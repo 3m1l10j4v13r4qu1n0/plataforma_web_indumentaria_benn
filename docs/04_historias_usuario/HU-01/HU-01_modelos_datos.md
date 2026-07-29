@@ -7,6 +7,8 @@ Basado en el modelo global, esta HU impacta directamente las siguientes entidade
 - `id` (UUID/Int): Identificador único.
 - `codigo` (String): Código de barras o SKU (índice de búsqueda).
 - `nombre` (String): Nombre descriptivo del producto.
+- `categoria` (int): categoria del producto.
+- `precio` (int): precio del producto.
 - `stock_actual` (Int): Cantidad disponible en inventario. **(Campo crítico)**
 - `estado` (Enum): 'ACTIVO' | 'INACTIVO'.
 

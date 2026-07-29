@@ -1,3 +1,4 @@
+// Preparación para autenticación futura (YAGNI)
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import type { ReactElement } from 'react';
