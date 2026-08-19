@@ -2,14 +2,15 @@ import uuid
 from datetime import datetime, UTC
 
 
-from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
+from app.application.dtos.venta_dto import CrearVentaCommand
 from app.domain.exceptions import (
     ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
 from app.domain.models.detalle_venta import DetalleVenta
-from app.domain.models.venta import Venta
+from app.domain.models.producto import EstadoProducto
+from app.domain.models.venta import EstadoVenta, Venta
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.domain.ports.i_venta_repository import IVentaRepository
 
@@ -44,7 +45,7 @@ class ValidarStockVentaUseCase:
             if not producto:
                 raise ProductoNoEncontradoError(item.producto_id)
 
-            if producto.estado != "ACTIVO":
+            if producto.estado != EstadoProducto.ACTIVO:
                 raise ProductoInvalidoError(item.producto_id, producto.estado)
 
             if producto.stock_actual < item.cantidad:
@@ -70,6 +71,9 @@ class ValidarStockVentaUseCase:
             # Volvemos a obtener el producto (ya bloqueado por for_update en la sesión actual)
             # para asegurar el estado más reciente antes de descontar.
             producto = await self._producto_repository.obtener_por_id(item.producto_id)
+            if not producto:
+                raise ProductoNoEncontradoError(item.producto_id)
+
             nuevo_stock = producto.stock_actual - item.cantidad
 
             await self._producto_repository.actualizar_stock(
@@ -81,7 +85,7 @@ class ValidarStockVentaUseCase:
             id=venta_id,
             fecha_hora=datetime.now(UTC),
             vendedor_id=command.vendedor_id,
-            estado="CONFIRMADA",  # Se confirma directamente si pasa todas las validaciones
+            estado=EstadoVenta.CONFIRMADA,
             items=detalles,
         )
 
