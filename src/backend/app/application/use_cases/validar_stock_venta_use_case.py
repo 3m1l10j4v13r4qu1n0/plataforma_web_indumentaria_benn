@@ -1,6 +1,6 @@
 import uuid
-from datetime import datetime
-from typing import List
+from datetime import datetime, UTC
+
 
 from app.application.dtos.venta_dto import CrearVentaCommand, ItemVentaDTO
 from app.domain.exceptions import (
@@ -34,7 +34,7 @@ class ValidarStockVentaUseCase:
             raise ValueError("La venta debe contener al menos un item.")
 
         venta_id = str(uuid.uuid4())
-        detalles: List[DetalleVenta] = []
+        detalles: list[DetalleVenta] = []
 
         # FASE 1: Validación y Bloqueo de Filas (Fetch con for_update)
         # Se valida cada item antes de realizar cualquier modificación.
@@ -79,7 +79,7 @@ class ValidarStockVentaUseCase:
         # FASE 3: Creación de la Entidad de Dominio y Persistencia
         nueva_venta = Venta(
             id=venta_id,
-            fecha_hora=datetime.utcnow(),
+            fecha_hora=datetime.now(UTC),
             vendedor_id=command.vendedor_id,
             estado="CONFIRMADA",  # Se confirma directamente si pasa todas las validaciones
             items=detalles,

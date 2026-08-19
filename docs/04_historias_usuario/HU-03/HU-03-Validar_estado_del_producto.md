@@ -1,0 +1,1 @@
+# transcribir tarjeta
