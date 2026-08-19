@@ -45,7 +45,9 @@ class VentaResponse(BaseModel):
 
 class StockResponse(BaseModel):
     producto_id: str
+    categoria: str
     nombre: str
+    precio: int
     stock_actual: int
 
 

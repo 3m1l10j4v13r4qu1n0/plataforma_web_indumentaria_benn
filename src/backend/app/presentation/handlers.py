@@ -25,7 +25,7 @@ def register_exception_handlers(app: FastAPI):
             content=ErrorResponse(
                 error="PRODUCTO_NO_ENCONTRADO",
                 mensaje=str(exc),
-                producto_id=exc.codigo if hasattr(exc, "codigo") else exc.producto_id,
+                producto_id=exc.identificador,
             ).model_dump(),
         )
 
@@ -41,9 +41,7 @@ def register_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(ProductoInvalidoError)
-    async def estado_invalido_handler(
-        request: Request, exc: ProductoInvalidoError
-    ):
+    async def estado_invalido_handler(request: Request, exc: ProductoInvalidoError):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=ErrorResponse(
