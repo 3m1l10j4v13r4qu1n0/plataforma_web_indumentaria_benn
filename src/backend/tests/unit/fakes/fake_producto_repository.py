@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 from app.domain.exceptions import (
-    EstadoProductoInvalidoError,
+    ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
@@ -31,7 +31,7 @@ class FakeProductoRepository(IProductoRepository):
             raise ProductoNoEncontradoError(producto_id)
 
         if producto.estado != "ACTIVO":
-            raise EstadoProductoInvalidoError(producto_id, producto.estado)
+            raise ProductoInvalidoError(producto_id, producto.estado)
 
         if nuevo_stock < 0:
             raise StockInsuficienteError(
