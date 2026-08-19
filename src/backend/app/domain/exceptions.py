@@ -7,9 +7,11 @@ class DomainException(Exception):
 class ProductoNoEncontradoError(DomainException):
     """Se lanza cuando se intenta operar con un producto que no existe."""
 
-    def __init__(self, codigo: str):
-        self.codigo = codigo
-        super().__init__(f"El producto con código '{codigo}' no existe en el sistema.")
+    def __init__(self, identificador: str):
+        self.identificador = identificador
+        super().__init__(
+            f"El producto con identificador '{identificador}' no existe en el sistema."
+        )
 
 
 class StockInsuficienteError(DomainException):
