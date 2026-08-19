@@ -28,6 +28,8 @@ class ProductoRepository(IProductoRepository):
             id=orm_producto.id,
             codigo=orm_producto.codigo,
             nombre=orm_producto.nombre,
+            categoria=orm_producto.categoria,
+            precio=orm_producto.precio,
             stock_actual=orm_producto.stock_actual,
             estado=orm_producto.estado,
         )
@@ -47,6 +49,8 @@ class ProductoRepository(IProductoRepository):
             id=orm_producto.id,
             codigo=orm_producto.codigo,
             nombre=orm_producto.nombre,
+            categoria=orm_producto.categoria,
+            precio=orm_producto.precio,
             stock_actual=orm_producto.stock_actual,
             estado=orm_producto.estado,
         )
