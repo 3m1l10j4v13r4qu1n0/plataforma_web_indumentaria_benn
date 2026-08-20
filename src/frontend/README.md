@@ -277,60 +277,53 @@ src/frontend/
 ├── index.html                    # HTML principal (entry point)
 ├── package.json                  # Dependencias y scripts
 ├── tsconfig.json                 # Configuración TypeScript (strict mode)
-├── vite.config.ts                # Configuración Vite + proxy + alias
-├── tailwind.config.js            # Configuración Tailwind CSS
-├── postcss.config.js             # Configuración PostCSS
+├── vite.config.ts                # Configuración Vite + proxy + alias + Vitest
+├── .oxlintrc.json                # Configuración de oxlint (linter)
 ├── .prettierrc                   # Configuración Prettier
-├── .eslintrc.cjs                 # Configuración ESLint
 ├── .env                          # Variables de entorno (NO commitear)
 ├── .env.example                  # Plantilla de variables de entorno
 │
 ├── public/                       # Assets estáticos (favicon, etc.)
 │
 └── src/
-    ├── main.tsx                  # Entry point de React
-    ├── App.tsx                   # Componente raíz
+    ├── main.tsx                  # Entry point de React (QueryClient + Router)
     │
     ├── api/                      # 🌐 Capa de comunicación con backend
     │   ├── client.ts             # Instancia de Axios + interceptores
     │   ├── endpoints.ts          # Constantes de URLs oficiales
     │   └── services/             # Servicios por dominio
-    │       ├── productos.service.ts
-    │       ├── venta.service.ts
-    │       └── cambio.service.ts
+    │       ├── productos.service.ts        # Consulta de stock
+    │       ├── productos.service.types.ts  # Contrato IProductosService
+    │       └── venta.service.ts            # Procesar venta
     │
     ├── components/               # 🎨 Componentes reutilizables
     │   ├── ui/                   # Presentacionales puros (botones, inputs, cards)
+    │   │   ├── Button.tsx
+    │   │   ├── Alert.tsx
     │   │   ├── StockBadge.tsx
-    │   │   ├── CartItemRow.tsx
-    │   │   ├── ReceiptTicket.tsx
-    │   │   ├── PlazoIndicator.tsx
+    │   │   ├── StockSearchInput.tsx
+    │   │   ├── StockResultCard.tsx
+    │   │   ├── VentaProductoCard.tsx
+    │   │   ├── VentaItemRow.tsx
+    │   │   ├── ResultsHeader.tsx
+    │   │   ├── EmptyState.tsx
     │   │   └── index.ts          # Barrel export
     │   └── layout/               # Layout (header, error boundary)
     │       ├── PageHeader.tsx
-    │       ├── SaleHeader.tsx
-    │       ├── ErrorBoundary.tsx
     │       └── index.ts
     │
     ├── pages/                    # 📄 Contenedores (orquestan hooks + UI)
     │   ├── ventas/
-    │   │   ├── NuevaVentaPage.tsx
+    │   │   ├── CrearVentaPage.tsx
     │   │   └── __tests__/
     │   ├── productos/
-    │   │   ├── ConsultarStockPage.tsx
-    │   │   └── __tests__/
-    │   └── cambios/
-    │       ├── GestionCambiosPage.tsx
-    │       └── __tests__/
+    │   │   └── ConsultarStockPage.tsx
+    │   └── (cambios/ - planificada)
     │
     ├── hooks/                    # 🪝 Custom hooks (lógica de UI)
-    │   ├── useCart.ts
-    │   ├── useProductSearch.ts
-    │   ├── useProcessSale.ts
-    │   ├── usePrinter.ts
-    │   ├── useCartValidation.ts
-    │   ├── __tests__/
-    │   └── index.ts
+    │   ├── useStockProducto.ts
+    │   ├── useVenta.ts
+    │   └── (más hooks por HU)
     │
     ├── contexts/                 # 🌍 Contextos globales
     │   └── AuthContext.tsx       # Preparado para auth futura (YAGNI)
@@ -343,30 +336,23 @@ src/frontend/
     │   ├── api/                  # Espejo de esquemas Pydantic
     │   │   ├── productos.types.ts
     │   │   ├── venta.types.ts
-    │   │   ├── ticket.types.ts
-    │   │   ├── cambio.types.ts
-    │   │   └── error.types.ts
+    │   │   ├── error.types.ts
+    │   │   └── index.ts
     │   └── domain/               # Tipos de dominio del frontend
-    │       ├── producto.types.ts
-    │       ├── venta.types.ts
-    │       ├── ticket.types.ts
-    │       └── cambio.types.ts
+    │       └── producto.types.ts
     │
     ├── utils/                    # 🛠️ Helpers puros
     │   ├── cn.ts                 # clsx + tailwind-merge
-    │   ├── formatCurrency.ts
-    │   ├── formatRelativeTime.ts
-    │   └── index.ts
+    │   └── apiErrors.ts          # Normalización de errores de API
     │
     ├── constants/                # 📌 Constantes globales
     │   └── routes.ts
     │
     ├── styles/                   # 🎨 Estilos globales
-    │   └── globals.css
+    │   └── index.css             # Tailwind v4 (@theme con colores brand)
     │
     └── test/                     # 🧪 Configuración de testing
-        ├── setup.ts
-        └── test-utils.tsx
+        └── setup.ts
 ```
 
 ---
@@ -381,8 +367,7 @@ src/frontend/
 | `npm run test` | Ejecuta todas las pruebas con Vitest |
 | `npm run test -- --watch` | Ejecuta pruebas en modo watch |
 | `npm run test -- --coverage` | Ejecuta pruebas con reporte de cobertura |
-| `npm run lint` | Ejecuta ESLint para verificar calidad de código |
-| `npm run format` | Formatea el código con Prettier |
+| `npm run lint` | Ejecuta oxlint para verificar calidad de código |
 
 ---
 
@@ -431,13 +416,13 @@ style: aplicar formato con Prettier
 | HU | Módulo | Título | Estado Frontend |
 |---|---|---|---|
 | HU-01 | Ventas | Validar stock antes de vender | ✅ Completada |
-| HU-06 | Ventas | Consultar stock disponible | ✅ Completada |
-| HU-07 | Ventas | Generar ticket de venta | ✅ Completada |
+| HU-06 | Ventas | Consultar stock disponible | 🚧 En progreso (esqueleto) |
+| HU-07 | Ventas | Generar ticket de venta | ⏳ Pendiente (sin endpoint backend) |
 | HU-08 | Inventario | Actualizar stock automáticamente | ✅ Completada (sin UI) |
-| HU-04 | Cambios | Solicitar ticket de compra | 🚧 En progreso |
+| HU-04 | Cambios | Solicitar ticket de compra | ⏳ Pendiente (sin endpoint backend) |
 | HU-02 | Cambios | Registrar cambios (15 días) | ⏳ Pendiente |
 | HU-03 | Cambios | Validar estado del producto | ⏳ Pendiente |
-| HU-05 | Admin | Controlar descuentos | ⏳ Pendiente |
+| HU-05 | Admin | Controlar descuentos | ⏳ Pendiente (sin endpoint backend) |
 
 ### Flujo de Trabajo (6 Pasos por HU)
 
