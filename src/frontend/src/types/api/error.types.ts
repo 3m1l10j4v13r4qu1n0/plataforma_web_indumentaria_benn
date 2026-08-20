@@ -1,19 +1,18 @@
 /**
- * Estructura estándar de errores del backend (handlers.py)
+ * Estructura estándar de errores del backend.
+ * Espejo del esquema Pydantic ErrorResponse (handlers.py).
  */
 export interface ApiErrorResponse {
   error: string;
   mensaje: string;
   producto_id?: string;
-  numero_ticket?: string;
-  usuario_id?: string;
 }
 
+/**
+ * Códigos de error emitidos por el backend (handlers.py).
+ */
 export type ApiErrorCode =
+  | 'PRODUCTO_NO_ENCONTRADO'
   | 'STOCK_INSUFICIENTE'
-  | 'PLAZO_DE_CAMBIO_VENCIDO'
-  | 'PRODUCTO_NO_ELEGIBLE_PARA_CAMBIO'
-  | 'TICKET_NO_ENCONTRADO'
-  | 'DESCUENTO_NO_AUTORIZADO'
-  | 'VALIDACION_ERROR'
-  | 'ERROR_INTERNO';
+  | 'ESTADO_PRODUCTO_INVALIDO'
+  | 'ERROR_DE_DOMINIO';
