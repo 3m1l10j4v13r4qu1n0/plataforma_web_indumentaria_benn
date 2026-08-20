@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 // opcional:
 import { ROUTES } from '@/constants/routes';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
+import { CrearVentaPage } from '@/pages/ventas/CrearVentaPage';
 
 /**
  * Router principal de la aplicación SGVIR.
@@ -20,8 +21,10 @@ export function AppRouter() {
       {/* HU-06: Consultar stock disponible */}
       <Route path="/productos/stock" element={<ConsultarStockPage />} />
 
-      {/* Placeholders para futuras HUs (se completarán en sus respectivos pasos) */}
-      <Route path="/ventas" element={<Placeholder page="Ventas" />} />
+      {/* HU-01: Procesar venta (validar stock antes de vender) */}
+      <Route path="/ventas" element={<CrearVentaPage />} />
+
+      {/* Placeholder para futuras HUs (se completarán en sus respectivos pasos) */}
       <Route path="/cambios" element={<Placeholder page="Cambios" />} />
 
       {/* Fallback 404 */}
