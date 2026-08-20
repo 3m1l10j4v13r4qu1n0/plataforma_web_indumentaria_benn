@@ -1,18 +1,18 @@
 import { apiClient } from '@/api/client';
 import { API_ENDPOINTS } from '@/api/endpoints';
-import type { StockSearchResponse } from '@/types/api/productos.types';
+import type { StockProducto } from '@/types/domain';
+import { StockResponse, toStockProducto } from '@/types/api';
 
-class ProductosService {
-  async buscarStock(query: string): Promise<StockSearchResponse> {
-    const response = await apiClient.get<StockSearchResponse>(
-      API_ENDPOINTS.PRODUCTOS.STOCK,
-      {
-        params: { query },
-      },
+import type { IProductosService } from './productos.service.types';
+
+/**
+ * Implementación concreta del servicio de productos usando el cliente Axios.
+ */
+export const productosService: IProductosService = {
+  async obtenerStock(codigo: string): Promise<StockProducto> {
+    const { data } = await apiClient.get<StockResponse>(
+      API_ENDPOINTS.PRODUCTOS.STOCK(codigo),
     );
-
-    return response.data;
-  }
-}
-
-export const productosService = new ProductosService();
+    return toStockProducto(data);
+  },
+};

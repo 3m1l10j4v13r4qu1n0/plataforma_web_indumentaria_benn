@@ -15,6 +15,7 @@ uvicorn[standard]>=0.30.0,<0.35.0 # Servidor ASGI para ejecutar FastAPI en desar
 sqlalchemy>=2.0.30,<3.0.0      # ORM y Core de SQLAlchemy (versión 2.x con typing moderno)
 asyncpg>=0.31.0,<0.32.0        # Driver asíncrono para PostgreSQL; soporte Python 3.14 desde 0.31.0
 alembic>=1.13.0,<2.0.0         # Herramienta de migraciones de base de datos para SQLAlchemy
+psycopg2-binary>=2.9.9,<3.0.0  # Driver síncrono requerido por Alembic para aplicar migraciones
 # aiosqlite>=0.20.0            # Descomentar si se usa SQLite para pruebas locales rápidas
 
 # ------------------------------------------------------------------------------

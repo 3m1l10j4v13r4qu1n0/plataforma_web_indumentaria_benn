@@ -1,8 +1,6 @@
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
-#Claude
-.claude/keybindings.json
 .vscode/
 #Cache folder
 .alcache/
@@ -23,8 +21,7 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
-# Claude settings
-.claude/settings.jsom
+
 
 #=========================.gitignore BACKEND =================
 # Byte-compiled / optimized / DLL files

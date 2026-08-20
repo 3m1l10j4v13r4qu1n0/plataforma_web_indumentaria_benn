@@ -36,8 +36,8 @@ def producto_activo_con_stock():
         id="P-001",
         codigo="CAM-001",
         nombre="Camiseta Básica",
-        categoria_id=1,
-        precio=1000,
+        categoria="Camisas",
+        precio=100,
         stock_actual=5,
         estado="ACTIVO",
     )
@@ -49,8 +49,8 @@ def producto_sin_stock():
         id="P-002",
         codigo="PAN-001",
         nombre="Pantalón",
-        categoria_id=1,
-        precio=1000,
+        categoria="Pantalones",
+        precio=200,
         stock_actual=0,
         estado="ACTIVO",
     )
@@ -62,8 +62,8 @@ def producto_inactivo():
         id="P-003",
         codigo="ZAP-001",
         nombre="Zapatos",
-        categoria_id=1,
-        precio=1000,
+        categoria="Calzado",
+        precio=150,
         stock_actual=2,
         estado="INACTIVO",
     )
@@ -148,7 +148,7 @@ async def test_rechazar_venta_producto_no_encontrado(use_case):
     with pytest.raises(ProductoNoEncontradoError) as exc_info:
         await use_case.execute(command)
 
-    assert exc_info.value.producto_id == "P-999"
+    assert exc_info.value.identificador == "P-999"
 
 
 # ❌ Escenario 5: Producto inactivo

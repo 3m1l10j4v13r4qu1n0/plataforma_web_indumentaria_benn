@@ -4,8 +4,9 @@ from contextlib import asynccontextmanager
 from app.infrastructure.core.config import settings
 from app.presentation.handlers import register_exception_handlers
 
-#routers
+# routers
 from app.presentation.routers.venta_router import router as venta_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,15 +23,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title       = settings.APP_NAME,
-    version     = settings.APP_VERSION,
-    debug       = settings.DEBUG,
-    description = """
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    debug=settings.DEBUG,
+    description="""
     API REST Plataforma Web Indumentaria BENN
     """,
-    lifespan    = lifespan,
-    docs_url    ="/api/docs",
-    redoc_url   ="/api/redoc"
+    lifespan=lifespan,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
 )
 
 # ── Handlers de errores ──────────────────────────────────────────────
@@ -39,11 +40,12 @@ register_exception_handlers(app)
 # ── Routers ──────────────────────────────────────────────────────────
 app.include_router(venta_router)
 
+
 # ── Health check ─────────────────────────────────────────────────────
 @app.get("/", tags=["Health"])
 async def health_check():
     return {
-        "estado"  : "ok",
-        "app"     : settings.APP_NAME,
-        "version" : settings.APP_VERSION,
+        "estado": "ok",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
     }

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".opencode/rules/stack-tecnologico.md",
+    ".opencode/rules/reglas-negocio.md",
+    ".opencode/rules/calidad-arquitectura.md",
+    ".opencode/rules/roadmap-historias-usuario.md",
+    ".opencode/rules/solid-python.md"
+  ]
+}

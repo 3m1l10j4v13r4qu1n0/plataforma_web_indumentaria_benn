@@ -17,21 +17,12 @@ class CrearVentaRequest(BaseModel):
     items: list[ItemVentaRequest] = Field(
         ..., min_length=1, description="Lista de productos a vender"
     )
-    porcentaje_descuento: float = Field(
-        default=0.0, ge=0.0, le=100.0, description="Porcentaje de descuento aplicado"
-    )
-    gerente_autorizacion_id: Optional[str] = Field(
-        default=None,
-        description="ID del gerente que autoriza si el descuento supera el 20%",
-    )
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "vendedor_id": "V-001",
                 "items": [{"producto_id": "123", "cantidad": 2}],
-                "porcentaje_descuento": 10.0,
-                "gerente_autorizacion_id": None,
             }
         }
     )
@@ -42,16 +33,8 @@ class ItemVentaResponse(BaseModel):
     cantidad: int
 
 
-class DescuentoResponse(BaseModel):
-    porcentaje: float
-    gerente_autorizacion_id: Optional[str] = None
-
-
 class VentaResponse(BaseModel):
     id: str
-    numero_ticket: str = Field(
-        ..., description="Número de comprobante único generado para esta venta (HU-07)"
-    )  # <-- NUEVO
     fecha_hora: datetime
     vendedor_id: str
     estado: str
@@ -62,21 +45,13 @@ class VentaResponse(BaseModel):
 
 class StockResponse(BaseModel):
     producto_id: str
-    codigo: str  # ← NUEVO: SKU del producto
+    categoria: str
     nombre: str
-    categoria: str  # ← NUEVO: Categoría del producto
-    precio: float  # ← NUEVO: Precio unitario
+    precio: int
     stock_actual: int
-    model_config = ConfigDict(from_attributes=True)
-
-
-class StockSearchResponse(BaseModel):
-    productos: list[StockResponse]
-    mensaje: str
 
 
 class ErrorResponse(BaseModel):
     error: str
     mensaje: str
     producto_id: str | None = None
-    usuario_id: str | None = None

@@ -4,10 +4,16 @@ from sqlalchemy import create_engine, pool
 from alembic import context
 
 from app.infrastructure.core.config import settings
-from app.infrastructure.database.session import Base  # ajustá el import a tu estructura real
+from app.infrastructure.database.session import (
+    Base,
+)  # ajustá el import a tu estructura real
 
 # Importá todos tus modelos acá para que autogenerate los detecte
-# from app.infrastructure.database.models import ModeloA, ModeloB  # ← descomentá y ajustá
+from app.infrastructure.database.orm_models import (  # noqa: F401
+    DetalleVentaORM,
+    ProductoORM,
+    VentaORM,
+)
 
 config = context.config
 
@@ -15,6 +21,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
+
 
 # Convertimos la URL async (asyncpg) a sync (psycopg2) para que Alembic pueda usarla
 def get_sync_url() -> str:

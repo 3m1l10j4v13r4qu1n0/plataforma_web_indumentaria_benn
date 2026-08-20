@@ -9,23 +9,29 @@
 
 ## 📋 Tabla de Contenidos
 
-- [1.  Descripción General](#1-descripción-general)
-- [2.  Objetivos del Proyecto](#2-objetivos-del-proyecto)
-- [3.  Alcance](#3-alcance)
-- [4.  Tecnologías Utilizadas](#4-tecnologías-utilizadas)
-- [5.  Estructura del Repositorio](#5-estructura-del-repositorio)
-- [6.  Roadmap del Proyecto](#6-roadmap-del-proyecto)
-- [7.  Documentación Global Disponible](#7-documentación-global-disponible)
-- [8.  Arquitectura del Sistema](#8-arquitectura-del-sistema)
-- [9.  Modelo de Datos (Resumen)](#9-modelo-de-datos-resumen)
+- [1. Descripción General](#1-descripción-general)
+- [2. Objetivos del Proyecto](#2-objetivos-del-proyecto)
+- [3. Alcance](#3-alcance)
+- [4. Tecnologías Utilizadas](#4-tecnologías-utilizadas)
+- [5. Estructura del Repositorio](#5-estructura-del-repositorio)
+- [6. Roadmap del Proyecto](#6-roadmap-del-proyecto)
+- [7. Documentación Global Disponible](#7-documentación-global-disponible)
+- [8. Arquitectura del Sistema](#8-arquitectura-del-sistema)
+- [9. Modelo de Datos (Resumen)](#9-modelo-de-datos-resumen)
 - [10. Resumen de Historias de Usuario por Módulo](#10-resumen-de-historias-de-usuario-por-módulo)
 - [11. Equipo de Trabajo](#11-equipo-de-trabajo)
 - [12. Estado Actual del Proyecto](#12-estado-actual-del-proyecto)
 - [13. Próximos Pasos](#13-próximos-pasos)
 - [14. Instalación y configuración](#14-instalación-y-configuración)
 - [15. Mockups y Prototipos de Interfaz](#15-mockups-y-prototipos-de-interfaz)
-- [16. Rol de la Ia en el Proyecto](#16-rol-de-la-ia-en-el-proyecto)
-- [17. Metodologia Agil](#17-metodologia-agil)
+
+
+
+
+
+
+
+
 
 
 ---
@@ -88,17 +94,6 @@ El proyecto está organizado como un **Monorepo** para centralizar la documentac
 
 ```text
 proyecto-retail/
-│
-├── CLAUDE.md                   # Configuracion Agente IA
-│
-├── .claude/
-│   ├── skills
-│   │   ├── di-architect-scaffold/
-│   │   │    └── SKILL.md
-│   │   │
-│   │   └── fe-architect-scaffold/
-│   │        └── SKILL.md
-│   └── settings.json
 │
 ├── README.md                   # Resumen del proyecto, cómo levantar el entorno y enlace a la documentación
 │
@@ -172,27 +167,13 @@ proyecto-retail/
 │   │       ├── HU-08_modelos_datos.md
 │   │       ├── HU-08_pruevas.md
 │   │       └── HU-08_requerimientos.md
-│   ├── 05_mockups
-│   │   ├── mockup_hu01.html
-│   │   ├── mockup_hu02_hu04.html
-│   │   ├── mockup_hu03.html
-│   │   ├── mockup_hu05.html
-│   │   ├── mockup_hu06.html
-│   │   └── mockup_hu07.html
-│   │
-│   ├── 06_uso_ia/
-│   │   ├── promt
-│   │   │   ├── promt_activador_di-architect-scaffold.md
-│   │   │   ├── promt_activador_fe-architect-scaffold.md
-│   │   │   └── promt_intrucciones_backend.md
-│   │   │
-│   │   └── rol/
-│   │       ├── rol_ia_backend.md
-│   │       └── rol_ia_frontend.md
-│   │    
-│   └── 07_metodologia_agil/
-│           └── metodoKanban.md
-│    
+│   └── 05_mockups
+│       ├── mockup_hu01.html
+│       ├── mockup_hu02_hu04.html
+│       ├── mockup_hu03.html
+│       ├── mockup_hu05.html
+│       ├── mockup_hu06.html
+│       └── mockup_hu07.html
 │──src/                        # Carpeta del código (Backend / Frontend)
 │  ├── backend/                # Lógica de servidor, controladores, modelos, servicios
 │  └── frontend/               # Componentes de interfaz, vistas, servicios HTTP
@@ -210,7 +191,7 @@ Hoja de ruta basada en las Historias de Usuario, agrupadas por módulos funciona
 ### Fase 1: Núcleo de Ventas e Inventario
 
 - [x] [HU-01: Validar stock antes de vender](docs/04_historias_usuario/HU-01/HU-01.md)
-- [x] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06.md)
+- [ ] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06.md)
 - [ ] [HU-07: Generar ticket de venta](docs/04_historias_usuario/HU-07/HU-07.md)
 - [ ] [HU-08: Actualizar stock automáticamente](docs/04_historias_usuario/HU-08/HU-08.md)
 
@@ -254,7 +235,7 @@ El sistema sigue una arquitectura en capas de tipo **Cliente-Servidor**:
 Las entidades principales identificadas en el relevamiento son:
 
 - **Usuario**: `id`, `nombre`, `rol` (Vendedor, Cajero, Gerente).
-- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `presio`, `camtidad_id`.
+- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `presio`, `camtidad`.
 - **Venta**: `id`, `numero_ticket` (único), `fecha_hora`, `vendedor_id`, `cajero_id`, `total`, `estado`.
 - **Detalle_Venta**: `venta_id`, `producto_id`, `cantidad`, `precio_unitario`.
 - **Cambio**: `id`, `venta_original_id`, `fecha_cambio`, `estado_producto` (Nuevo/Usado/Dañado), `tiene_etiqueta` (Boolean), `cajero_id`.
@@ -355,35 +336,5 @@ Tienes dos opciones para revisar los diseños:
    - Abre el archivo `.html` con un editor de texto (como VS Code o el Bloc de notas).
    - Copia todo el código.
    - Pégalo en [https://play.tailwindcss.com/](https://play.tailwindcss.com/) para verlo renderizado al instante y experimentar con los estados comentados en el código.
-
----
-
-## 16. Rol de la Ia en el Proyecto.
-
-### Primera face Backend Usamos el Agente Qwen3.7-plus
-- [Rol del Agente en la codificacion del Backend](docs/06_uso_ia/rol/rol_ia_backend.md)
-
-### Primera face Frontend Usamos los agentes Qwen3.7-plus y Claude
-- [Rol de los Agentes en la codificacion del Frontend](docs/06_uso_ia/rol/rol_ia_frontend.md)
-
-### Utilizacion de SKILLS y PROMTS
-
-#### **Backend**
-- [Promt Activador di-architect-scaffold](docs/06_uso_ia/promt/promt_activador_DI-Architect-Scaffold.md)
-- [Promt de Intrucciones del Backend](docs/06_uso_ia/promt/promt_intrucciones_backend.md)
-- [SKILL di-architect-scaffold](.claude/skills/di-architect-scaffold/SKILL.md)
-
-#### **Frontend**
-- [Promt Activador fe-architect-scaffold](docs/06_uso_ia/promt/promt_activador_fe-architect-scaffold.md)
-- [SKILL fe-architect-scaffold](.claude/skills/fe-architect-scaffold/SKILL.md)
-
----
-
-## 17. Metodologia Agil.
-
-### Descripcion.
-- [Metodo Kanban](docs/07_metodologia_agil/metodoKanban.md)
-
----
 
 _Documento generado para fines académicos. Última actualización: Junio 2026._

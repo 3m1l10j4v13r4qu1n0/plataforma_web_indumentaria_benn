@@ -1,51 +1,38 @@
 /**
- * Item del carrito de ventas.
- * Representa un producto agregado a la venta actual.
+ * Item de venta en la request de POST /api/v1/ventas.
+ * Espejo del esquema Pydantic ItemVentaRequest.
  */
-export interface ItemCarrito {
-  productoId: string;
-  codigo: string;
-  nombre: string;
-  categoria: string;
-  precio: number;
-  stockActual: number;
+export interface ItemVentaRequest {
+  producto_id: string;
   cantidad: number;
 }
 
 /**
- * Venta procesada (respuesta del backend).
+ * Request de POST /api/v1/ventas.
+ * Espejo del esquema Pydantic CrearVentaRequest.
  */
-export interface VentaProcesada {
+export interface CrearVentaRequest {
+  vendedor_id: string;
+  items: ItemVentaRequest[];
+}
+
+/**
+ * Item de venta en la respuesta de POST /api/v1/ventas.
+ * Espejo del esquema Pydantic ItemVentaResponse.
+ */
+export interface ItemVentaResponse {
+  producto_id: string;
+  cantidad: number;
+}
+
+/**
+ * Response de POST /api/v1/ventas.
+ * Espejo del esquema Pydantic VentaResponse.
+ */
+export interface VentaResponse {
   id: string;
-  numeroTicket: string;
-  fechaHora: string;
-  vendedorId: string;
+  fecha_hora: string;
+  vendedor_id: string;
   estado: string;
   items: ItemVentaResponse[];
-  descuento: DescuentoResponse;
-}
-
-export interface ItemVentaResponse {
-  productoId: string;
-  cantidad: number;
-}
-
-export interface DescuentoResponse {
-  porcentaje: number;
-  gerenteAutorizacionId?: string;
-}
-
-/**
- * Resultado de validación del carrito.
- */
-export interface ValidacionCarrito {
-  esValido: boolean;
-  errores: ErrorValidacionItem[];
-}
-
-export interface ErrorValidacionItem {
-  productoId: string;
-  nombre: string;
-  motivo: 'SIN_STOCK' | 'CANTIDAD_EXCEDE_STOCK' | 'CANTIDAD_CERO';
-  mensaje: string;
 }

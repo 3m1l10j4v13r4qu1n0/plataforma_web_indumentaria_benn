@@ -42,12 +42,3 @@ class FakeProductoRepository(IProductoRepository):
             )
 
         producto.stock_actual = nuevo_stock
-
-    async def buscar_por_nombre_o_codigo(self, query: str) -> list[Producto]:
-        query_normalizada = query.strip().lower()
-        return [
-            producto
-            for producto in self._productos.values()
-            if query_normalizada in producto.codigo.lower()
-            or query_normalizada in producto.nombre.lower()
-        ]

@@ -20,13 +20,12 @@ export interface Producto {
 
 /**
  * Información de stock de un producto.
- * Proyección específica para la HU-06.
+ * Espejo del StockResponse del backend (HU-01/HU-06).
  */
 export interface StockProducto {
-  codigo: string;
+  productoId: string;
+  categoria: string;
   nombre: string;
+  precio: number;
   stockActual: number;
-  stockMinimo: number;
-  disponible: boolean;
-  bajoStock: boolean;
 }

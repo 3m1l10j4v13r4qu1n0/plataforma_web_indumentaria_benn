@@ -6,34 +6,32 @@ import type { StockProducto } from '@/types/domain';
 describe('Productos Types', () => {
   it('toStockProducto mapea correctamente snake_case a camelCase', () => {
     const response: StockResponse = {
-      codigo: 'PROD-001',
+      producto_id: 'PROD-001',
+      categoria: 'Remeras',
       nombre: 'Producto Test',
+      precio: 15000,
       stock_actual: 10,
-      stock_minimo: 5,
-      disponible: true,
-      bajo_stock: false,
     };
 
     const result = toStockProducto(response);
 
-    expectTypeOf(result).toMatchTypeOf<StockProducto>();
-    expectTypeOf(result.codigo).toBeString();
+    expectTypeOf(result).toExtend<StockProducto>();
+    expectTypeOf(result.productoId).toBeString();
     expectTypeOf(result.stockActual).toBeNumber();
-    expectTypeOf(result.bajoStock).toBeBoolean();
+    expectTypeOf(result.categoria).toBeString();
   });
 
   it('StockProducto tiene todos los campos requeridos', () => {
     const stock: StockProducto = {
-      codigo: 'PROD-001',
+      productoId: 'PROD-001',
+      categoria: 'Remeras',
       nombre: 'Producto Test',
+      precio: 15000,
       stockActual: 10,
-      stockMinimo: 5,
-      disponible: true,
-      bajoStock: false,
     };
 
-    expectTypeOf(stock).toHaveProperty('codigo');
+    expectTypeOf(stock).toHaveProperty('productoId');
     expectTypeOf(stock).toHaveProperty('stockActual');
-    expectTypeOf(stock).toHaveProperty('bajoStock');
+    expectTypeOf(stock).toHaveProperty('categoria');
   });
 });

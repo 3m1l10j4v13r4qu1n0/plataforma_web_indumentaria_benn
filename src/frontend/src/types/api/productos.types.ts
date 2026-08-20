@@ -1,18 +1,15 @@
 import type { StockProducto } from '@/types/domain';
 
 /**
- * Response de GET /api/v1/productos/stock
- * Espejo del esquema Pydantic StockSearchResponse del backend.
+ * Response de GET /api/v1/productos/{codigo}/stock
+ * Espejo del esquema Pydantic StockResponse del backend.
  */
 export interface StockResponse {
   producto_id: string;
+  categoria: string;
   nombre: string;
+  precio: number;
   stock_actual: number;
-}
-
-export interface StockSearchResponse {
-  productos: StockResponse[];
-  mensaje: string;
 }
 
 /**
@@ -20,11 +17,10 @@ export interface StockSearchResponse {
  */
 export function toStockProducto(response: StockResponse): StockProducto {
   return {
-    codigo: response.producto_id,
+    productoId: response.producto_id,
+    categoria: response.categoria,
     nombre: response.nombre,
+    precio: response.precio,
     stockActual: response.stock_actual,
-    stockMinimo: 0,
-    disponible: response.stock_actual > 0,
-    bajoStock: response.stock_actual <= 0,
   };
 }

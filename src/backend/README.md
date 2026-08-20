@@ -248,10 +248,10 @@ Este proyecto implementa una arquitectura basada en **Clean Architecture + Hexag
 ## 📦 Estructura General
 
 ```
-backend
+backend/
 │
-├── alembic  
-│   ├── versions
+├── alembic/  
+│   ├── versions/
 │   ├── env.py
 │   └── script.py.mako
 │   💬 migraciones de base de datos (versionado del esquema)
@@ -293,6 +293,8 @@ backend
 │   │   - coordinar servicios del dominio
 │   │   - usar repositorios (a través de puertos)
 │   │   - no depende de infraestructura concreta
+│
+│   ├── domain/  🟥 capa de dominio (core del negocio)
 │   │
 │   │   ├── models/
 │   │   │   ├── detalle_venta.py
@@ -312,6 +314,8 @@ backend
 │   │   - Contener las reglas de negocio
 │   │   - Ser independiente de frameworks
 │   │   - Definir contratos (ports)
+│   
+│   ├── infrastructure/  🟨 CAPA DE INFRAESTRUCTURA (Adapters)
 │   │
 │   │   ├── core/
 │   │   │   └── config.py
@@ -355,6 +359,9 @@ backend
 │               └── test_validador_stock_venta_use_case.py
 │   💬 Tests unitarios del dominio (normalización, validación, etc.)
 │
+│   🎯 Responsabilidad:
+│   - Validar reglas de negocio
+│   - Asegurar comportamiento correcto del sistema
 │
 │
 ├── README.md  
@@ -362,7 +369,6 @@ backend
 │
 └── alembic.ini  
     💬 Configuración de migraciones
-
 ```
 
 ---
@@ -402,8 +408,8 @@ Infrastructure (DB, APIs externas)
 
 ## 🗺️ Roadmap
 
-- Fase 1: Análisis funcional 
-- Fase 2: Diseño técnico y arquitectura 
+- Fase 1: Análisis funcional ✔
+- Fase 2: Diseño técnico y arquitectura ✔
 - Fase 3: Implementación del módulo de productos
 - Fase 4: Implementación del módulo de inventario
 - Fase 5: Implementación del módulo de ventas
@@ -434,14 +440,12 @@ Infrastructure (DB, APIs externas)
 Este proyecto está pensado como material demostrativo para:
 
 ---
-## 👥 Integrantes (Grupo 7)
 
-- Aquino Emilio Javier  
-- Brian Maigua   
-- Nelida Fernandes  
-- Nicol Vargas  
+## Participantes
 
----
+Emilio Javier Aquino   
+
+
 ## 📄 Licencia
 
 Proyecto de uso educativo y demostrativo.
