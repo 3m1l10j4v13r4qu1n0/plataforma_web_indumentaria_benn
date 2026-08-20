@@ -235,7 +235,7 @@ alembic revision --autogenerate -m "crear tablas plataforma web "
 alembic upgrade head
 
 # Levantar la API
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 ---
 
