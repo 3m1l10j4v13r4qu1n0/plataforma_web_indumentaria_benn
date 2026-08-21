@@ -26,20 +26,32 @@ para entregar comprobantes a los clientes.
 
 Criterios de aceptación:
 
-    - Dado que la venta finaliza, debe generarse ticket
+  - Dado que la venta finaliza, debe generarse ticket
 
-    - Dado que ocurre un error, debe mostrarse advertencia
+  - Dado que ocurre un error, debe mostrarse advertencia
 
-    - Dado que el ticket existe, debe guardarse en el sistema
+  - Dado que el ticket existe, debe guardarse en el sistema
+
+
+Specification by Example
+
+  - Venta confirmada = ticket generado
+  - Error de impresión = mostrar advertencia
+
+Acceptance TDD
+
+  - Generar ticket correctamente y verificar datos registrados (caso positivo)
+  - Validar manejo de error de impresión y número único de comprobante (caso negativo/borde)
+
 
 ## Backend
 
-[] Crear validación de estado
-[] Registrar rechazo de productos
-[] Validar existencia de etiqueta
+  - [] Crear validación de estado
+  - [] Registrar rechazo de productos
+  - [] Validar existencia de etiqueta
 
 ## Frontend
 
-[] Crear selector de estado
-[] Mostrar validaciones visuales
-[] Mostrar mensajes de rechazo
+  - [] Crear selector de estado
+  - [] Mostrar validaciones visuales
+  - [] Mostrar mensajes de rechazo
