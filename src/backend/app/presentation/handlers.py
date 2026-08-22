@@ -7,6 +7,7 @@ from app.domain.exceptions import (
     ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
+    TicketDuplicadoError,
 )
 from app.presentation.schemas.venta_schema import ErrorResponse
 
@@ -58,6 +59,16 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_400_BAD_REQUEST,
             content=ErrorResponse(
                 error="BUSQUEDA_INVALIDA",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(TicketDuplicadoError)
+    async def ticket_duplicado_handler(request: Request, exc: TicketDuplicadoError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=ErrorResponse(
+                error="TICKET_DUPLICADO",
                 mensaje=str(exc),
             ).model_dump(),
         )
