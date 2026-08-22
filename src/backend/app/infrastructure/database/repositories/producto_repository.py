@@ -5,10 +5,10 @@ from app.domain.exceptions import (
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
-from app.domain.models.producto import Producto
+from app.domain.models.producto import EstadoProducto, Producto
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.infrastructure.database.orm_models.producto_orm import ProductoORM
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -54,6 +54,33 @@ class ProductoRepository(IProductoRepository):
             stock_actual=orm_producto.stock_actual,
             estado=orm_producto.estado,
         )
+
+    async def buscar_por_nombre_o_codigo(self, query: str) -> list[Producto]:
+        termino = f"%{query.strip()}%"
+        stmt = (
+            select(ProductoORM)
+            .where(
+                or_(
+                    ProductoORM.nombre.ilike(termino),
+                    ProductoORM.codigo.ilike(termino),
+                )
+            )
+            .where(ProductoORM.estado == EstadoProducto.ACTIVO.value)
+        )
+        result = await self.session.execute(stmt)
+
+        return [
+            Producto(
+                id=orm_producto.id,
+                codigo=orm_producto.codigo,
+                nombre=orm_producto.nombre,
+                categoria=orm_producto.categoria,
+                precio=orm_producto.precio,
+                stock_actual=orm_producto.stock_actual,
+                estado=orm_producto.estado,
+            )
+            for orm_producto in result.scalars().all()
+        ]
 
     async def actualizar_stock(self, producto_id: str, nuevo_stock: int) -> None:
         stmt = (
