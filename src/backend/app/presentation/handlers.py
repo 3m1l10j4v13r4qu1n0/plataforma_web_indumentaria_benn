@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
+    BusquedaInvalidaError,
     DomainException,
     ProductoInvalidoError,
     ProductoNoEncontradoError,
@@ -48,6 +49,16 @@ def register_exception_handlers(app: FastAPI):
                 error="ESTADO_PRODUCTO_INVALIDO",
                 mensaje=str(exc),
                 producto_id=exc.producto_id,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(BusquedaInvalidaError)
+    async def busqueda_invalida_handler(request: Request, exc: BusquedaInvalidaError):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ErrorResponse(
+                error="BUSQUEDA_INVALIDA",
+                mensaje=str(exc),
             ).model_dump(),
         )
 
