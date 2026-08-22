@@ -1,9 +1,12 @@
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.domain.exceptions import TicketDuplicadoError
 from app.domain.models.detalle_venta import DetalleVenta
 from app.domain.models.venta import Venta
 from app.domain.ports.i_venta_repository import IVentaRepository
 from app.infrastructure.database.orm_models.detalle_venta_orm import DetalleVentaORM
 from app.infrastructure.database.orm_models.venta_orm import VentaORM
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class VentaRepository(IVentaRepository):
@@ -17,26 +20,47 @@ class VentaRepository(IVentaRepository):
             fecha_hora=venta.fecha_hora,
             vendedor_id=venta.vendedor_id,
             estado=venta.estado,
+            numero_ticket=venta.numero_ticket,
+            total=venta.total,
         )
 
         for item in venta.items:
             orm_detalle = DetalleVentaORM(
-                venta_id=venta.id, producto_id=item.producto_id, cantidad=item.cantidad
+                venta_id=venta.id,
+                producto_id=item.producto_id,
+                cantidad=item.cantidad,
+                precio_unitario=item.precio_unitario,
             )
             orm_venta.detalles.append(orm_detalle)
 
         self.session.add(orm_venta)
-        await self.session.commit()
-        await self.session.refresh(orm_venta)
+        try:
+            await self.session.commit()
+        except IntegrityError as exc:
+            # La BD rechaza duplicados por el UNIQUE de numero_ticket;
+            # se traduce a una excepción de dominio.
+            await self.session.rollback()
+            mensaje_tecnico = str(exc.orig) if exc.orig else str(exc)
+            if "numero_ticket" in mensaje_tecnico:
+                raise TicketDuplicadoError(venta.numero_ticket) from exc
+            raise
 
-        # Retornamos la entidad de dominio actualizada (si la BD generó IDs, etc.)
+        # Los identificadores se generan del lado cliente y la entidad de
+        # dominio ya contiene todos los datos persistidos, por lo que no es
+        # necesario refrescar el ORM (evita lazy loads fuera del greenlet).
         return Venta(
-            id=orm_venta.id,
-            fecha_hora=orm_venta.fecha_hora,
-            vendedor_id=orm_venta.vendedor_id,
-            estado=orm_venta.estado,
+            id=venta.id,
+            fecha_hora=venta.fecha_hora,
+            vendedor_id=venta.vendedor_id,
+            estado=venta.estado,
+            numero_ticket=venta.numero_ticket,
+            total=venta.total,
             items=[
-                DetalleVenta(producto_id=d.producto_id, cantidad=d.cantidad)
-                for d in orm_venta.detalles
+                DetalleVenta(
+                    producto_id=item.producto_id,
+                    cantidad=item.cantidad,
+                    precio_unitario=item.precio_unitario,
+                )
+                for item in venta.items
             ],
         )
