@@ -54,3 +54,13 @@ class ProductoInvalidoError(DomainException):
         super().__init__(
             f"El producto con ID '{producto_id}' no está activo (Estado: {estado})."
         )
+
+
+class TicketDuplicadoError(DomainException):
+    """Se lanza cuando se intenta registrar una venta con un número de ticket ya existente."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            f"El número de ticket '{numero_ticket}' ya existe en el sistema."
+        )
