@@ -45,9 +45,9 @@ Acceptance TDD
 
 ## Backend
 
-  - [] Crear búsqueda de productos
-  - [] Crear consulta de stock
-  - [] Optimizar consultas
+  - [x] Crear búsqueda de productos
+  - [x] Crear consulta de stock
+  - [x] Optimizar consultas
 
 ## Frontend
 
