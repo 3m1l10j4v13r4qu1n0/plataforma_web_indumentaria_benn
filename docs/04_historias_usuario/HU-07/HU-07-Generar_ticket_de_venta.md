@@ -46,12 +46,12 @@ Acceptance TDD
 
 ## Backend
 
-  - [] Crear validación de estado
-  - [] Registrar rechazo de productos
-  - [] Validar existencia de etiqueta
+  - [] Generar número único
+  - [] Registrar venta
+  - [] Guardar comprobante
 
 ## Frontend
 
-  - [] Crear selector de estado
-  - [] Mostrar validaciones visuales
-  - [] Mostrar mensajes de rechazo
+  - [] Mostrar ticket
+  - [] Permitir impresión
+  - [] Mostrar confirmación
