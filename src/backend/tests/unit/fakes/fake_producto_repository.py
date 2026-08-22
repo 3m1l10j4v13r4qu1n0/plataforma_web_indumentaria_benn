@@ -5,7 +5,7 @@ from app.domain.exceptions import (
     ProductoNoEncontradoError,
     StockInsuficienteError,
 )
-from app.domain.models.producto import Producto
+from app.domain.models.producto import EstadoProducto, Producto
 from app.domain.ports.i_producto_repository import IProductoRepository
 
 
@@ -21,6 +21,15 @@ class FakeProductoRepository(IProductoRepository):
             if p.codigo == codigo:
                 return p
         return None
+
+    async def buscar_por_nombre_o_codigo(self, query: str) -> list[Producto]:
+        termino = query.strip().lower()
+        return [
+            p
+            for p in self._productos.values()
+            if p.estado == EstadoProducto.ACTIVO.value
+            and (termino in p.nombre.lower() or termino in p.codigo.lower())
+        ]
 
     async def obtener_por_id(self, producto_id: str) -> Optional[Producto]:
         return self._productos.get(producto_id)
