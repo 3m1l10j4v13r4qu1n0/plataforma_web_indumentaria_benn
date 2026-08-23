@@ -7,6 +7,7 @@ export { ProductoBusquedaCard } from './ProductoBusquedaCard';
 export { TicketCard } from './TicketCard';
 export { Button } from './Button';
 export { Alert } from './Alert';
+export { DescuentoModal } from './DescuentoModal';
 export {
   VentaProductoCard,
   type VentaProductoCardProps,
