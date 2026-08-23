@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.domain.models.cambio import EstadoProducto
+
 
 class ItemVentaTicketResponse(BaseModel):
     producto_id: str
@@ -57,3 +59,51 @@ class CambioResponse(BaseModel):
 class CambioErrorResponse(BaseModel):
     error: str
     mensaje: str
+
+
+class ValidarEstadoProductoRequest(BaseModel):
+    """Schema de entrada para validar el estado físico del producto (HU-03)."""
+
+    producto_id: str = Field(..., description="ID del producto físico inspeccionado")
+    estado_producto: EstadoProducto = Field(
+        ...,
+        description="Estado físico del producto: NUEVO_ETIQUETADO, USADO o DANADO",
+    )
+    tiene_etiqueta: bool = Field(
+        ..., description="Indica si el producto conserva su etiqueta original"
+    )
+    observaciones: Optional[str] = Field(
+        None,
+        description="Comentarios del cajero (obligatorios si el producto no es apto)",
+    )
+    cajero_id: Optional[str] = Field(
+        None, description="ID del cajero que realizó la validación física"
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "producto_id": "123",
+                "estado_producto": "NUEVO_ETIQUETADO",
+                "tiene_etiqueta": True,
+                "observaciones": "Producto en perfectas condiciones",
+                "cajero_id": "C-005",
+            }
+        }
+    )
+
+
+class ValidarEstadoProductoResponse(BaseModel):
+    """Schema de salida de una validación de estado exitosa (HU-03)."""
+
+    mensaje: str
+    es_apto_para_cambio: bool
+
+
+class ProductoNoAptoErrorResponse(BaseModel):
+    """Schema de error cuando el producto no es apto para el cambio (HU-03)."""
+
+    error: str
+    mensaje: str
+    motivo: str
+    es_apto_para_cambio: bool

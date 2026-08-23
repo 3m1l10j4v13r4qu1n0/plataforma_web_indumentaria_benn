@@ -9,13 +9,18 @@ from app.domain.exceptions import (
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
     DomainException,
+    ObservacionesRequeridasError,
     ProductoInvalidoError,
+    ProductoNoAptoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
     TicketDuplicadoError,
     VentaNoEncontradaError,
 )
-from app.presentation.schemas.cambio_schema import CambioErrorResponse
+from app.presentation.schemas.cambio_schema import (
+    CambioErrorResponse,
+    ProductoNoAptoErrorResponse,
+)
 from app.presentation.schemas.venta_schema import ErrorResponse
 
 
@@ -147,6 +152,32 @@ def register_exception_handlers(app: FastAPI):
             content=CambioErrorResponse(
                 error="CAMBIO_NO_ENCONTRADO",
                 mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(ProductoNoAptoError)
+    async def producto_no_apto_handler(request: Request, exc: ProductoNoAptoError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ProductoNoAptoErrorResponse(
+                error="PRODUCTO_NO_APTO",
+                mensaje="El producto no cumple las condiciones para ser cambiado.",
+                motivo=exc.motivo,
+                es_apto_para_cambio=False,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(ObservacionesRequeridasError)
+    async def observaciones_requeridas_handler(
+        request: Request, exc: ObservacionesRequeridasError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ProductoNoAptoErrorResponse(
+                error="OBSERVACIONES_REQUERIDAS",
+                mensaje=str(exc),
+                motivo="OBSERVACIONES_OBLIGATORIAS",
+                es_apto_para_cambio=False,
             ).model_dump(),
         )
 
