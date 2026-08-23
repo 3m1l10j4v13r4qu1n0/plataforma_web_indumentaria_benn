@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +13,56 @@ from app.infrastructure.database.orm_models.venta_orm import VentaORM
 class VentaRepository(IVentaRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    async def obtener_venta_por_id(self, venta_id: str) -> Venta | None:
+        stmt = select(VentaORM).where(VentaORM.id == venta_id)
+        result = await self.session.execute(stmt)
+        orm_venta = result.scalar_one_or_none()
+
+        if orm_venta is None:
+            return None
+
+        return Venta(
+            id=orm_venta.id,
+            fecha_hora=orm_venta.fecha_hora,
+            vendedor_id=orm_venta.vendedor_id,
+            estado=orm_venta.estado,
+            numero_ticket=orm_venta.numero_ticket,
+            total=orm_venta.total,
+            items=[
+                DetalleVenta(
+                    producto_id=detalle.producto_id,
+                    cantidad=detalle.cantidad,
+                    precio_unitario=detalle.precio_unitario,
+                )
+                for detalle in orm_venta.detalles
+            ],
+        )
+
+    async def obtener_venta_por_numero_ticket(self, numero_ticket: str) -> Venta | None:
+        stmt = select(VentaORM).where(VentaORM.numero_ticket == numero_ticket)
+        result = await self.session.execute(stmt)
+        orm_venta = result.scalar_one_or_none()
+
+        if orm_venta is None:
+            return None
+
+        return Venta(
+            id=orm_venta.id,
+            fecha_hora=orm_venta.fecha_hora,
+            vendedor_id=orm_venta.vendedor_id,
+            estado=orm_venta.estado,
+            numero_ticket=orm_venta.numero_ticket,
+            total=orm_venta.total,
+            items=[
+                DetalleVenta(
+                    producto_id=detalle.producto_id,
+                    cantidad=detalle.cantidad,
+                    precio_unitario=detalle.precio_unitario,
+                )
+                for detalle in orm_venta.detalles
+            ],
+        )
 
     async def crear_venta(self, venta: Venta) -> Venta:
         # Mapeo de Entidad de Dominio a ORM
