@@ -1,26 +1,20 @@
 from fastapi import APIRouter, Depends, status
 
 from app.application.dtos.cambio_dto import (
-    ConsultarVentaPorTicketQuery,
     ProcesarCambioCommand,
     ValidarEstadoProductoCommand,
-)
-from app.application.use_cases.consultar_venta_por_ticket_use_case import (
-    ConsultarVentaPorTicketUseCase,
 )
 from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUseCase
 from app.application.use_cases.validar_estado_producto_use_case import (
     ValidarEstadoProductoUseCase,
 )
 from app.infrastructure.dependencies.dependency_injection import (
-    get_consultar_venta_por_ticket_use_case,
     get_procesar_cambio_use_case,
     get_validar_estado_producto_use_case,
 )
 from app.presentation.schemas.cambio_schema import (
     CambioErrorResponse,
     CambioResponse,
-    ConsultarVentaPorTicketResponse,
     ProductoNoAptoErrorResponse,
     ProcesarCambioRequest,
     ValidarEstadoProductoRequest,
@@ -28,27 +22,6 @@ from app.presentation.schemas.cambio_schema import (
 )
 
 router = APIRouter(prefix="/api/v1", tags=["Cambios"])
-
-
-@router.get(
-    "/ventas/ticket/{numero_ticket}",
-    response_model=ConsultarVentaPorTicketResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Consultar Venta por Ticket (Validación previa)",
-)
-async def consultar_venta_por_ticket(
-    numero_ticket: str,
-    use_case: ConsultarVentaPorTicketUseCase = Depends(
-        get_consultar_venta_por_ticket_use_case
-    ),
-):
-    """
-    Obtiene los datos de la venta original para validar si es elegible para cambio.
-    Calcula los días transcurridos desde la fecha de compra.
-    """
-    query = ConsultarVentaPorTicketQuery(numero_ticket=numero_ticket)
-    resultado = await use_case.execute(query)
-    return ConsultarVentaPorTicketResponse(**resultado)
 
 
 @router.post(

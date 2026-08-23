@@ -15,13 +15,18 @@ from app.domain.exceptions import (
     ProductoNoEncontradoError,
     StockInsuficienteError,
     TicketDuplicadoError,
+    TicketNoEncontradoError,
     VentaNoEncontradaError,
+    VentaYaEnCambioError,
 )
 from app.presentation.schemas.cambio_schema import (
     CambioErrorResponse,
     ProductoNoAptoErrorResponse,
 )
-from app.presentation.schemas.venta_schema import ErrorResponse
+from app.presentation.schemas.venta_schema import (
+    ErrorResponse,
+    TicketNoEncontradoErrorResponse,
+)
 
 
 def register_exception_handlers(app: FastAPI):
@@ -178,6 +183,30 @@ def register_exception_handlers(app: FastAPI):
                 mensaje=str(exc),
                 motivo="OBSERVACIONES_OBLIGATORIAS",
                 es_apto_para_cambio=False,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(TicketNoEncontradoError)
+    async def ticket_no_encontrado_handler(
+        request: Request, exc: TicketNoEncontradoError
+    ):
+        # Payload específico del contrato HU-04 para el flujo de cambios.
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=TicketNoEncontradoErrorResponse(
+                existe=False,
+                error="TICKET_NO_ENCONTRADO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(VentaYaEnCambioError)
+    async def venta_ya_en_cambio_handler(request: Request, exc: VentaYaEnCambioError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=CambioErrorResponse(
+                error="VENTA_YA_EN_CAMBIO",
+                mensaje=str(exc),
             ).model_dump(),
         )
 

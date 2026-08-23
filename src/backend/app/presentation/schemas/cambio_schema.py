@@ -6,21 +6,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.domain.models.cambio import EstadoProducto
 
 
-class ItemVentaTicketResponse(BaseModel):
-    producto_id: str
-    cantidad: int
-
-
-class ConsultarVentaPorTicketResponse(BaseModel):
-    numero_ticket: str
-    fecha_compra: datetime
-    dias_transcurridos: int
-    es_elegible_para_cambio: bool
-    items: list[ItemVentaTicketResponse]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class ProcesarCambioRequest(BaseModel):
     venta_original_id: str = Field(..., description="ID de la venta original")
     cajero_id: str = Field(..., description="ID del cajero que procesa el cambio")
