@@ -64,3 +64,34 @@ class TicketDuplicadoError(DomainException):
         super().__init__(
             f"El número de ticket '{numero_ticket}' ya existe en el sistema."
         )
+
+
+class DescuentoExcedeLimiteError(DomainException):
+    """Se lanza cuando un descuento supera el porcentaje máximo sin autorización."""
+
+    def __init__(self, porcentaje: float, limite: float = 20.0):
+        self.porcentaje = porcentaje
+        self.limite = limite
+        super().__init__(
+            f"El descuento de {porcentaje}% supera el límite permitido de {limite}%. "
+            "Se requiere autorización de gerente."
+        )
+
+
+class DescuentoSinAutorizacionError(DomainException):
+    """Se lanza cuando se intenta aplicar un descuento que requiere autorización sin registrarla."""
+
+    def __init__(self, porcentaje: float):
+        self.porcentaje = porcentaje
+        super().__init__(
+            f"El descuento de {porcentaje}% requiere autorización de gerente. "
+            "Debe proporcionar el ID del gerente que autoriza la operación."
+        )
+
+
+class DescuentoInvalidoError(DomainException):
+    """Se lanza cuando los datos del descuento son inválidos."""
+
+    def __init__(self, motivo: str):
+        self.motivo = motivo
+        super().__init__(f"Descuento inválido: {motivo}")

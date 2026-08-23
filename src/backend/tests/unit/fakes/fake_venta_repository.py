@@ -16,5 +16,11 @@ class FakeVentaRepository(IVentaRepository):
         self._ventas.append(venta)
         return venta
 
+    async def obtener_por_id(self, venta_id: str) -> Venta | None:
+        for v in self._ventas:
+            if v.id == venta_id:
+                return v
+        return None
+
     def obtener_ventas(self):
         return self._ventas

@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
     BusquedaInvalidaError,
+    DescuentoExcedeLimiteError,
+    DescuentoInvalidoError,
+    DescuentoSinAutorizacionError,
     DomainException,
     ProductoInvalidoError,
     ProductoNoEncontradoError,
@@ -69,6 +72,42 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_409_CONFLICT,
             content=ErrorResponse(
                 error="TICKET_DUPLICADO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(DescuentoExcedeLimiteError)
+    async def descuento_excede_limite_handler(
+        request: Request, exc: DescuentoExcedeLimiteError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ErrorResponse(
+                error="DESCUENTO_EXCEDE_LIMITE",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(DescuentoSinAutorizacionError)
+    async def descuento_sin_autorizacion_handler(
+        request: Request, exc: DescuentoSinAutorizacionError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ErrorResponse(
+                error="DESCUENTO_SIN_AUTORIZACION",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(DescuentoInvalidoError)
+    async def descuento_invalido_handler(
+        request: Request, exc: DescuentoInvalidoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ErrorResponse(
+                error="DESCUENTO_INVALIDO",
                 mensaje=str(exc),
             ).model_dump(),
         )

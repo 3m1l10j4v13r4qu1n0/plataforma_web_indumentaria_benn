@@ -5,6 +5,7 @@ from app.infrastructure.core.config import settings
 from app.presentation.handlers import register_exception_handlers
 
 # routers
+from app.presentation.routers.descuento_router import router as descuento_router
 from app.presentation.routers.producto_router import router as producto_router
 from app.presentation.routers.venta_router import router as venta_router
 
@@ -41,6 +42,7 @@ register_exception_handlers(app)
 # ── Routers ──────────────────────────────────────────────────────────
 app.include_router(producto_router)
 app.include_router(venta_router)
+app.include_router(descuento_router)
 
 
 # ── Health check ─────────────────────────────────────────────────────
