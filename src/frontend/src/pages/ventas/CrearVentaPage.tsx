@@ -5,12 +5,14 @@ import {
   VentaProductoCard,
   VentaItemRow,
   TicketCard,
+  DescuentoModal,
   Button,
   Alert,
   type VentaItem,
 } from '@/components/ui';
 import { useStockProducto } from '@/hooks/useStockProducto';
 import { useVenta } from '@/hooks/useVenta';
+import { useDescuento } from '@/hooks/useDescuento';
 import { normalizarErrorApi } from '@/utils/apiErrors';
 import type { CrearVentaRequest } from '@/types/api';
 
@@ -32,9 +34,11 @@ export function CrearVentaPage() {
   const [cantidad, setCantidad] = useState(1);
   const [items, setItems] = useState<VentaItem[]>([]);
   const [vendedorId, setVendedorId] = useState('V-001');
+  const [descuentoModalAbierto, setDescuentoModalAbierto] = useState(false);
 
   const stockQuery = useStockProducto(codigoBuscado);
   const ventaMutation = useVenta();
+  const descuentoMutation = useDescuento();
 
   const producto = stockQuery.data;
   const hayItems = items.length > 0;
@@ -95,8 +99,34 @@ export function CrearVentaPage() {
     ventaMutation.reset();
   };
 
+  const confirmarDescuento = (datos: {
+    porcentaje: number;
+    motivo: string;
+    autorizado_por: string | null;
+  }) => {
+    if (!ventaExitosa) return;
+
+    descuentoMutation.mutate(
+      {
+        venta_id: ventaExitosa.id,
+        porcentaje: datos.porcentaje,
+        motivo: datos.motivo,
+        autorizado_por: datos.autorizado_por,
+      },
+      {
+        onSuccess: () => {
+          setDescuentoModalAbierto(false);
+        },
+      },
+    );
+  };
+
   const errorConfirmacion = ventaMutation.error
     ? normalizarErrorApi(ventaMutation.error)
+    : null;
+
+  const errorDescuento = descuentoMutation.error
+    ? normalizarErrorApi(descuentoMutation.error)
     : null;
 
   return (
@@ -215,14 +245,56 @@ export function CrearVentaPage() {
           )}
 
           {ventaExitosa && (
-            <TicketCard
-              venta={ventaExitosa}
-              onImprimir={imprimirTicket}
-              onCerrar={cerrarTicket}
-            />
+            <>
+              <TicketCard
+                venta={ventaExitosa}
+                onImprimir={imprimirTicket}
+                onCerrar={cerrarTicket}
+              />
+
+              {/* HU-05: Botón para aplicar descuento */}
+              {!descuentoMutation.data && (
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => setDescuentoModalAbierto(true)}
+                >
+                  Aplicar descuento
+                </Button>
+              )}
+
+              {/* Descuento aplicado */}
+              {descuentoMutation.data && (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                  <p className="text-sm font-semibold text-emerald-800">
+                    Descuento aplicado
+                  </p>
+                  <p className="mt-1 text-sm text-emerald-700">
+                    {descuentoMutation.data.mensaje}
+                  </p>
+                </div>
+              )}
+
+              {errorDescuento && (
+                <Alert
+                  variant="error"
+                  title="No se pudo aplicar el descuento"
+                  message={errorDescuento}
+                />
+              )}
+            </>
           )}
         </aside>
       </div>
+
+      {/* HU-05: Modal de descuento */}
+      <DescuentoModal
+        isOpen={descuentoModalAbierto}
+        onClose={() => setDescuentoModalAbierto(false)}
+        onConfirm={confirmarDescuento}
+        totalVenta={ventaExitosa?.total ?? 0}
+        isPending={descuentoMutation.isPending}
+      />
     </main>
   );
 }
