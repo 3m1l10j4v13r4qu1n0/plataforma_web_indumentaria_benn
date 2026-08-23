@@ -5,7 +5,6 @@ from datetime import datetime, UTC
 from app.application.dtos.descuento_dto import AplicarDescuentoCommand
 from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
 from app.domain.exceptions import (
-    DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
     DomainException,
