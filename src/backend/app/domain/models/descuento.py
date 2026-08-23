@@ -7,6 +7,7 @@ from app.domain.exceptions import DomainException
 
 class TipoDescuento(str):
     """Tipo de descuento aplicado."""
+
     PORCENTAJE = "PORCENTAJE"
     MONTO_FIJO = "MONTO_FIJO"
 

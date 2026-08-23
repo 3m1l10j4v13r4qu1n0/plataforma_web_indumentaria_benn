@@ -7,7 +7,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class AplicarDescuentoRequest(BaseModel):
     """Schema de entrada para aplicar un descuento a una venta."""
 
-    venta_id: str = Field(..., description="ID de la venta a la que se aplica el descuento")
+    venta_id: str = Field(
+        ..., description="ID de la venta a la que se aplica el descuento"
+    )
     porcentaje: Decimal = Field(
         ...,
         gt=0,
