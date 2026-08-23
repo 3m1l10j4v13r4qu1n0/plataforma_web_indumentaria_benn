@@ -1,3 +1,4 @@
+from app.domain.exceptions import CambioNoEncontradoError
 from app.domain.models.cambio import Cambio
 from app.domain.ports.i_cambio_repository import ICambioRepository
 
@@ -18,6 +19,14 @@ class FakeCambioRepository(ICambioRepository):
 
     async def obtener_cambios_por_venta(self, venta_id: str) -> list[Cambio]:
         return [c for c in self._cambios if c.venta_original_id == venta_id]
+
+    async def actualizar_cambio(self, cambio: Cambio) -> Cambio:
+        for i, c in enumerate(self._cambios):
+            if c.id == cambio.id:
+                self._cambios[i] = cambio
+                return cambio
+
+        raise CambioNoEncontradoError(cambio.id)
 
     def obtener_cambios(self):
         return self._cambios
