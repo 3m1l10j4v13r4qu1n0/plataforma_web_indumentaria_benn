@@ -1,11 +1,15 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
 from app.application.use_cases.buscar_productos_use_case import BuscarProductosUseCase
 from app.application.use_cases.validar_stock_venta_use_case import (
     ValidarStockVentaUseCase,
 )
 from app.infrastructure.database.generador_numero_ticket import GeneradorNumeroTicket
+from app.infrastructure.database.repositories.descuento_repository import (
+    DescuentoRepository,
+)
 from app.infrastructure.database.repositories.producto_repository import (
     ProductoRepository,
 )
@@ -42,6 +46,15 @@ def get_generador_numero_ticket(
     return GeneradorNumeroTicket(session=session)
 
 
+def get_descuento_repository(
+    session: AsyncSession = Depends(get_async_session),
+) -> DescuentoRepository:
+    """
+    Fábrica Transient: Crea una nueva instancia del repositorio de descuentos por cada request.
+    """
+    return DescuentoRepository(session=session)
+
+
 def get_validar_stock_venta_use_case(
     producto_repo: ProductoRepository = Depends(get_producto_repository),
     venta_repo: VentaRepository = Depends(get_venta_repository),
@@ -68,3 +81,19 @@ def get_buscar_productos_use_case(
     cadena de dependencias por request.
     """
     return BuscarProductosUseCase(producto_repository=producto_repo)
+
+
+def get_aplicar_descuento_use_case(
+    descuento_repo: DescuentoRepository = Depends(get_descuento_repository),
+    venta_repo: VentaRepository = Depends(get_venta_repository),
+    producto_repo: ProductoRepository = Depends(get_producto_repository),
+) -> AplicarDescuentoUseCase:
+    """
+    Fábrica del Caso de Uso: Inyecta los contratos para el caso de uso de descuentos.
+    FastAPI se encarga de resolver toda la cadena de dependencias por request.
+    """
+    return AplicarDescuentoUseCase(
+        descuento_repository=descuento_repo,
+        venta_repository=venta_repo,
+        producto_repository=producto_repo,
+    )
