@@ -51,7 +51,10 @@ const ventaOk: VentaResponse = {
   fecha_hora: '2026-08-19T12:00:00',
   vendedor_id: 'V-001',
   estado: 'CONFIRMADA',
-  items: [{ producto_id: 'P-001', cantidad: 2 }],
+  numero_ticket: 'T-20260819-001',
+  total: 30000,
+  mensaje: 'Venta registrada y ticket generado exitosamente.',
+  items: [{ producto_id: 'P-001', nombre: 'Remera Azul', cantidad: 2, precio: 15000 }],
 };
 
 function renderizar() {
@@ -113,7 +116,8 @@ describe('CrearVentaPage', () => {
     // Confirmar venta
     await user.click(screen.getByRole('button', { name: 'Confirmar venta' }));
 
-    expect(await screen.findByText('Venta confirmada')).toBeInTheDocument();
+    expect(await screen.findByText('Comprobante de Venta')).toBeInTheDocument();
+    expect(screen.getByText('T-20260819-001')).toBeInTheDocument();
     expect(mockProcesarVenta).toHaveBeenCalledWith({
       vendedor_id: 'V-001',
       items: [{ producto_id: 'P-001', cantidad: 2 }],
