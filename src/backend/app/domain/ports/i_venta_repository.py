@@ -1,7 +1,7 @@
 # app/domain/ports/i_venta_repository.py
 from typing import Protocol
 
-from app.domain.models.venta import Venta
+from app.domain.models.venta import EstadoVenta, Venta
 
 
 class IVentaRepository(Protocol):
@@ -11,4 +11,8 @@ class IVentaRepository(Protocol):
 
     async def obtener_venta_por_numero_ticket(
         self, numero_ticket: str
+    ) -> Venta | None: ...
+
+    async def actualizar_estado(
+        self, numero_ticket: str, nuevo_estado: EstadoVenta
     ) -> Venta | None: ...

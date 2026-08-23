@@ -130,6 +130,28 @@ class VentaNoEncontradaError(DomainException):
         )
 
 
+class TicketNoEncontradoError(DomainException):
+    """Se lanza cuando el número de ticket ingresado no existe en el sistema (HU-04)."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            "El número de ticket ingresado no existe en el sistema. "
+            "Verifique el comprobante."
+        )
+
+
+class VentaYaEnCambioError(DomainException):
+    """Se lanza cuando se intenta marcar en cambio una venta que ya está EN_CAMBIO (HU-04)."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            f"El ticket '{numero_ticket}' ya está en proceso de cambio "
+            "por otra caja."
+        )
+
+
 class CambioInvalidoError(DomainException):
     """Se lanza cuando los datos del cambio son inválidos."""
 
