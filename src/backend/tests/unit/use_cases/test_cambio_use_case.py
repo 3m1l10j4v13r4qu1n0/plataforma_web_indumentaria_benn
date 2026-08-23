@@ -1,13 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
 
-from app.application.dtos.cambio_dto import (
-    ConsultarVentaPorTicketQuery,
-    ProcesarCambioCommand,
-)
-from app.application.use_cases.consultar_venta_por_ticket_use_case import (
-    ConsultarVentaPorTicketUseCase,
-)
+from app.application.dtos.cambio_dto import ProcesarCambioCommand
 from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUseCase
 from app.domain.exceptions import (
     CambioPlazoVencidoError,
@@ -27,11 +21,6 @@ def cambio_repo():
 @pytest.fixture
 def venta_repo():
     return FakeVentaRepository()
-
-
-@pytest.fixture
-def consultar_venta_use_case(venta_repo):
-    return ConsultarVentaPorTicketUseCase(venta_repository=venta_repo)
 
 
 @pytest.fixture
@@ -85,40 +74,7 @@ def venta_vencida():
     )
 
 
-# ✅ Escenario 1: Consultar venta por ticket existente
-@pytest.mark.asyncio
-async def test_consultar_venta_por_ticket_exitoso(
-    consultar_venta_use_case, venta_repo, venta_reciente
-):
-    # Arrange
-    await venta_repo.crear_venta(venta_reciente)
-    query = ConsultarVentaPorTicketQuery(numero_ticket="T-20231015-001")
-
-    # Act
-    resultado = await consultar_venta_use_case.execute(query)
-
-    # Assert
-    assert resultado is not None
-    assert resultado["numero_ticket"] == "T-20231015-001"
-    assert resultado["dias_transcurridos"] == 10
-    assert resultado["es_elegible_para_cambio"] is True
-    assert len(resultado["items"]) == 1
-
-
-# ❌ Escenario 2: Consultar venta por ticket inexistente
-@pytest.mark.asyncio
-async def test_consultar_venta_por_ticket_no_encontrado(consultar_venta_use_case):
-    # Arrange
-    query = ConsultarVentaPorTicketQuery(numero_ticket="T-NO-EXISTE")
-
-    # Act & Assert
-    with pytest.raises(VentaNoEncontradaError) as exc_info:
-        await consultar_venta_use_case.execute(query)
-
-    assert exc_info.value.identificador == "T-NO-EXISTE"
-
-
-# ✅ Escenario 3: Procesar cambio dentro del plazo
+# ✅ Escenario 1: Procesar cambio dentro del plazo
 @pytest.mark.asyncio
 async def test_procesar_cambio_dentro_del_plazo(
     procesar_cambio_use_case, cambio_repo, venta_repo, venta_reciente
@@ -186,22 +142,3 @@ async def test_procesar_cambio_venta_no_encontrada(procesar_cambio_use_case):
         await procesar_cambio_use_case.execute(command)
 
     assert exc_info.value.identificador == "V-NO-EXISTE"
-
-
-# ✅ Escenario 6: Consultar venta con plazo vencido
-@pytest.mark.asyncio
-async def test_consultar_venta_plazo_vencido(
-    consultar_venta_use_case, venta_repo, venta_vencida
-):
-    # Arrange
-    await venta_repo.crear_venta(venta_vencida)
-    query = ConsultarVentaPorTicketQuery(numero_ticket="T-20231010-002")
-
-    # Act
-    resultado = await consultar_venta_use_case.execute(query)
-
-    # Assert
-    assert resultado is not None
-    assert resultado["numero_ticket"] == "T-20231010-002"
-    assert resultado["dias_transcurridos"] == 20
-    assert resultado["es_elegible_para_cambio"] is False

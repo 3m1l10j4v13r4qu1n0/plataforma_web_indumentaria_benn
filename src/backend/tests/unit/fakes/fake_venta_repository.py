@@ -1,5 +1,5 @@
 from app.domain.exceptions import TicketDuplicadoError
-from app.domain.models.venta import Venta
+from app.domain.models.venta import EstadoVenta, Venta
 from app.domain.ports.i_venta_repository import IVentaRepository
 
 
@@ -26,6 +26,24 @@ class FakeVentaRepository(IVentaRepository):
         for v in self._ventas:
             if v.numero_ticket == numero_ticket:
                 return v
+        return None
+
+    async def actualizar_estado(
+        self, numero_ticket: str, nuevo_estado: EstadoVenta
+    ) -> Venta | None:
+        for i, v in enumerate(self._ventas):
+            if v.numero_ticket == numero_ticket:
+                actualizada = Venta(
+                    id=v.id,
+                    fecha_hora=v.fecha_hora,
+                    vendedor_id=v.vendedor_id,
+                    estado=nuevo_estado,
+                    numero_ticket=v.numero_ticket,
+                    total=v.total,
+                    items=list(v.items),
+                )
+                self._ventas[i] = actualizada
+                return actualizada
         return None
 
     # Método auxiliar para compatibilidad con código existente
