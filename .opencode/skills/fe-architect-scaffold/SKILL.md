@@ -126,7 +126,8 @@ Seguir este orden y **esperar confirmación explícita antes de avanzar al sigui
 | `POST` | `/api/v1/ventas` | Procesar venta (valida stock, descuentos) | HU-01, HU-05, HU-07, HU-08 |
 | `GET` | `/api/v1/productos/{codigo}/stock` | Consultar stock de un producto | HU-01 |
 | `GET` | `/api/v1/productos/buscar?query=...` | Buscar productos por nombre/código | HU-06 |
-| `GET` | `/api/v1/ventas/tickets/{numero_ticket}` | Consultar detalles de un ticket | HU-04 |
+| `GET` | `/api/v1/ventas/validar-ticket/{numero_ticket}` | Validar existencia de ticket y obtener datos de la compra | HU-04 |
+| `PATCH` | `/api/v1/ventas/{numero_ticket}/estado` | Marcar venta como EN_CAMBIO (retiene el ticket) | HU-04 |
 | `POST` | `/api/v1/cambios/validar-elegibilidad` | Validar si un ticket/producto es elegible para cambio | HU-02, HU-03, HU-04 |
 | `GET` | `/health` | Health check del sistema | - |
 

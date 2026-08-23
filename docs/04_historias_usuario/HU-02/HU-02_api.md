@@ -1,22 +1,9 @@
 # HU-02: Especificación de API (Registrar cambios de productos)
 
 ## Endpoint 1: Consultar Venta por Ticket (Validación previa)
+La validación previa del ticket está definida como parte del flujo de solicitud de ticket (HU-04). Ver su especificación completa (ruta, payload de éxito y error) en [`HU-04_api.md`](../HU-04/HU-04_api.md):
 - **Método**: `GET`
-- **Ruta**: `/api/v1/ventas/ticket/{numero_ticket}`
-- **Descripción**: Obtiene los datos de la venta original para validar si es elegible para cambio.
-- **Respuesta Éxito (200 OK)**:
-```json
-  {
-    "numero_ticket": "T-20231015-001",
-    "fecha_compra": "2023-10-15T10:30:00Z",
-    "dias_transcurridos": 10,
-    "es_elegible_para_cambio": true,
-    "items": [
-      { "producto_id": "123", "nombre": "Camiseta", "cantidad": 1 }
-    ]
-  }
-
-```
+- **Ruta**: `/api/v1/ventas/validar-ticket/{numero_ticket}`
 
 ## Endpoint 2: Procesar Cambio de Producto
 
