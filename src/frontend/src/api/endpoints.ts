@@ -13,5 +13,6 @@ export const API_ENDPOINTS = {
   // Productos
   PRODUCTOS: {
     STOCK: (codigo: string) => `/api/v1/productos/${codigo}/stock`,
+    BUSCAR: (query: string) => `/api/v1/productos/buscar?query=${encodeURIComponent(query)}`,
   },
 } as const;
