@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
     BusquedaInvalidaError,
+    CambioNoEncontradoError,
+    CambioPlazoVencidoError,
     DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
@@ -11,7 +13,9 @@ from app.domain.exceptions import (
     ProductoNoEncontradoError,
     StockInsuficienteError,
     TicketDuplicadoError,
+    VentaNoEncontradaError,
 )
+from app.presentation.schemas.cambio_schema import CambioErrorResponse
 from app.presentation.schemas.venta_schema import ErrorResponse
 
 
@@ -101,13 +105,47 @@ def register_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(DescuentoInvalidoError)
-    async def descuento_invalido_handler(
-        request: Request, exc: DescuentoInvalidoError
-    ):
+    async def descuento_invalido_handler(request: Request, exc: DescuentoInvalidoError):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content=ErrorResponse(
                 error="DESCUENTO_INVALIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(VentaNoEncontradaError)
+    async def venta_no_encontrada_handler(
+        request: Request, exc: VentaNoEncontradaError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=ErrorResponse(
+                error="VENTA_NO_ENCONTRADA",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CambioPlazoVencidoError)
+    async def cambio_plazo_vencido_handler(
+        request: Request, exc: CambioPlazoVencidoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=CambioErrorResponse(
+                error="PLAZO_VENCIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CambioNoEncontradoError)
+    async def cambio_no_encontrado_handler(
+        request: Request, exc: CambioNoEncontradoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=CambioErrorResponse(
+                error="CAMBIO_NO_ENCONTRADO",
                 mensaje=str(exc),
             ).model_dump(),
         )
