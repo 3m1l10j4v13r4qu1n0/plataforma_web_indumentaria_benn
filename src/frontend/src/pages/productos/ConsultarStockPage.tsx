@@ -1,13 +1,39 @@
+import { useRef } from 'react';
+import { useBuscarProductos } from '@/hooks/useBuscarProductos';
+import {
+  StockSearchInput,
+  ResultsHeader,
+  ProductoBusquedaCard,
+  EmptyState,
+  Alert,
+} from '@/components/ui';
+
 /**
  * HU-06 — Consultar stock disponible.
  *
- * ⚠️ PLACEHOLDER: este componente se implementará completamente en el Paso 5
- * (Página/Contenedor). Por ahora solo renderiza un esqueleto para que la ruta
- * sea navegable durante los pasos 2, 3 y 4.
+ * Permite al vendedor buscar productos por nombre o código
+ * y ver su stock actual en tiempo real.
  *
- * Mockup de referencia: docs/05_mockups/mockup_hu06.html
+ * SRP: Orquesta hook + componentes presentacionales.
  */
 export function ConsultarStockPage() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const {
+    query,
+    setQuery,
+    ejecutarBusqueda,
+    resultados,
+    totalEncontrados,
+    mensajeBackend,
+    isLoading,
+    error,
+    buscoAlMenosUnaVez,
+  } = useBuscarProductos();
+
+  const mostrarResultados = buscoAlMenosUnaVez && !isLoading && !error;
+  const mostrarSinResultados =
+    mostrarResultados && resultados.length === 0;
+
   return (
     <main className="min-h-screen bg-slate-50 p-6">
       <header className="mb-6">
@@ -15,14 +41,60 @@ export function ConsultarStockPage() {
           Consulta de Stock
         </h1>
         <p className="text-sm text-slate-500">
-          HU-06 — Busca productos por nombre o código para ver su disponibilidad.
+          Busca productos por nombre o código para ver su disponibilidad.
         </p>
       </header>
 
-      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-12 text-center">
-        <p className="text-slate-400">
-          🔨 Implementación en progreso (Pasos 3, 4 y 5 del scaffold)...
-        </p>
+      <StockSearchInput
+        ref={inputRef}
+        value={query}
+        onValueChange={setQuery}
+        onSearch={ejecutarBusqueda}
+        placeholder="Buscar por nombre o código (mínimo 3 caracteres)..."
+      />
+
+      <div className="mt-6">
+        {/* Estado de carga */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-brand-600" />
+            <span className="ml-3 text-sm text-slate-500">Buscando productos...</span>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <Alert
+            variant="error"
+            title="Error al buscar"
+            message={error}
+          />
+        )}
+
+        {/* Resultados */}
+        {mostrarResultados && resultados.length > 0 && (
+          <>
+            <ResultsHeader count={totalEncontrados} label="Productos encontrados" />
+            <ul className="mt-4 space-y-3">
+              {resultados.map((producto) => (
+                <li key={producto.productoId}>
+                  <ProductoBusquedaCard producto={producto} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {/* Sin resultados */}
+        {mostrarSinResultados && (
+          <EmptyState
+            title="No se encontraron productos"
+            description={
+              mensajeBackend ||
+              'Intenta buscar con otro nombre o código de producto.'
+            }
+          />
+        )}
       </div>
     </main>
   );
