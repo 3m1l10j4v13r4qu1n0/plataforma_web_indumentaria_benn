@@ -50,16 +50,19 @@ async def consultar_stock(
     "/ventas",
     response_model=VentaResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Procesar Venta (Validación y Descuento)",
+    summary="Finalizar venta y generar ticket (HU-01 / HU-07)",
 )
 async def procesar_venta(
     request: CrearVentaRequest,
     use_case: ValidarStockVentaUseCase = Depends(get_validar_stock_venta_use_case),
+    producto_repo: IProductoRepository = Depends(get_producto_repository),
 ):
     """
-    Valida el stock de todos los items. Si es válido, confirma la venta
-    y descuenta el inventario en una sola transacción atómica.
-    Lanza 409 Conflict si hay stock insuficiente (manejado por handlers.py).
+    Valida el stock de todos los items. Si es válido, confirma la venta,
+    genera el número de ticket único, calcula el total con los precios
+    congelados y descuenta el inventario.
+    Lanza 409 Conflict si hay stock insuficiente o ticket duplicado,
+    y 404/400 ante productos inexistentes o inactivos (manejado por handlers.py).
     """
     # Mapeo de Schema Pydantic a DTO de Aplicación
     command = CrearVentaCommand(
@@ -73,13 +76,27 @@ async def procesar_venta(
     # Ejecución del Caso de Uso. Las excepciones de dominio burbujearán automáticamente a handlers.py
     venta = await use_case.execute(command)
 
+    # Enriquecimiento de presentación: el agregado Venta no conoce los nombres,
+    # se resuelven contra el repositorio para armar el comprobante.
+    items_response = []
+    for item in venta.items:
+        producto = await producto_repo.obtener_por_id(item.producto_id)
+        items_response.append(
+            ItemVentaResponse(
+                producto_id=item.producto_id,
+                nombre=producto.nombre if producto else "",
+                cantidad=item.cantidad,
+                precio=float(item.precio_unitario),
+            )
+        )
+
     return VentaResponse(
         id=venta.id,
         fecha_hora=venta.fecha_hora,
         vendedor_id=venta.vendedor_id,
         estado=venta.estado,
-        items=[
-            ItemVentaResponse(producto_id=item.producto_id, cantidad=item.cantidad)
-            for item in venta.items
-        ],
+        numero_ticket=venta.numero_ticket,
+        total=float(venta.total) if venta.total is not None else None,
+        mensaje="Venta registrada y ticket generado exitosamente.",
+        items=items_response,
     )

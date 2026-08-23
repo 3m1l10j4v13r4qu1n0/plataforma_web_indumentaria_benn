@@ -30,7 +30,9 @@ class CrearVentaRequest(BaseModel):
 
 class ItemVentaResponse(BaseModel):
     producto_id: str
+    nombre: str
     cantidad: int
+    precio: float
 
 
 class VentaResponse(BaseModel):
@@ -38,6 +40,9 @@ class VentaResponse(BaseModel):
     fecha_hora: datetime
     vendedor_id: str
     estado: str
+    numero_ticket: str | None = None
+    total: float | None = None
+    mensaje: str | None = None
     items: list[ItemVentaResponse]
 
     model_config = ConfigDict(from_attributes=True)

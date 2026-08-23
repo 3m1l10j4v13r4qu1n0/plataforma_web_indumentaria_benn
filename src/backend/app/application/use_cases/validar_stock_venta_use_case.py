@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, UTC
+from decimal import Decimal
 
 
 from app.application.dtos.venta_dto import CrearVentaCommand
@@ -11,13 +12,14 @@ from app.domain.exceptions import (
 from app.domain.models.detalle_venta import DetalleVenta
 from app.domain.models.producto import EstadoProducto
 from app.domain.models.venta import EstadoVenta, Venta
+from app.domain.ports.i_generador_numero_ticket import IGeneradorNumeroTicket
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.domain.ports.i_venta_repository import IVentaRepository
 
 
 class ValidarStockVentaUseCase:
     """
-    Caso de Uso para validar stock y procesar una venta.
+    Caso de Uso para validar stock, generar el ticket y procesar una venta.
     Orquesta la lógica de negocio y deja que las excepciones de dominio burbujeen
     hacia el manejador global de errores (Paso 5).
     """
@@ -26,9 +28,11 @@ class ValidarStockVentaUseCase:
         self,
         producto_repository: IProductoRepository,
         venta_repository: IVentaRepository,
+        generador_numero_ticket: IGeneradorNumeroTicket,
     ):
         self._producto_repository = producto_repository
         self._venta_repository = venta_repository
+        self._generador_numero_ticket = generador_numero_ticket
 
     async def execute(self, command: CrearVentaCommand) -> Venta:
         if not command.items:
@@ -39,6 +43,7 @@ class ValidarStockVentaUseCase:
 
         # FASE 1: Validación y Bloqueo de Filas (Fetch con for_update)
         # Se valida cada item antes de realizar cualquier modificación.
+        # Se congela el precio unitario como snapshot histórico (HU-07).
         for item in command.items:
             producto = await self._producto_repository.obtener_por_id(item.producto_id)
 
@@ -57,7 +62,11 @@ class ValidarStockVentaUseCase:
                 )
 
             detalles.append(
-                DetalleVenta(producto_id=item.producto_id, cantidad=item.cantidad)
+                DetalleVenta(
+                    producto_id=item.producto_id,
+                    cantidad=item.cantidad,
+                    precio_unitario=Decimal(producto.precio),
+                )
             )
 
         # FASE 2: Ejecución Atómica (Descuento y Registro)
@@ -81,13 +90,22 @@ class ValidarStockVentaUseCase:
             )
 
         # FASE 3: Creación de la Entidad de Dominio y Persistencia
+        # El número de ticket se genera automáticamente al confirmar la
+        # venta (nunca lo ingresa el usuario) y el total se calcula con los
+        # precios congelados.
+        numero_ticket = await self._generador_numero_ticket.generar()
+
         nueva_venta = Venta(
             id=venta_id,
-            fecha_hora=datetime.now(UTC),
+            # Se persiste en UTC naive para coincidir con la columna
+            # TIMESTAMP WITHOUT TIME ZONE de la base de datos.
+            fecha_hora=datetime.now(UTC).replace(tzinfo=None),
             vendedor_id=command.vendedor_id,
             estado=EstadoVenta.CONFIRMADA,
+            numero_ticket=numero_ticket,
             items=detalles,
         )
+        nueva_venta.total = nueva_venta.calcular_total()
 
         venta_guardada = await self._venta_repository.crear_venta(nueva_venta)
 

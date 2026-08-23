@@ -4,6 +4,7 @@ import {
   StockSearchInput,
   VentaProductoCard,
   VentaItemRow,
+  TicketCard,
   Button,
   Alert,
   type VentaItem,
@@ -14,13 +15,14 @@ import { normalizarErrorApi } from '@/utils/apiErrors';
 import type { CrearVentaRequest } from '@/types/api';
 
 /**
- * HU-01 — Procesar venta (validar stock antes de vender).
+ * HU-01 / HU-07 — Procesar venta y generar ticket.
  *
  * Orquesta:
  * 1. Búsqueda del producto por código → muestra stock disponible.
  * 2. Agregado de items con cantidad al carrito de venta.
  * 3. Confirmación de la venta vía POST /ventas.
- * 4. Manejo de estados Loading / Error / Success.
+ * 4. Visualización del ticket generado con opción a imprimir.
+ * 5. Manejo de estados Loading / Error / Success.
  *
  * SRP: solo orquesta; la lógica de negocio queda en hooks/servicios.
  */
@@ -36,6 +38,7 @@ export function CrearVentaPage() {
 
   const producto = stockQuery.data;
   const hayItems = items.length > 0;
+  const ventaExitosa = ventaMutation.data;
 
   const agregarItem = () => {
     if (!producto || cantidad < 1) return;
@@ -84,10 +87,17 @@ export function CrearVentaPage() {
     });
   };
 
+  const imprimirTicket = () => {
+    window.print();
+  };
+
+  const cerrarTicket = () => {
+    ventaMutation.reset();
+  };
+
   const errorConfirmacion = ventaMutation.error
     ? normalizarErrorApi(ventaMutation.error)
     : null;
-  const ventaExitosa = ventaMutation.data;
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
@@ -205,10 +215,10 @@ export function CrearVentaPage() {
           )}
 
           {ventaExitosa && (
-            <Alert
-              variant="success"
-              title="Venta confirmada"
-              message={`Venta ${ventaExitosa.id} registrada con ${ventaExitosa.items.length} producto(s).`}
+            <TicketCard
+              venta={ventaExitosa}
+              onImprimir={imprimirTicket}
+              onCerrar={cerrarTicket}
             />
           )}
         </aside>

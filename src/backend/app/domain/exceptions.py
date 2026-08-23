@@ -14,6 +14,17 @@ class ProductoNoEncontradoError(DomainException):
         )
 
 
+class BusquedaInvalidaError(DomainException):
+    """Se lanza cuando el término de búsqueda es inválido (vacío o menor a 3 caracteres)."""
+
+    def __init__(self, query: str):
+        self.query = query
+        super().__init__(
+            f"El término de búsqueda '{query}' es inválido. "
+            f"Debe contener al menos 3 caracteres."
+        )
+
+
 class StockInsuficienteError(DomainException):
     """Se lanza cuando el stock actual es menor a la cantidad solicitada o es cero."""
 
@@ -42,4 +53,14 @@ class ProductoInvalidoError(DomainException):
         self.estado = estado
         super().__init__(
             f"El producto con ID '{producto_id}' no está activo (Estado: {estado})."
+        )
+
+
+class TicketDuplicadoError(DomainException):
+    """Se lanza cuando se intenta registrar una venta con un número de ticket ya existente."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            f"El número de ticket '{numero_ticket}' ya existe en el sistema."
         )

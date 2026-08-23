@@ -9,6 +9,7 @@ from app.domain.exceptions import (
     StockInsuficienteError,
 )
 from app.domain.models.producto import Producto
+from tests.unit.fakes.fake_generador_numero_ticket import FakeGeneradorNumeroTicket
 from tests.unit.fakes.fake_producto_repository import FakeProductoRepository
 from tests.unit.fakes.fake_venta_repository import FakeVentaRepository
 
@@ -24,9 +25,16 @@ def venta_repo():
 
 
 @pytest.fixture
-def use_case(producto_repo, venta_repo):
+def generador_ticket():
+    return FakeGeneradorNumeroTicket()
+
+
+@pytest.fixture
+def use_case(producto_repo, venta_repo, generador_ticket):
     return ValidarStockVentaUseCase(
-        producto_repository=producto_repo, venta_repository=venta_repo
+        producto_repository=producto_repo,
+        venta_repository=venta_repo,
+        generador_numero_ticket=generador_ticket,
     )
 
 
@@ -89,6 +97,10 @@ async def test_validar_venta_con_stock_suficiente(
     assert venta.estado == "CONFIRMADA"
     assert len(venta.items) == 1
     assert venta.items[0].cantidad == 2
+
+    # HU-07: el ticket se genera automáticamente y el total usa el precio congelado
+    assert venta.numero_ticket is not None
+    assert venta.total == 200  # 2 x precio 100
 
     # Verificar actualización automática del stock post-venta (Requisito HU-01)
     producto_actualizado = await producto_repo.obtener_por_id("P-001")

@@ -8,9 +8,7 @@ class ProductoORM(Base):
     __tablename__ = "productos"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    codigo: Mapped[str] = mapped_column(
-        String(50), unique=True, nullable=False, index=True
-    )
+    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     nombre: Mapped[str] = mapped_column(String(150), nullable=False)
     precio: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     stock_actual: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -20,4 +18,5 @@ class ProductoORM(Base):
     __table_args__ = (
         CheckConstraint("stock_actual >= 0", name="check_stock_no_negativo"),
         Index("ix_producto_codigo", "codigo"),
+        Index("ix_producto_nombre", "nombre"),
     )

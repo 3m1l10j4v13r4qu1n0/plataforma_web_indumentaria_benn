@@ -1,7 +1,12 @@
 import { apiClient } from '@/api/client';
 import { API_ENDPOINTS } from '@/api/endpoints';
 import type { StockProducto } from '@/types/domain';
-import { StockResponse, toStockProducto } from '@/types/api';
+import {
+  StockResponse,
+  BuscarProductosResponse,
+  toStockProducto,
+  toProductoBusqueda,
+} from '@/types/api';
 
 import type { IProductosService } from './productos.service.types';
 
@@ -14,5 +19,16 @@ export const productosService: IProductosService = {
       API_ENDPOINTS.PRODUCTOS.STOCK(codigo),
     );
     return toStockProducto(data);
+  },
+
+  async buscarProductos(query: string) {
+    const { data } = await apiClient.get<BuscarProductosResponse>(
+      API_ENDPOINTS.PRODUCTOS.BUSCAR(query),
+    );
+    return {
+      resultados: data.resultados.map(toProductoBusqueda),
+      totalEncontrados: data.total_encontrados,
+      mensaje: data.mensaje,
+    };
   },
 };

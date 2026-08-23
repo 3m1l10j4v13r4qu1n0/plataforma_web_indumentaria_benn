@@ -19,7 +19,7 @@
 - **Y** no debe permitir la duplicidad en la base de datos.
 
 ## Casos de Prueba TDD (Checklist para Desarrolladores)
-- [ ] `test_generar_ticket_con_datos_correctos()`
-- [ ] `test_verificar_datos_registrados_en_detalle_venta()`
-- [ ] `test_validar_numero_unico_de_comprobante()`
-- [ ] `test_manejo_de_error_de_impresion_sin_revertir_venta()`
+- [x] `test_generar_ticket_con_datos_correctos()`
+- [x] `test_verificar_datos_registrados_en_detalle_venta()`
+- [x] `test_validar_numero_unico_de_comprobante()`
+- [x] `test_manejo_de_error_de_impresion_sin_revertir_venta()`

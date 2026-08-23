@@ -29,3 +29,15 @@ export interface StockProducto {
   precio: number;
   stockActual: number;
 }
+
+/**
+ * Producto resultante de una búsqueda (HU-06).
+ * Espejo del ProductoStockResponse del backend.
+ */
+export interface ProductoBusqueda {
+  productoId: string;
+  codigo: string;
+  nombre: string;
+  stockActual: number;
+  estado: string;
+}

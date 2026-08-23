@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.infrastructure.database.session import Base
@@ -19,6 +20,10 @@ class VentaORM(Base):
     )
     vendedor_id: Mapped[str] = mapped_column(String(36), nullable=False)
     estado: Mapped[str] = mapped_column(String(20), nullable=False, default="PENDIENTE")
+    numero_ticket: Mapped[str | None] = mapped_column(
+        String(30), unique=True, nullable=True
+    )
+    total: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
 
     detalles: Mapped[list["DetalleVentaORM"]] = relationship(
         back_populates="venta", cascade="all, delete-orphan"
