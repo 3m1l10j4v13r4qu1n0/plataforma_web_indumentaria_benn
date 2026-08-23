@@ -7,6 +7,9 @@ from app.application.use_cases.consultar_venta_por_ticket_use_case import (
     ConsultarVentaPorTicketUseCase,
 )
 from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUseCase
+from app.application.use_cases.validar_estado_producto_use_case import (
+    ValidarEstadoProductoUseCase,
+)
 from app.application.use_cases.validar_stock_venta_use_case import (
     ValidarStockVentaUseCase,
 )
@@ -135,3 +138,13 @@ def get_procesar_cambio_use_case(
         venta_repository=venta_repo,
         producto_repository=producto_repo,
     )
+
+
+def get_validar_estado_producto_use_case(
+    cambio_repo: CambioRepository = Depends(get_cambio_repository),
+) -> ValidarEstadoProductoUseCase:
+    """
+    Fábrica del Caso de Uso: Inyecta el contrato del repositorio de cambios
+    para la validación del estado físico del producto (HU-03).
+    """
+    return ValidarEstadoProductoUseCase(cambio_repository=cambio_repo)
