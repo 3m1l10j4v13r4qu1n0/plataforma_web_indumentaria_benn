@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
 from app.application.use_cases.buscar_productos_use_case import BuscarProductosUseCase
-from app.application.use_cases.consultar_venta_por_ticket_use_case import (
-    ConsultarVentaPorTicketUseCase,
+from app.application.use_cases.marcar_venta_en_cambio_use_case import (
+    MarcarVentaEnCambioUseCase,
 )
 from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUseCase
 from app.application.use_cases.validar_estado_producto_use_case import (
@@ -12,6 +12,9 @@ from app.application.use_cases.validar_estado_producto_use_case import (
 )
 from app.application.use_cases.validar_stock_venta_use_case import (
     ValidarStockVentaUseCase,
+)
+from app.application.use_cases.validar_ticket_compra_use_case import (
+    ValidarTicketCompraUseCase,
 )
 from app.infrastructure.database.generador_numero_ticket import GeneradorNumeroTicket
 from app.infrastructure.database.repositories.cambio_repository import CambioRepository
@@ -115,16 +118,6 @@ def get_aplicar_descuento_use_case(
     )
 
 
-def get_consultar_venta_por_ticket_use_case(
-    venta_repo: VentaRepository = Depends(get_venta_repository),
-) -> ConsultarVentaPorTicketUseCase:
-    """
-    Fábrica del Caso de Uso: Inyecta el contrato del repositorio de ventas
-    para consultar una venta por número de ticket.
-    """
-    return ConsultarVentaPorTicketUseCase(venta_repository=venta_repo)
-
-
 def get_procesar_cambio_use_case(
     cambio_repo: CambioRepository = Depends(get_cambio_repository),
     venta_repo: VentaRepository = Depends(get_venta_repository),
@@ -148,3 +141,27 @@ def get_validar_estado_producto_use_case(
     para la validación del estado físico del producto (HU-03).
     """
     return ValidarEstadoProductoUseCase(cambio_repository=cambio_repo)
+
+
+def get_validar_ticket_compra_use_case(
+    venta_repo: VentaRepository = Depends(get_venta_repository),
+    producto_repo: ProductoRepository = Depends(get_producto_repository),
+) -> ValidarTicketCompraUseCase:
+    """
+    Fábrica del Caso de Uso: Inyecta los contratos para validar la existencia
+    de un ticket de compra e iniciar el flujo de cambio (HU-04).
+    """
+    return ValidarTicketCompraUseCase(
+        venta_repository=venta_repo,
+        producto_repository=producto_repo,
+    )
+
+
+def get_marcar_venta_en_cambio_use_case(
+    venta_repo: VentaRepository = Depends(get_venta_repository),
+) -> MarcarVentaEnCambioUseCase:
+    """
+    Fábrica del Caso de Uso: Inyecta el contrato del repositorio de ventas
+    para retener un ticket en proceso de cambio (HU-04).
+    """
+    return MarcarVentaEnCambioUseCase(venta_repository=venta_repo)
