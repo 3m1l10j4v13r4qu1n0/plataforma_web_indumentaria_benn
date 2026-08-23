@@ -136,3 +136,24 @@ class CambioInvalidoError(DomainException):
     def __init__(self, motivo: str):
         self.motivo = motivo
         super().__init__(f"Cambio inválido: {motivo}")
+
+
+class ProductoNoAptoError(DomainException):
+    """Se lanza cuando el producto físico no cumple las condiciones para el cambio (HU-03)."""
+
+    def __init__(self, motivo: str):
+        self.motivo = motivo
+        super().__init__(
+            "El producto no cumple las condiciones para ser cambiado "
+            f"(Motivo: {motivo})."
+        )
+
+
+class ObservacionesRequeridasError(DomainException):
+    """Se lanza cuando un producto no apto se rechaza sin registrar observaciones (HU-03)."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "Las observaciones son obligatorias cuando el producto no es apto "
+            "para el cambio."
+        )
