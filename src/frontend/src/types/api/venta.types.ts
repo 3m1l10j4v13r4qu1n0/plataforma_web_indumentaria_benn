@@ -22,7 +22,9 @@ export interface CrearVentaRequest {
  */
 export interface ItemVentaResponse {
   producto_id: string;
+  nombre: string;
   cantidad: number;
+  precio: number;
 }
 
 /**
@@ -34,5 +36,8 @@ export interface VentaResponse {
   fecha_hora: string;
   vendedor_id: string;
   estado: string;
+  numero_ticket: string | null;
+  total: number | null;
+  mensaje: string | null;
   items: ItemVentaResponse[];
 }
