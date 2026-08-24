@@ -66,6 +66,25 @@ class TicketDuplicadoError(DomainException):
         )
 
 
+class StockUpdateException(DomainException):
+    """Se lanza cuando falla la actualización atómica del stock y se requiere rollback."""
+
+    def __init__(self, producto_id: str, motivo: str):
+        self.producto_id = producto_id
+        self.motivo = motivo
+        super().__init__(
+            f"Falló la actualización de stock del producto '{producto_id}': {motivo}"
+        )
+
+
+class CantidadMovimientoInvalidaError(DomainException):
+    """Se lanza cuando la cantidad de un movimiento de stock es inválida (cero o con signo inconsistente)."""
+
+    def __init__(self, motivo: str):
+        self.motivo = motivo
+        super().__init__(f"Cantidad de movimiento inválida: {motivo}")
+
+
 class DescuentoExcedeLimiteError(DomainException):
     """Se lanza cuando un descuento supera el porcentaje máximo sin autorización."""
 
