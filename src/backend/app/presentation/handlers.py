@@ -5,6 +5,7 @@ from app.domain.exceptions import (
     BusquedaInvalidaError,
     CambioNoEncontradoError,
     CambioPlazoVencidoError,
+    CantidadMovimientoInvalidaError,
     DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
@@ -14,6 +15,7 @@ from app.domain.exceptions import (
     ProductoNoAptoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
+    StockUpdateException,
     TicketDuplicadoError,
     TicketNoEncontradoError,
     VentaNoEncontradaError,
@@ -206,6 +208,31 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_409_CONFLICT,
             content=CambioErrorResponse(
                 error="VENTA_YA_EN_CAMBIO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(StockUpdateException)
+    async def stock_update_handler(request: Request, exc: StockUpdateException):
+        # HU-08: falla transaccional al actualizar stock (ej. concurrencia).
+        # 409 porque el estado del inventario cambió y la operación no pudo aplicarse.
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=ErrorResponse(
+                error="ERROR_ACTUALIZACION_STOCK",
+                mensaje=str(exc),
+                producto_id=exc.producto_id,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CantidadMovimientoInvalidaError)
+    async def cantidad_movimiento_invalida_handler(
+        request: Request, exc: CantidadMovimientoInvalidaError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ErrorResponse(
+                error="CANTIDAD_MOVIMIENTO_INVALIDA",
                 mensaje=str(exc),
             ).model_dump(),
         )

@@ -10,6 +10,9 @@ from app.domain.exceptions import (
 )
 from app.domain.models.producto import Producto
 from tests.unit.fakes.fake_generador_numero_ticket import FakeGeneradorNumeroTicket
+from tests.unit.fakes.fake_movimiento_stock_repository import (
+    FakeMovimientoStockRepository,
+)
 from tests.unit.fakes.fake_producto_repository import FakeProductoRepository
 from tests.unit.fakes.fake_venta_repository import FakeVentaRepository
 
@@ -30,11 +33,17 @@ def generador_ticket():
 
 
 @pytest.fixture
-def use_case(producto_repo, venta_repo, generador_ticket):
+def movimiento_repo():
+    return FakeMovimientoStockRepository()
+
+
+@pytest.fixture
+def use_case(producto_repo, venta_repo, generador_ticket, movimiento_repo):
     return ValidarStockVentaUseCase(
         producto_repository=producto_repo,
         venta_repository=venta_repo,
         generador_numero_ticket=generador_ticket,
+        movimiento_stock_repository=movimiento_repo,
     )
 
 
@@ -101,6 +110,10 @@ async def test_validar_venta_con_stock_suficiente(
     # HU-07: el ticket se genera automáticamente y el total usa el precio congelado
     assert venta.numero_ticket is not None
     assert venta.total == 200  # 2 x precio 100
+
+    # El resultado de aplicación resuelve los nombres para la presentación
+    assert venta.items[0].producto_id == "P-001"
+    assert venta.items[0].nombre == "Camiseta Básica"
 
     # Verificar actualización automática del stock post-venta (Requisito HU-01)
     producto_actualizado = await producto_repo.obtener_por_id("P-001")

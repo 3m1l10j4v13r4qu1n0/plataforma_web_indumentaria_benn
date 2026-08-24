@@ -83,6 +83,7 @@ Cada vez que se solicite implementar una nueva Historia de Usuario (HU) o módul
 1. Crear la clase del Caso de Uso (ej. `CreateProductUseCase`).
 2. El `__init__` debe recibir **únicamente** los Puertos (Interfaces), nunca implementaciones concretas.
 3. El método `execute` orquesta la lógica, llama al puerto y deja que las excepciones de dominio burbujeen hacia arriba.
+4. **Regla crítica**: si el endpoint necesita datos de varias entidades para su respuesta (ej. nombres de productos en una venta), el caso de uso debe resolverlos y devolver un **DTO de aplicación** (en `app/application/dtos/`) listo para presentar. El router NUNCA accede a repositorios ni a puertos de persistencia (estándar establecido en `fix/hu-01-router-arquitectura`; ver `venta_router.py` como referencia).
 
 ### Paso 5: Exposición y Manejo de Errores (Capa de Presentación)
 **Ubicación**: `app/presentation/`
@@ -90,7 +91,7 @@ Cada vez que se solicite implementar una nueva Historia de Usuario (HU) o módul
 **Antes de empezar**, leer `app/presentation/handlers.py` para ver qué excepciones ya están mapeadas y no duplicar handlers, y leer la tabla de endpoints en `fe-architect-scaffold/SKILL.md` para mantenerla sincronizada.
 
 1. Definir DTOs de entrada/salida con Pydantic en `schemas/`.
-2. Definir el endpoint en `routers/`, inyectando el Caso de Uso mediante `Depends(getter_del_paso_3)`.
+2. Definir el endpoint en `routers/`, inyectando el Caso de Uso mediante `Depends(getter_del_paso_3)`. Los routers solo importan casos de uso y schemas propios: prohibido inyectar repositorios o puertos directamente.
 3. **Regla crítica**: en `handlers.py`, registrar `@app.exception_handler(TuExcepcionDeDominio)` para mapear cada error de negocio a su código HTTP correspondiente (400, 403, 404, 409, etc.) con payload JSON estandarizado.
 
 ### Paso 6: Pruebas de Aislamiento (Testing)
