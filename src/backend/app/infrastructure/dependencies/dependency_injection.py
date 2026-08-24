@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.use_cases.actualizar_stock_use_case import ActualizarStockUseCase
 from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
 from app.application.use_cases.buscar_productos_use_case import BuscarProductosUseCase
+from app.application.use_cases.consultar_stock_producto_use_case import (
+    ConsultarStockProductoUseCase,
+)
 from app.application.use_cases.validar_stock_venta_use_case import (
     ValidarStockVentaUseCase,
 )
@@ -130,6 +133,17 @@ def get_buscar_productos_use_case(
     cadena de dependencias por request.
     """
     return BuscarProductosUseCase(producto_repository=producto_repo)
+
+
+def get_consultar_stock_producto_use_case(
+    producto_repo: ProductoRepository = Depends(get_producto_repository),
+) -> ConsultarStockProductoUseCase:
+    """
+    Fábrica del Caso de Uso: Inyecta el contrato del repositorio de productos
+    en el Caso de Uso de consulta de stock por código. FastAPI se encarga de
+    resolver toda la cadena de dependencias por request.
+    """
+    return ConsultarStockProductoUseCase(producto_repository=producto_repo)
 
 
 def get_aplicar_descuento_use_case(

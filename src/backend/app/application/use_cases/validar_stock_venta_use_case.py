@@ -3,7 +3,11 @@ from datetime import datetime, UTC
 from decimal import Decimal
 
 
-from app.application.dtos.venta_dto import CrearVentaCommand
+from app.application.dtos.venta_dto import (
+    CrearVentaCommand,
+    ItemVentaResultado,
+    ResultadoVenta,
+)
 from app.domain.exceptions import (
     ProductoInvalidoError,
     ProductoNoEncontradoError,
@@ -38,16 +42,32 @@ class ValidarStockVentaUseCase:
         self._generador_numero_ticket = generador_numero_ticket
         self._movimiento_stock_repository = movimiento_stock_repository
 
-    async def execute(self, command: CrearVentaCommand) -> Venta:
+    async def execute(self, command: CrearVentaCommand) -> ResultadoVenta:
+        """Valida el stock, confirma la venta y devuelve el resultado listo para presentar.
+
+        Args:
+            command: Datos de la venta a procesar (vendedor e ítems).
+
+        Returns:
+            Un `ResultadoVenta` con los datos del comprobante y los nombres
+            de los productos resueltos, sin exponer entidades de dominio.
+
+        Raises:
+            ProductoNoEncontradoError: Si algún ítem referencia un producto inexistente.
+            ProductoInvalidoError: Si algún producto no está activo.
+            StockInsuficienteError: Si algún producto no tiene stock suficiente.
+        """
         if not command.items:
             raise ValueError("La venta debe contener al menos un item.")
 
         venta_id = str(uuid.uuid4())
         detalles: list[DetalleVenta] = []
+        nombres: dict[str, str] = {}
 
         # FASE 1: Validación y Bloqueo de Filas (Fetch con for_update)
         # Se valida cada item antes de realizar cualquier modificación.
-        # Se congela el precio unitario como snapshot histórico (HU-07).
+        # Se congela el precio unitario como snapshot histórico (HU-07)
+        # y se captura el nombre para el resultado de presentación.
         for item in command.items:
             producto = await self._producto_repository.obtener_por_id(item.producto_id)
 
@@ -65,6 +85,7 @@ class ValidarStockVentaUseCase:
                     cantidad_solicitada=item.cantidad,
                 )
 
+            nombres[item.producto_id] = producto.nombre
             detalles.append(
                 DetalleVenta(
                     producto_id=item.producto_id,
@@ -125,4 +146,20 @@ class ValidarStockVentaUseCase:
 
         venta_guardada = await self._venta_repository.crear_venta(nueva_venta)
 
-        return venta_guardada
+        return ResultadoVenta(
+            id=venta_guardada.id,
+            fecha_hora=venta_guardada.fecha_hora,
+            vendedor_id=venta_guardada.vendedor_id,
+            estado=venta_guardada.estado,
+            numero_ticket=venta_guardada.numero_ticket,
+            total=venta_guardada.total,
+            items=[
+                ItemVentaResultado(
+                    producto_id=detalle.producto_id,
+                    nombre=nombres[detalle.producto_id],
+                    cantidad=detalle.cantidad,
+                    precio_unitario=detalle.precio_unitario,
+                )
+                for detalle in venta_guardada.items
+            ],
+        )
