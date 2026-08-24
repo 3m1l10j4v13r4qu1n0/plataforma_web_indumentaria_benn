@@ -8,6 +8,8 @@ interface StockSearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   onValueChange: (value: string) => void;
   /** Callback cuando se presiona Enter */
   onSearch: (value: string) => void;
+  /** Etiqueta visible sobre el input (opcional) */
+  label?: string;
   /** Placeholder del input */
   placeholder?: string;
   /** Si está deshabilitado */
@@ -28,7 +30,7 @@ interface StockSearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
  * SRP: Solo maneja la UI del input, no la lógica de búsqueda.
  */
 export const StockSearchInput = forwardRef<HTMLInputElement, StockSearchInputProps>(
-  ({ value, onValueChange, onSearch, placeholder, disabled, className, ...props }, ref) => {
+  ({ value, onValueChange, onSearch, label, placeholder, disabled, className, ...props }, ref) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && value.trim()) {
         onSearch(value.trim());
@@ -37,6 +39,11 @@ export const StockSearchInput = forwardRef<HTMLInputElement, StockSearchInputPro
 
     return (
       <div className={cn('relative', className)}>
+        {label && (
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">
+            {label}
+          </label>
+        )}
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <svg
             className="h-5 w-5 text-slate-400"

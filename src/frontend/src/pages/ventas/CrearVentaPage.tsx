@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import {
   StockSearchInput,
@@ -14,17 +14,20 @@ import { useStockProducto } from '@/hooks/useStockProducto';
 import { useVenta } from '@/hooks/useVenta';
 import { useDescuento } from '@/hooks/useDescuento';
 import { normalizarErrorApi } from '@/utils/apiErrors';
+import { formatoFechaCorta, formatoMoneda } from '@/utils/format';
 import type { CrearVentaRequest } from '@/types/api';
 
 /**
- * HU-01 / HU-07 — Procesar venta y generar ticket.
+ * HU-01 / HU-07 — Nueva venta y generación de ticket.
  *
  * Orquesta:
  * 1. Búsqueda del producto por código → muestra stock disponible.
- * 2. Agregado de items con cantidad al carrito de venta.
- * 3. Confirmación de la venta vía POST /ventas.
- * 4. Visualización del ticket generado con opción a imprimir.
- * 5. Manejo de estados Loading / Error / Success.
+ * 2. Agregado de items con cantidad al carrito ("Productos a vender").
+ * 3. Bloqueo preventivo si un ítem quedó sin stock (contrato HU-01).
+ * 4. Confirmación de la venta vía POST /ventas.
+ * 5. Visualización del ticket generado con opción a imprimir.
+ *
+ * Textos según contrato visual (docs/05_mockups/mockup_hu01.html).
  *
  * SRP: solo orquesta; la lógica de negocio queda en hooks/servicios.
  */
@@ -36,13 +39,47 @@ export function CrearVentaPage() {
   const [vendedorId, setVendedorId] = useState('V-001');
   const [descuentoModalAbierto, setDescuentoModalAbierto] = useState(false);
 
-  const stockQuery = useStockProducto(codigoBuscado);
-  const ventaMutation = useVenta();
+  const stockQuery = useStockProducto(codigoBuscado);  const ventaMutation = useVenta();
   const descuentoMutation = useDescuento();
+
+  /**
+   * Busca el stock del código ingresado. Si se vuelve a escanear el mismo
+   * código, fuerza un refetch para re-consultar el stock vigente en vez de
+   * servir la respuesta cacheada.
+   */
+  const buscarProducto = (codigo: string) => {
+    if (codigo === codigoBuscado) {
+      void stockQuery.refetch();
+    } else {
+      setCodigoBuscado(codigo);
+    }
+  };
 
   const producto = stockQuery.data;
   const hayItems = items.length > 0;
   const ventaExitosa = ventaMutation.data;
+  const totalArticulos = items.reduce((acc, i) => acc + i.cantidad, 0);
+  const totalPagar = items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+
+  /** Ítem sin stock que bloquea la venta (estado bloqueado del contrato). */
+  const itemSinStock = items.find((i) => i.stockActual === 0);
+  const ventaBloqueada = Boolean(itemSinStock);
+
+  /**
+   * Sincroniza el stock de los ítems del carrito con la última consulta
+   * del producto: si el stock cambió después de agregarlo, la fila queda
+   * desactualizada y dispara el bloqueo preventivo del contrato.
+   */
+  useEffect(() => {
+    if (!producto) return;
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productoId === producto.productoId
+          ? { ...i, stockActual: producto.stockActual }
+          : i,
+      ),
+    );
+  }, [producto]);
 
   const agregarItem = () => {
     if (!producto || cantidad < 1) return;
@@ -63,17 +100,35 @@ export function CrearVentaPage() {
           nombre: producto.nombre,
           precio: producto.precio,
           cantidad,
+          stockActual: producto.stockActual,
         },
       ];
     });
     setCantidad(1);
   };
 
+  const cambiarCantidadItem = (productoId: string, nuevaCantidad: number) => {
+    setItems((prev) =>
+      prev.map((i) =>
+        i.productoId === productoId ? { ...i, cantidad: nuevaCantidad } : i,
+      ),
+    );
+  };
+
   const quitarItem = (productoId: string) => {
     setItems((prev) => prev.filter((i) => i.productoId !== productoId));
   };
 
+  const cancelarVenta = () => {
+    setItems([]);
+    setCodigoBuscado('');
+    setInputCodigo('');
+    setCantidad(1);
+  };
+
   const confirmarVenta = () => {
+    if (ventaBloqueada) return;
+
     const request: CrearVentaRequest = {
       vendedor_id: vendedorId.trim() || 'V-001',
       items: items.map((i) => ({
@@ -132,9 +187,9 @@ export function CrearVentaPage() {
   return (
     <main className="min-h-screen bg-slate-50 p-6">
       <PageHeader
-        title="Procesar Venta"
-        subtitle="HU-01 — Consulta el stock del producto y confirma la venta"
+        title="Nueva Venta"
         meta={{ label: 'Vendedor', value: vendedorId }}
+        timestamp={formatoFechaCorta(new Date())}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -143,8 +198,9 @@ export function CrearVentaPage() {
           <StockSearchInput
             value={inputCodigo}
             onValueChange={setInputCodigo}
-            onSearch={setCodigoBuscado}
-            placeholder="Buscar producto por código..."
+            onSearch={buscarProducto}
+            label="Buscar o escanear producto"
+            placeholder="Ej: CAM-001 o 'Camiseta Básica'"
             disabled={ventaMutation.isPending}
           />
 
@@ -175,11 +231,11 @@ export function CrearVentaPage() {
           )}
         </section>
 
-        {/* Columna derecha: resumen de la venta */}
+        {/* Columna derecha: carrito "Productos a vender" */}
         <aside className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-2 text-base font-semibold text-slate-900">
-              Resumen de venta
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-lg sm:p-5">
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+              Productos a vender
             </h2>
 
             {!hayItems ? (
@@ -187,31 +243,58 @@ export function CrearVentaPage() {
                 Todavía no hay productos agregados.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100">
-                {items.map((item) => (
-                  <VentaItemRow
-                    key={item.productoId}
-                    item={item}
-                    onQuitar={() => quitarItem(item.productoId)}
-                  />
-                ))}
-              </ul>
+              <div className="-mx-4 overflow-x-auto sm:-mx-5">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="px-4 py-2 text-xs font-medium uppercase text-slate-500 sm:px-5">
+                        Producto
+                      </th>
+                      <th className="px-4 py-2 text-xs font-medium uppercase text-slate-500 sm:px-5">
+                        Precio Unit.
+                      </th>
+                      <th className="px-4 py-2 text-xs font-medium uppercase text-slate-500 sm:px-5">
+                        Stock Actual
+                      </th>
+                      <th className="px-4 py-2 text-xs font-medium uppercase text-slate-500 sm:px-5">
+                        Cantidad
+                      </th>
+                      <th className="px-4 py-2 text-xs font-medium uppercase text-slate-500 sm:px-5">
+                        Subtotal
+                      </th>
+                      <th aria-label="Acciones" />
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {items.map((item) => (
+                      <VentaItemRow
+                        key={item.productoId}
+                        item={item}
+                        onCantidadChange={(nuevaCantidad) =>
+                          cambiarCantidadItem(item.productoId, nuevaCantidad)
+                        }
+                        onQuitar={() => quitarItem(item.productoId)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
 
             {hayItems && (
               <>
-                <div className="mt-4 border-t border-slate-200 pt-3">
-                  <p className="flex items-center justify-between text-sm font-semibold text-slate-900">
-                    <span>Total</span>
-                    <span>
-                      $
-                      {items.reduce(
-                        (acc, i) => acc + i.precio * i.cantidad,
-                        0,
-                      )}
-                    </span>
-                  </p>
+                <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-3 text-sm text-slate-600">
+                  <span>Total de artículos</span>
+                  <span>{totalArticulos}</span>
                 </div>
+                <p className="mt-1 flex items-baseline justify-between">
+                  <span className="text-sm font-semibold text-slate-900">
+                    Total a Pagar
+                  </span>
+                  <span className="text-3xl font-bold text-brand-700">
+                    {formatoMoneda(totalPagar)}
+                  </span>
+                </p>
 
                 <label className="mt-4 block text-sm text-slate-700">
                   <span className="mb-1 block">ID de vendedor</span>
@@ -223,17 +306,84 @@ export function CrearVentaPage() {
                     aria-label="ID de vendedor"
                   />
                 </label>
+
+                {/* Bloqueo preventivo por ítem sin stock (contrato HU-01) */}
+                {ventaBloqueada && itemSinStock && (
+                  <Alert
+                    variant="error"
+                    className="mt-4"
+                    title="No se puede procesar la venta"
+                    message={`El producto "${itemSinStock.nombre}" no tiene stock disponible. Por favor, elimínalo del carrito para continuar.`}
+                  />
+                )}
               </>
             )}
 
-            <Button
-              type="button"
-              className="mt-4 w-full"
-              disabled={!hayItems || ventaMutation.isPending}
-              onClick={confirmarVenta}
-            >
-              {ventaMutation.isPending ? 'Procesando...' : 'Confirmar venta'}
-            </Button>
+            <div className="mt-4 flex gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                className="flex-1"
+                disabled={!hayItems || ventaMutation.isPending}
+                onClick={cancelarVenta}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                className="flex-1"
+                disabled={
+                  !hayItems || ventaBloqueada || ventaMutation.isPending
+                }
+                onClick={confirmarVenta}
+              >
+                {ventaMutation.isPending ? (
+                  <>
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    {ventaBloqueada && (
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
+                    )}
+                    Confirmar Venta
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {errorConfirmacion && (

@@ -24,8 +24,10 @@ describe('VentaProductoCard', () => {
     );
 
     expect(screen.getByText('Remera Azul')).toBeInTheDocument();
-    expect(screen.getByText('$15000')).toBeInTheDocument();
-    expect(screen.getByLabelText('Stock: 10 unidades - en stock')).toBeInTheDocument();
+    expect(screen.getByText('$15000.00')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Stock: 10 unidades - 10 disponibles'),
+    ).toBeInTheDocument();
   });
 
   it('deshabilita el botón y el input cuando no hay stock', () => {

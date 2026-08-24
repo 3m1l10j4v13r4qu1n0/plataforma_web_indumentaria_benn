@@ -18,14 +18,25 @@ vi.mock('@/api/services/venta.service', () => ({
   },
 }));
 
-vi.mock('axios', () => ({
-  default: {
-    isAxiosError: (error: unknown) =>
-      typeof error === 'object' &&
-      error !== null &&
-      'response' in error,
-  },
-}));
+vi.mock('axios', () => {
+  const clienteStub = () => ({
+    get: vi.fn(),
+    post: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
+  });
+  return {
+    default: {
+      create: vi.fn(clienteStub),
+      isAxiosError: (error: unknown) =>
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error,
+    },
+  };
+});
 
 import { productosService } from '@/api/services/productos.service';
 import { ventaService } from '@/api/services/venta.service';
@@ -83,7 +94,7 @@ describe('CrearVentaPage', () => {
 
     expect(await screen.findByText('Remera Azul')).toBeInTheDocument();
     expect(
-      await screen.findByLabelText('Stock: 10 unidades - en stock'),
+      await screen.findByLabelText('Stock: 10 unidades - 10 disponibles'),
     ).toBeInTheDocument();
     expect(mockObtenerStock).toHaveBeenCalledWith('P-001');
   });
@@ -97,6 +108,36 @@ describe('CrearVentaPage', () => {
     await user.keyboard('{Enter}');
 
     expect(await screen.findByRole('button', { name: 'Sin stock' })).toBeDisabled();
+  });
+
+  it('muestra el bloqueo preventivo cuando un ítem del carrito queda sin stock (E-01)', async () => {
+    const user = userEvent.setup();
+    mockObtenerStock
+      .mockResolvedValueOnce(stockDisponible)
+      .mockResolvedValueOnce(stockCero);
+    renderizar();
+
+    // Agregar el producto con stock disponible
+    await user.type(screen.getByLabelText('Buscar producto por nombre o código'), 'P-001');
+    await user.keyboard('{Enter}');
+    await user.click(await screen.findByRole('button', { name: 'Agregar a venta' }));
+
+    // Reconsultar: el backend ahora reporta stock 0 para ese producto
+    await user.clear(screen.getByLabelText('Buscar producto por nombre o código'));
+    await user.type(screen.getByLabelText('Buscar producto por nombre o código'), 'P-001');
+    await user.keyboard('{Enter}');
+
+    expect(
+      await screen.findByText('No se puede procesar la venta'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'El producto "Remera Azul" no tiene stock disponible. Por favor, elimínalo del carrito para continuar.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Confirmar Venta/ }),
+    ).toBeDisabled();
   });
 
   it('agrega un item, confirma la venta y muestra el éxito', async () => {
@@ -114,7 +155,7 @@ describe('CrearVentaPage', () => {
     await user.click(screen.getByRole('button', { name: 'Agregar a venta' }));
 
     // Confirmar venta
-    await user.click(screen.getByRole('button', { name: 'Confirmar venta' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar Venta' }));
 
     expect(await screen.findByText('Comprobante de Venta')).toBeInTheDocument();
     expect(screen.getByText('T-20260819-001')).toBeInTheDocument();
@@ -144,7 +185,7 @@ describe('CrearVentaPage', () => {
     await user.type(screen.getByLabelText('Buscar producto por nombre o código'), 'P-001');
     await user.keyboard('{Enter}');
     await user.click(await screen.findByRole('button', { name: 'Agregar a venta' }));
-    await user.click(screen.getByRole('button', { name: 'Confirmar venta' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar Venta' }));
 
     expect(
       await screen.findByText('No hay stock suficiente para completar la venta.'),

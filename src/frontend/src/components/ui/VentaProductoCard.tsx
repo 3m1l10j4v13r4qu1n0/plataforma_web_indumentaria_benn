@@ -1,6 +1,8 @@
 import { cn } from '@/utils/cn';
-import { StockBadge, type NivelStock } from './StockBadge';
+import { StockBadge } from './StockBadge';
 import { Button } from './Button';
+import { calcularNivelStock } from '@/constants/stock';
+import { formatoMoneda } from '@/utils/format';
 import type { StockProducto } from '@/types/domain';
 
 export interface VentaProductoCardProps {
@@ -36,7 +38,7 @@ export function VentaProductoCard({
   className,
 }: VentaProductoCardProps) {
   const sinStock = producto.stockActual === 0;
-  const stockLevel: NivelStock = sinStock ? 'out' : 'healthy';
+  const nivelStock = calcularNivelStock(producto.stockActual);
 
   return (
     <article
@@ -56,12 +58,16 @@ export function VentaProductoCard({
             Categoría: <span className="font-medium">{producto.categoria}</span>
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Precio: <span className="font-medium">${producto.precio}</span>
+            Precio: <span className="font-medium">{formatoMoneda(producto.precio)}</span>
           </p>
         </div>
 
         <div className="flex items-center">
-          <StockBadge level={stockLevel} quantity={producto.stockActual} />
+          <StockBadge
+            level={nivelStock}
+            quantity={producto.stockActual}
+            formato="disponibles"
+          />
         </div>
       </div>
 
