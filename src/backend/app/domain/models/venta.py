@@ -11,6 +11,7 @@ from app.domain.exceptions import DomainException
 class EstadoVenta(str, Enum):
     PENDIENTE = "PENDIENTE"
     CONFIRMADA = "CONFIRMADA"
+    EN_CAMBIO = "EN_CAMBIO"
     CANCELADA = "CANCELADA"
 
 

@@ -5,7 +5,6 @@ from datetime import datetime, UTC
 from app.application.dtos.descuento_dto import AplicarDescuentoCommand
 from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
 from app.domain.exceptions import (
-    DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
     DomainException,
@@ -186,9 +185,7 @@ async def test_rechazar_descuento_venta_no_confirmada(
 
 # ❌ Escenario 6: Descuento duplicado para la misma venta
 @pytest.mark.asyncio
-async def test_rechazar_descuento_duplicado(
-    use_case, venta_repo, venta_confirmada
-):
+async def test_rechazar_descuento_duplicado(use_case, venta_repo, venta_confirmada):
     # Arrange
     await venta_repo.crear_venta(venta_confirmada)
     command1 = AplicarDescuentoCommand(

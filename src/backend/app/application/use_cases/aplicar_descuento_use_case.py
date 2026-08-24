@@ -68,7 +68,9 @@ class AplicarDescuentoUseCase:
             )
 
         # 5. Verificar si requiere autorización
-        requiere_autorizacion = command.porcentaje > self.LIMITE_DESCUENTO_SIN_AUTORIZACION
+        requiere_autorizacion = (
+            command.porcentaje > self.LIMITE_DESCUENTO_SIN_AUTORIZACION
+        )
 
         if requiere_autorizacion and not command.autorizado_por:
             raise DescuentoSinAutorizacionError(float(command.porcentaje))

@@ -13,3 +13,16 @@ export {
   type VentaProductoCardProps,
 } from './VentaProductoCard';
 export { VentaItemRow, type VentaItem } from './VentaItemRow';
+export { TicketSearchInput } from './TicketSearchInput';
+export {
+  CompraOriginalCard,
+} from './CompraOriginalCard';
+export {
+  RegistroCambioForm,
+  type RegistroCambioFormValues,
+} from './RegistroCambioForm';
+export {
+  EstadoProductoSelector,
+  type ValidarEstadoFormValues,
+} from './EstadoProductoSelector';
+export { CambioExitosoCard } from './CambioExitosoCard';

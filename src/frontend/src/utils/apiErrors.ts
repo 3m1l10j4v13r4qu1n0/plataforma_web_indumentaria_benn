@@ -14,6 +14,18 @@ const MENSAJES_AMIGABLES: Record<string, string> = {
     'El stock del producto cambió recientemente. Por favor, verifique la cantidad disponible.',
   CANTIDAD_MOVIMIENTO_INVALIDA:
     'La cantidad indicada no es válida para actualizar el inventario.',
+  TICKET_NO_ENCONTRADO:
+    'El número de ticket no existe en el sistema. Verificá el comprobante.',
+  VENTA_NO_ENCONTRADA: 'La venta consultada no existe en el sistema.',
+  VENTA_YA_EN_CAMBIO:
+    'La venta ya está en proceso de cambio en otra caja. No podés retenerla.',
+  PLAZO_VENCIDO:
+    'Pasaron más de 15 días desde la compra. El cambio fue rechazado.',
+  CAMBIO_NO_ENCONTRADO: 'El cambio solicitado no existe en el sistema.',
+  PRODUCTO_NO_APTO:
+    'El producto no cumple las condiciones para ser cambiado (debe estar nuevo y con etiqueta).',
+  OBSERVACIONES_REQUERIDAS:
+    'Las observaciones son obligatorias cuando el producto no es apto.',
 };
 
 /**

@@ -8,6 +8,17 @@ export const API_ENDPOINTS = {
   // Ventas
   VENTAS: {
     CREATE: '/api/v1/ventas',
+    VALIDAR_TICKET: (numeroTicket: string) =>
+      `/api/v1/ventas/validar-ticket/${encodeURIComponent(numeroTicket)}`,
+    MARCAR_EN_CAMBIO: (numeroTicket: string) =>
+      `/api/v1/ventas/${encodeURIComponent(numeroTicket)}/estado`,
+  },
+
+  // Cambios (HU-02, HU-03)
+  CAMBIOS: {
+    CREATE: '/api/v1/cambios',
+    VALIDAR_ESTADO: (cambioId: string) =>
+      `/api/v1/cambios/${encodeURIComponent(cambioId)}/validar-estado`,
   },
 
   // Productos

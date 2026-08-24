@@ -10,6 +10,7 @@ from app.infrastructure.database.session import (
 
 # Importá todos tus modelos acá para que autogenerate los detecte
 from app.infrastructure.database.orm_models import (  # noqa: F401
+    CambioORM,
     DetalleVentaORM,
     ProductoORM,
     VentaORM,

@@ -1,9 +1,10 @@
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.exceptions import TicketDuplicadoError
 from app.domain.models.detalle_venta import DetalleVenta
-from app.domain.models.venta import Venta
+from app.domain.models.venta import EstadoVenta, Venta
 from app.domain.ports.i_venta_repository import IVentaRepository
 from app.infrastructure.database.orm_models.detalle_venta_orm import DetalleVentaORM
 from app.infrastructure.database.orm_models.venta_orm import VentaORM
@@ -12,6 +13,77 @@ from app.infrastructure.database.orm_models.venta_orm import VentaORM
 class VentaRepository(IVentaRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    @staticmethod
+    def _mapear_a_entidad(orm_venta: VentaORM) -> Venta:
+        """Convierte una fila ORM de venta (con sus detalles cargados) a entidad de dominio.
+
+        Args:
+            orm_venta: Instancia de VentaORM con la relación `detalles` accesible.
+
+        Returns:
+            Entidad de dominio Venta equivalente.
+        """
+        return Venta(
+            id=orm_venta.id,
+            fecha_hora=orm_venta.fecha_hora,
+            vendedor_id=orm_venta.vendedor_id,
+            estado=orm_venta.estado,
+            numero_ticket=orm_venta.numero_ticket,
+            total=orm_venta.total,
+            items=[
+                DetalleVenta(
+                    producto_id=detalle.producto_id,
+                    cantidad=detalle.cantidad,
+                    precio_unitario=detalle.precio_unitario,
+                )
+                for detalle in orm_venta.detalles
+            ],
+        )
+
+    async def obtener_venta_por_id(self, venta_id: str) -> Venta | None:
+        stmt = select(VentaORM).where(VentaORM.id == venta_id)
+        result = await self.session.execute(stmt)
+        orm_venta = result.scalar_one_or_none()
+
+        if orm_venta is None:
+            return None
+
+        return self._mapear_a_entidad(orm_venta)
+
+    async def obtener_venta_por_numero_ticket(self, numero_ticket: str) -> Venta | None:
+        stmt = select(VentaORM).where(VentaORM.numero_ticket == numero_ticket)
+        result = await self.session.execute(stmt)
+        orm_venta = result.scalar_one_or_none()
+
+        if orm_venta is None:
+            return None
+
+        return self._mapear_a_entidad(orm_venta)
+
+    async def actualizar_estado(
+        self, numero_ticket: str, nuevo_estado: EstadoVenta
+    ) -> Venta | None:
+        """Actualiza el estado de una venta identificada por su número de ticket (HU-04).
+
+        Args:
+            numero_ticket: Número de ticket único de la venta.
+            nuevo_estado: Estado de destino (ej. EN_CAMBIO).
+
+        Returns:
+            La entidad de dominio actualizada, o None si el ticket no existe.
+        """
+        stmt = select(VentaORM).where(VentaORM.numero_ticket == numero_ticket)
+        result = await self.session.execute(stmt)
+        orm_venta = result.scalar_one_or_none()
+
+        if orm_venta is None:
+            return None
+
+        orm_venta.estado = nuevo_estado
+        await self.session.commit()
+
+        return self._mapear_a_entidad(orm_venta)
 
     async def crear_venta(self, venta: Venta) -> Venta:
         # Mapeo de Entidad de Dominio a ORM

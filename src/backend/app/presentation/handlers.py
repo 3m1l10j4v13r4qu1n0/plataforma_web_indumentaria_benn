@@ -3,18 +3,32 @@ from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
     BusquedaInvalidaError,
+    CambioNoEncontradoError,
+    CambioPlazoVencidoError,
     CantidadMovimientoInvalidaError,
     DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
     DomainException,
+    ObservacionesRequeridasError,
     ProductoInvalidoError,
+    ProductoNoAptoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
     StockUpdateException,
     TicketDuplicadoError,
+    TicketNoEncontradoError,
+    VentaNoEncontradaError,
+    VentaYaEnCambioError,
 )
-from app.presentation.schemas.venta_schema import ErrorResponse
+from app.presentation.schemas.cambio_schema import (
+    CambioErrorResponse,
+    ProductoNoAptoErrorResponse,
+)
+from app.presentation.schemas.venta_schema import (
+    ErrorResponse,
+    TicketNoEncontradoErrorResponse,
+)
 
 
 def register_exception_handlers(app: FastAPI):
@@ -108,6 +122,92 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content=ErrorResponse(
                 error="DESCUENTO_INVALIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(VentaNoEncontradaError)
+    async def venta_no_encontrada_handler(
+        request: Request, exc: VentaNoEncontradaError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=ErrorResponse(
+                error="VENTA_NO_ENCONTRADA",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CambioPlazoVencidoError)
+    async def cambio_plazo_vencido_handler(
+        request: Request, exc: CambioPlazoVencidoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=CambioErrorResponse(
+                error="PLAZO_VENCIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CambioNoEncontradoError)
+    async def cambio_no_encontrado_handler(
+        request: Request, exc: CambioNoEncontradoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=CambioErrorResponse(
+                error="CAMBIO_NO_ENCONTRADO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(ProductoNoAptoError)
+    async def producto_no_apto_handler(request: Request, exc: ProductoNoAptoError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ProductoNoAptoErrorResponse(
+                error="PRODUCTO_NO_APTO",
+                mensaje="El producto no cumple las condiciones para ser cambiado.",
+                motivo=exc.motivo,
+                es_apto_para_cambio=False,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(ObservacionesRequeridasError)
+    async def observaciones_requeridas_handler(
+        request: Request, exc: ObservacionesRequeridasError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ProductoNoAptoErrorResponse(
+                error="OBSERVACIONES_REQUERIDAS",
+                mensaje=str(exc),
+                motivo="OBSERVACIONES_OBLIGATORIAS",
+                es_apto_para_cambio=False,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(TicketNoEncontradoError)
+    async def ticket_no_encontrado_handler(
+        request: Request, exc: TicketNoEncontradoError
+    ):
+        # Payload específico del contrato HU-04 para el flujo de cambios.
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=TicketNoEncontradoErrorResponse(
+                existe=False,
+                error="TICKET_NO_ENCONTRADO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(VentaYaEnCambioError)
+    async def venta_ya_en_cambio_handler(request: Request, exc: VentaYaEnCambioError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=CambioErrorResponse(
+                error="VENTA_YA_EN_CAMBIO",
                 mensaje=str(exc),
             ).model_dump(),
         )

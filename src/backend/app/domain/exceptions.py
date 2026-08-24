@@ -114,3 +114,87 @@ class DescuentoInvalidoError(DomainException):
     def __init__(self, motivo: str):
         self.motivo = motivo
         super().__init__(f"Descuento inválido: {motivo}")
+
+
+class CambioNoEncontradoError(DomainException):
+    """Se lanza cuando se intenta operar con un cambio que no existe."""
+
+    def __init__(self, cambio_id: str):
+        self.cambio_id = cambio_id
+        super().__init__(f"El cambio con ID '{cambio_id}' no existe en el sistema.")
+
+
+class CambioPlazoVencidoError(DomainException):
+    """Se lanza cuando se intenta realizar un cambio fuera del plazo de 15 días."""
+
+    def __init__(
+        self, numero_ticket: str, dias_transcurridos: int, dias_limite: int = 15
+    ):
+        self.numero_ticket = numero_ticket
+        self.dias_transcurridos = dias_transcurridos
+        self.dias_limite = dias_limite
+        super().__init__(
+            f"El plazo de {dias_limite} días para realizar cambios ha expirado para el ticket '{numero_ticket}'. "
+            f"Días transcurridos: {dias_transcurridos}."
+        )
+
+
+class VentaNoEncontradaError(DomainException):
+    """Se lanza cuando se intenta operar con una venta que no existe."""
+
+    def __init__(self, identificador: str):
+        self.identificador = identificador
+        super().__init__(
+            f"La venta con identificador '{identificador}' no existe en el sistema."
+        )
+
+
+class TicketNoEncontradoError(DomainException):
+    """Se lanza cuando el número de ticket ingresado no existe en el sistema (HU-04)."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            "El número de ticket ingresado no existe en el sistema. "
+            "Verifique el comprobante."
+        )
+
+
+class VentaYaEnCambioError(DomainException):
+    """Se lanza cuando se intenta marcar en cambio una venta que ya está EN_CAMBIO (HU-04)."""
+
+    def __init__(self, numero_ticket: str):
+        self.numero_ticket = numero_ticket
+        super().__init__(
+            f"El ticket '{numero_ticket}' ya está en proceso de cambio "
+            "por otra caja."
+        )
+
+
+class CambioInvalidoError(DomainException):
+    """Se lanza cuando los datos del cambio son inválidos."""
+
+    def __init__(self, motivo: str):
+        self.motivo = motivo
+        super().__init__(f"Cambio inválido: {motivo}")
+
+
+class ProductoNoAptoError(DomainException):
+    """Se lanza cuando el producto físico no cumple las condiciones para el cambio (HU-03)."""
+
+    def __init__(self, motivo: str):
+        self.motivo = motivo
+        super().__init__(
+            "El producto no cumple las condiciones para ser cambiado "
+            f"(Motivo: {motivo})."
+        )
+
+
+class ObservacionesRequeridasError(DomainException):
+    """Se lanza cuando un producto no apto se rechaza sin registrar observaciones (HU-03)."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "Las observaciones son obligatorias cuando el producto no es apto "
+            "para el cambio."
+        )

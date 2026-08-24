@@ -8,6 +8,7 @@
   ```json
   {
     "existe": true,
+    "venta_original_id": "V-999",
     "numero_ticket": "T-20260601-001",
     "fecha_compra": "2026-05-20T14:30:00Z",
     "cajero_original_id": "C-003",
