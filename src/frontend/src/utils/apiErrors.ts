@@ -9,6 +9,18 @@ const MENSAJES_AMIGABLES: Record<string, string> = {
   DESCUENTO_SIN_AUTORIZACION:
     'El descuento requiere la autorización de un gerente.',
   DESCUENTO_INVALIDO: 'El porcentaje de descuento no es válido.',
+  TICKET_NO_ENCONTRADO:
+    'El número de ticket no existe en el sistema. Verificá el comprobante.',
+  VENTA_NO_ENCONTRADA: 'La venta consultada no existe en el sistema.',
+  VENTA_YA_EN_CAMBIO:
+    'La venta ya está en proceso de cambio en otra caja. No podés retenerla.',
+  PLAZO_VENCIDO:
+    'Pasaron más de 15 días desde la compra. El cambio fue rechazado.',
+  CAMBIO_NO_ENCONTRADO: 'El cambio solicitado no existe en el sistema.',
+  PRODUCTO_NO_APTO:
+    'El producto no cumple las condiciones para ser cambiado (debe estar nuevo y con etiqueta).',
+  OBSERVACIONES_REQUERIDAS:
+    'Las observaciones son obligatorias cuando el producto no es apto.',
 };
 
 /**
