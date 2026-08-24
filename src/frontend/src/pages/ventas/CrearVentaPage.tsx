@@ -8,6 +8,7 @@ import {
   DescuentoModal,
   Button,
   Alert,
+  Toast,
   type VentaItem,
 } from '@/components/ui';
 import { useStockProducto } from '@/hooks/useStockProducto';
@@ -38,6 +39,7 @@ export function CrearVentaPage() {
   const [items, setItems] = useState<VentaItem[]>([]);
   const [vendedorId, setVendedorId] = useState('V-001');
   const [descuentoModalAbierto, setDescuentoModalAbierto] = useState(false);
+  const [toastVenta, setToastVenta] = useState<string | null>(null);
 
   const stockQuery = useStockProducto(codigoBuscado);  const ventaMutation = useVenta();
   const descuentoMutation = useDescuento();
@@ -142,6 +144,8 @@ export function CrearVentaPage() {
         setCodigoBuscado('');
         setInputCodigo('');
         setCantidad(1);
+        // HU-08: confirmación tipo Toast del mensaje post-venta requerido
+        setToastVenta('Venta registrada e inventario actualizado');
       },
     });
   };
@@ -428,6 +432,11 @@ export function CrearVentaPage() {
           )}
         </aside>
         </div>
+      )}
+
+      {/* HU-08: Toast de éxito con auto-dismiss */}
+      {toastVenta && (
+        <Toast message={toastVenta} variant="success" onDismiss={() => setToastVenta(null)} />
       )}
 
       {/* HU-05: Modal de descuento */}

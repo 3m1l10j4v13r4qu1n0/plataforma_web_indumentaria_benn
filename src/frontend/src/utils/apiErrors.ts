@@ -9,6 +9,11 @@ const MENSAJES_AMIGABLES: Record<string, string> = {
   DESCUENTO_SIN_AUTORIZACION:
     'El descuento requiere la autorización de un gerente.',
   DESCUENTO_INVALIDO: 'El porcentaje de descuento no es válido.',
+  // HU-08: actualización automática de stock (mensajes textuales de la doc)
+  ERROR_ACTUALIZACION_STOCK:
+    'El stock del producto cambió recientemente. Por favor, verifique la cantidad disponible.',
+  CANTIDAD_MOVIMIENTO_INVALIDA:
+    'La cantidad indicada no es válida para actualizar el inventario.',
 };
 
 /**

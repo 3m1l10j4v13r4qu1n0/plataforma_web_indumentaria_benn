@@ -166,6 +166,22 @@ describe('CrearVentaPage', () => {
     });
   });
 
+  it('muestra el toast verde de éxito con el mensaje de HU-08', async () => {
+    const user = userEvent.setup();
+    mockObtenerStock.mockResolvedValue(stockDisponible);
+    mockProcesarVenta.mockResolvedValue(ventaOk);
+    renderizar();
+
+    await user.type(screen.getByLabelText('Buscar producto por nombre o código'), 'P-001');
+    await user.keyboard('{Enter}');
+    await user.click(await screen.findByRole('button', { name: 'Agregar a venta' }));
+    await user.click(screen.getByRole('button', { name: 'Confirmar Venta' }));
+
+    expect(
+      await screen.findByText('Venta registrada e inventario actualizado'),
+    ).toBeInTheDocument();
+  });
+
   it('muestra alerta de stock insuficiente cuando el backend rechaza la venta', async () => {
     const user = userEvent.setup();
     mockObtenerStock.mockResolvedValue(stockDisponible);

@@ -6,6 +6,7 @@ export { ProductoBusquedaCard } from './ProductoBusquedaCard';
 export { TicketCard } from './TicketCard';
 export { Button } from './Button';
 export { Alert } from './Alert';
+export { Toast } from './Toast';
 export { DescuentoModal } from './DescuentoModal';
 export {
   VentaProductoCard,
