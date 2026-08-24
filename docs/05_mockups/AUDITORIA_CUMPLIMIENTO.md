@@ -19,6 +19,7 @@ usuario. Cualquier desviación futura debe agregarse acá antes de implementarse
 | D-002 | **HU-05 mantiene el flujo post-venta real** (endpoint `POST /api/v1/descuentos` con `autorizado_por` + `motivo`), pero la UI se rediseña para parecerse al mockup (header naranja "Autorización Requerida", hint del límite 20%). Los campos del mockup (correo/PIN del gerente) se mapean a `autorizado_por`/`motivo`. | El backend define el flujo transaccional real; el descuento pre-venta del mockup exigiría endpoints nuevos. La estética sí sigue al contrato. |
 | D-003 | **HU-02/03/04 sin pantallas**: quedan en backlog hasta que el backend exponga endpoints de cambios/devoluciones (hoy `app/presentation/routers/` solo tiene venta, producto y descuento). Prohibido inventar endpoints (`src/api/endpoints.ts`). | Regla dura del proyecto: no consumir endpoints inexistentes. |
 | D-004 | **HU-06 sin "Última actualización"**: el timestamp por producto que muestra el mockup no existe en la API (`ProductoBusquedaResponse` no expone fecha de actualización). Se omite hasta que el backend lo agregue. | Mismo motivo que D-003. |
+| D-005 | **HU-06 muestra `Estado` en vez de `Categoría`** en la línea de metadatos de cada resultado: `GET /api/v1/productos/buscar` devuelve `estado` pero no la categoría del producto. La venta (`StockProducto`) sí tiene categoría y ahí se respeta el contrato. | La API de búsqueda no expone categoría; prohibido inventar datos. |
 
 ## 1. Design System global
 
@@ -155,7 +156,7 @@ Según `docs/04_historias_usuario/HU-08/HU-08_frontend_backlog.md`:
 | :--- | :--- | :--- |
 | Starter de Vite muerto | `App.tsx`, `App.css` | Eliminar (no los importa `main.tsx`) |
 | `cn()` duplicado localmente | `EmptyState`, `ResultsHeader`, `StockBadge`, `StockResultCard`, `PageHeader` | Importar desde `utils/cn.ts` |
-| Componente huérfano | `StockResultCard` | Evaluar: eliminar o convertir en base de las cards de resultado |
+| Componente huérfano | `StockResultCard` | **Eliminado**: dependía de `stockMinimo`/`updatedAt` que la API de búsqueda no expone (D-004); `ProductoBusquedaCard` es la card contractual |
 | Límite de descuento hardcodeado | `DescuentoModal` (`LIMITE_SIN_AUTORIZACION = 20`) | Centralizar constante; idealmente provenir del backend |
 | `index.html` sin branding | `lang="en"`, `<title>frontend</title>` | `lang="es"` + título SGVIR |
 | Mensaje de error duplicado | `useBuscarProductos` hardcodea fallback distinto | Unificar con `apiErrors.ts` |
