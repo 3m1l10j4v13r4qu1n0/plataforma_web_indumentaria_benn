@@ -1,6 +1,6 @@
 import type { ProductoBusqueda } from '@/types/domain';
 import { cn } from '@/utils/cn';
-import { StockBadge, type StockLevel } from './StockBadge';
+import { StockBadge, type NivelStock } from './StockBadge';
 
 interface ProductoBusquedaCardProps {
   producto: ProductoBusqueda;
@@ -13,7 +13,7 @@ interface ProductoBusquedaCardProps {
  * SRP: Solo presenta datos del resultado de búsqueda, sin lógica de negocio.
  */
 export function ProductoBusquedaCard({ producto, className }: ProductoBusquedaCardProps) {
-  const stockLevel: StockLevel =
+  const stockLevel: NivelStock =
     producto.stockActual === 0 ? 'out' : 'healthy';
 
   return (

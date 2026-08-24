@@ -17,14 +17,17 @@ interface AlertProps {
 }
 
 const variantClasses: Record<AlertVariant, string> = {
-  error: 'border-rose-200 bg-rose-50 text-rose-800',
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  warning: 'border-amber-200 bg-amber-50 text-amber-800',
-  info: 'border-sky-200 bg-sky-50 text-sky-800',
+  error: 'border-red-500 bg-red-50 text-red-800',
+  success: 'border-green-500 bg-green-50 text-green-800',
+  warning: 'border-orange-500 bg-orange-50 text-orange-800',
+  info: 'border-brand-500 bg-brand-50 text-brand-800',
 };
 
 /**
  * Alerta reutilizable para mensajes de error, éxito, advertencia o info.
+ *
+ * Sigue el patrón visual del contrato (docs/05_mockups/): borde izquierdo
+ * grueso (`border-l-4`) + fondo tenue de la paleta funcional.
  *
  * SRP: Solo presenta el mensaje, sin lógica de negocio.
  */
@@ -32,7 +35,7 @@ export function Alert({ variant, title, message, icon, className }: AlertProps) 
   return (
     <div
       className={cn(
-        'flex items-start gap-3 rounded-lg border px-4 py-3',
+        'flex items-start gap-3 rounded-lg border-l-4 px-4 py-3',
         variantClasses[variant],
         className,
       )}

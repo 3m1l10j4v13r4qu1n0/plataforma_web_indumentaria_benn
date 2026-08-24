@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { StockBadge, type StockLevel } from './StockBadge';
+import { StockBadge, type NivelStock } from './StockBadge';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -47,7 +47,7 @@ export function StockResultCard({
   className,
 }: StockResultCardProps) {
   // Determinar el nivel de stock (lógica visual simple, KISS)
-  const stockLevel: StockLevel = stockActual === 0 ? 'out' : stockActual < stockMinimo ? 'low' : 'healthy';
+  const stockLevel: NivelStock = stockActual === 0 ? 'out' : stockActual < stockMinimo ? 'low' : 'healthy';
 
   return (
     <article

@@ -1,5 +1,5 @@
 import { cn } from '@/utils/cn';
-import { StockBadge, type StockLevel } from './StockBadge';
+import { StockBadge, type NivelStock } from './StockBadge';
 import { Button } from './Button';
 import type { StockProducto } from '@/types/domain';
 
@@ -36,7 +36,7 @@ export function VentaProductoCard({
   className,
 }: VentaProductoCardProps) {
   const sinStock = producto.stockActual === 0;
-  const stockLevel: StockLevel = sinStock ? 'out' : 'healthy';
+  const stockLevel: NivelStock = sinStock ? 'out' : 'healthy';
 
   return (
     <article
