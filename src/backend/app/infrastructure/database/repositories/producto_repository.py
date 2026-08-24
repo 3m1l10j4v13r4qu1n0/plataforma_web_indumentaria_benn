@@ -106,4 +106,6 @@ class ProductoRepository(IProductoRepository):
             )
 
         orm_producto.stock_actual = nuevo_stock
-        await self.session.commit()
+        # Sin commit: la confirmación la controla el Unit of Work / el
+        # repositorio que cierra la transacción (ej. venta al crear la venta),
+        # garantizando atomicidad entre agregados.
