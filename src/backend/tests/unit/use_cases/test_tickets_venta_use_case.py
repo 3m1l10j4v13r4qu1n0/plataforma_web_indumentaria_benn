@@ -7,6 +7,7 @@ from app.application.use_cases.validar_stock_venta_use_case import (
     ValidarStockVentaUseCase,
 )
 from app.domain.exceptions import TicketDuplicadoError
+from app.domain.models.detalle_venta import DetalleVenta
 from app.domain.models.producto import Producto
 from app.domain.models.venta import EstadoVenta, Venta
 from tests.unit.fakes.fake_generador_numero_ticket import FakeGeneradorNumeroTicket
@@ -165,7 +166,14 @@ async def test_validar_numero_unico_de_comprobante(
         estado=EstadoVenta.CONFIRMADA,
         numero_ticket=venta_1.numero_ticket,
         total=Decimal("100"),
-        items=list(venta_1.items),
+        items=[
+            DetalleVenta(
+                producto_id=item.producto_id,
+                cantidad=item.cantidad,
+                precio_unitario=item.precio_unitario,
+            )
+            for item in venta_1.items
+        ],
     )
     with pytest.raises(TicketDuplicadoError) as exc_info:
         await venta_repo.crear_venta(duplicada)

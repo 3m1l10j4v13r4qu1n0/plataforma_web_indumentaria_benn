@@ -111,6 +111,10 @@ async def test_validar_venta_con_stock_suficiente(
     assert venta.numero_ticket is not None
     assert venta.total == 200  # 2 x precio 100
 
+    # El resultado de aplicación resuelve los nombres para la presentación
+    assert venta.items[0].producto_id == "P-001"
+    assert venta.items[0].nombre == "Camiseta Básica"
+
     # Verificar actualización automática del stock post-venta (Requisito HU-01)
     producto_actualizado = await producto_repo.obtener_por_id("P-001")
     assert producto_actualizado.stock_actual == 3
