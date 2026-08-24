@@ -10,9 +10,11 @@ from app.domain.exceptions import (
     StockInsuficienteError,
 )
 from app.domain.models.detalle_venta import DetalleVenta
+from app.domain.models.movimiento_stock import MovimientoStock, TipoMovimiento
 from app.domain.models.producto import EstadoProducto
 from app.domain.models.venta import EstadoVenta, Venta
 from app.domain.ports.i_generador_numero_ticket import IGeneradorNumeroTicket
+from app.domain.ports.i_movimiento_stock_repository import IMovimientoStockRepository
 from app.domain.ports.i_producto_repository import IProductoRepository
 from app.domain.ports.i_venta_repository import IVentaRepository
 
@@ -29,10 +31,12 @@ class ValidarStockVentaUseCase:
         producto_repository: IProductoRepository,
         venta_repository: IVentaRepository,
         generador_numero_ticket: IGeneradorNumeroTicket,
+        movimiento_stock_repository: IMovimientoStockRepository,
     ):
         self._producto_repository = producto_repository
         self._venta_repository = venta_repository
         self._generador_numero_ticket = generador_numero_ticket
+        self._movimiento_stock_repository = movimiento_stock_repository
 
     async def execute(self, command: CrearVentaCommand) -> Venta:
         if not command.items:
@@ -88,6 +92,18 @@ class ValidarStockVentaUseCase:
             await self._producto_repository.actualizar_stock(
                 item.producto_id, nuevo_stock
             )
+
+            # HU-08: cada descuento queda auditado en movimientos_stock,
+            # referenciando la venta que lo originó.
+            movimiento = MovimientoStock.registrar(
+                id=str(uuid.uuid4()),
+                producto_id=item.producto_id,
+                tipo_movimiento=TipoMovimiento.VENTA,
+                cantidad=item.cantidad,
+                fecha_hora=datetime.now(UTC).replace(tzinfo=None),
+                documento_referencia_id=venta_id,
+            )
+            await self._movimiento_stock_repository.registrar(movimiento)
 
         # FASE 3: Creación de la Entidad de Dominio y Persistencia
         # El número de ticket se genera automáticamente al confirmar la

@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.domain.exceptions import (
     BusquedaInvalidaError,
+    CantidadMovimientoInvalidaError,
     DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
@@ -10,6 +11,7 @@ from app.domain.exceptions import (
     ProductoInvalidoError,
     ProductoNoEncontradoError,
     StockInsuficienteError,
+    StockUpdateException,
     TicketDuplicadoError,
 )
 from app.presentation.schemas.venta_schema import ErrorResponse
@@ -101,13 +103,36 @@ def register_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(DescuentoInvalidoError)
-    async def descuento_invalido_handler(
-        request: Request, exc: DescuentoInvalidoError
-    ):
+    async def descuento_invalido_handler(request: Request, exc: DescuentoInvalidoError):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content=ErrorResponse(
                 error="DESCUENTO_INVALIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(StockUpdateException)
+    async def stock_update_handler(request: Request, exc: StockUpdateException):
+        # HU-08: falla transaccional al actualizar stock (ej. concurrencia).
+        # 409 porque el estado del inventario cambió y la operación no pudo aplicarse.
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=ErrorResponse(
+                error="ERROR_ACTUALIZACION_STOCK",
+                mensaje=str(exc),
+                producto_id=exc.producto_id,
+            ).model_dump(),
+        )
+
+    @app.exception_handler(CantidadMovimientoInvalidaError)
+    async def cantidad_movimiento_invalida_handler(
+        request: Request, exc: CantidadMovimientoInvalidaError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=ErrorResponse(
+                error="CANTIDAD_MOVIMIENTO_INVALIDA",
                 mensaje=str(exc),
             ).model_dump(),
         )

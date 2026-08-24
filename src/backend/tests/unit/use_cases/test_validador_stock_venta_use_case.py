@@ -10,6 +10,9 @@ from app.domain.exceptions import (
 )
 from app.domain.models.producto import Producto
 from tests.unit.fakes.fake_generador_numero_ticket import FakeGeneradorNumeroTicket
+from tests.unit.fakes.fake_movimiento_stock_repository import (
+    FakeMovimientoStockRepository,
+)
 from tests.unit.fakes.fake_producto_repository import FakeProductoRepository
 from tests.unit.fakes.fake_venta_repository import FakeVentaRepository
 
@@ -30,11 +33,17 @@ def generador_ticket():
 
 
 @pytest.fixture
-def use_case(producto_repo, venta_repo, generador_ticket):
+def movimiento_repo():
+    return FakeMovimientoStockRepository()
+
+
+@pytest.fixture
+def use_case(producto_repo, venta_repo, generador_ticket, movimiento_repo):
     return ValidarStockVentaUseCase(
         producto_repository=producto_repo,
         venta_repository=venta_repo,
         generador_numero_ticket=generador_ticket,
+        movimiento_stock_repository=movimiento_repo,
     )
 
 

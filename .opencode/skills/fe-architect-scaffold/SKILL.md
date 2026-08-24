@@ -143,6 +143,8 @@ export interface ApiErrorResponse {
 }
 ```
 
+Códigos de error de negocio existentes (payload `error`): `PRODUCTO_NO_ENCONTRADO`, `STOCK_INSUFICIENTE`, `ESTADO_PRODUCTO_INVALIDO`, `BUSQUEDA_INVALIDA`, `TICKET_DUPLICADO`, `DESCUENTO_EXCEDE_LIMITE`, `DESCUENTO_SIN_AUTORIZACION`, `DESCUENTO_INVALIDO`, `ERROR_ACTUALIZACION_STOCK` (HU-08: falla transaccional/concurrencia al actualizar stock → mostrar "El stock del producto cambió recientemente..."), `CANTIDAD_MOVIMIENTO_INVALIDA` (HU-08).
+
 ### Códigos HTTP y su significado
 
 | Código | Significado | Acción en frontend |
