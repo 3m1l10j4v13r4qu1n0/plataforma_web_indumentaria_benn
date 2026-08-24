@@ -415,22 +415,14 @@ export function CrearVentaPage() {
 
               {/* Descuento aplicado */}
               {descuentoMutation.data && (
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                  <p className="text-sm font-semibold text-emerald-800">
+                <div className="rounded-lg border-l-4 border-green-500 bg-green-50 p-4">
+                  <p className="text-sm font-semibold text-green-800">
                     Descuento aplicado
                   </p>
-                  <p className="mt-1 text-sm text-emerald-700">
+                  <p className="mt-1 text-sm text-green-700">
                     {descuentoMutation.data.mensaje}
                   </p>
                 </div>
-              )}
-
-              {errorDescuento && (
-                <Alert
-                  variant="error"
-                  title="No se pudo aplicar el descuento"
-                  message={errorDescuento}
-                />
               )}
             </>
           )}
@@ -440,10 +432,14 @@ export function CrearVentaPage() {
       {/* HU-05: Modal de descuento */}
       <DescuentoModal
         isOpen={descuentoModalAbierto}
-        onClose={() => setDescuentoModalAbierto(false)}
+        onClose={() => {
+          setDescuentoModalAbierto(false);
+          if (descuentoMutation.isError) descuentoMutation.reset();
+        }}
         onConfirm={confirmarDescuento}
         totalVenta={ventaExitosa?.total ?? 0}
         isPending={descuentoMutation.isPending}
+        error={errorDescuento}
       />
     </main>
   );
