@@ -160,3 +160,33 @@ Según `docs/04_historias_usuario/HU-08/HU-08_frontend_backlog.md`:
 | Límite de descuento hardcodeado | `DescuentoModal` (`LIMITE_SIN_AUTORIZACION = 20`) | Centralizar constante; idealmente provenir del backend |
 | `index.html` sin branding | `lang="en"`, `<title>frontend</title>` | `lang="es"` + título SGVIR |
 | Mensaje de error duplicado | `useBuscarProductos` hardcodea fallback distinto | Unificar con `apiErrors.ts` |
+
+## 6. Resultado de la iteración `feat/frontend-mockups-mvp` (24/08/2026)
+
+Resolución de las secciones anteriores tras la implementación:
+
+| Ítem | Estado final |
+| :--- | :--- |
+| Fuentes Inter + JetBrains Mono (`--font-sans`/`--font-mono`) | ✅ Implementado |
+| Paleta funcional green/red/orange + Alert `border-l-4` | ✅ Implementado |
+| `StockBadge` 3 niveles con formatos `en stock` / `disponibles` | ✅ Implementado |
+| Helpers `formatoMoneda` ($XX.XX) y fechas es-AR deterministas | ✅ Implementado |
+| Limpieza (starter Vite, `cn()` duplicado, `StockResultCard`, branding `index.html`) | ✅ Implementado |
+| HU-06: título, placeholder, chip, icono, estado vacío E-06, badge amarillo | ✅ Implementado |
+| HU-06: timestamp por producto | ⛔ D-004 |
+| HU-06: categoría en metadatos | ⛔ D-005 (se muestra `Estado`) |
+| HU-01: título "Nueva Venta", label búsqueda, carrito tabular, fila roja sin stock, bloqueo preventivo E-01 con candado, Total a Pagar 3xl, Cancelar | ✅ Implementado |
+| HU-05: header naranja "Autorización Requerida", hint límite, input naranja, botón "Aplicar" oscuro, error dentro del modal E-05 | ✅ Implementado |
+| HU-05: descuento inline pre-venta con credenciales/PIN | 🟡 D-002 (flujo post-venta real conservado) |
+| HU-07: card centrada, header verde, branding TIENDA RETAIL S.A., mono, COMPROBANTE N°, acciones apiladas | ✅ Implementado |
+| HU-07: toast "Advertencia de Impresión" (E-07) | ✅ Implementado como estado controlado; activación automática pendiente de integración real con impresora |
+| HU-08: códigos `ERROR_ACTUALIZACION_STOCK`/`CANTIDAD_MOVIMIENTO_INVALIDA`, toast verde, spinner | ✅ Implementado |
+| HU-08: feedback post-devolución | ⛔ D-003 (sin pantalla de cambios) |
+| HU-02/03/04: pantallas de cambios e inspección | ⛔ D-003 (backlog, requiere backend) |
+
+Fix adicional fuera del contrato: el suite de `CrearVentaPage` estaba roto desde antes
+(mock de axios sin `create`/`interceptors`, roto al agregarse `useDescuento`);
+se corrigió el mock. Verificación: `lint` + `build` + `test` (32/32) en verde.
+
+Estados alternativos cubiertos con test: E-01, E-04, E-05, E-06, E-07.
+E-02 y E-03 quedan para la iteración de Cambios (D-003).
