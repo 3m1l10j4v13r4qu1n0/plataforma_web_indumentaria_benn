@@ -7,12 +7,15 @@ import {
   EmptyState,
   Alert,
 } from '@/components/ui';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { formatoFechaCorta } from '@/utils/format';
 
 /**
  * HU-06 — Consultar stock disponible.
  *
  * Permite al vendedor buscar productos por nombre o código
  * y ver su stock actual en tiempo real.
+ * Textos según contrato visual (docs/05_mockups/mockup_hu06.html).
  *
  * SRP: Orquesta hook + componentes presentacionales.
  */
@@ -28,6 +31,7 @@ export function ConsultarStockPage() {
     isLoading,
     error,
     buscoAlMenosUnaVez,
+    queryBuscada,
   } = useBuscarProductos();
 
   const mostrarResultados = buscoAlMenosUnaVez && !isLoading && !error;
@@ -36,21 +40,19 @@ export function ConsultarStockPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">
-          Consulta de Stock
-        </h1>
-        <p className="text-sm text-slate-500">
-          Busca productos por nombre o código para ver su disponibilidad.
-        </p>
-      </header>
+      <PageHeader
+        title="Consulta de Stock en Tiempo Real"
+        meta={{ label: 'Vendedor', value: 'V-001' }}
+        timestamp={formatoFechaCorta(new Date())}
+        timestampLabel="Sistema"
+      />
 
       <StockSearchInput
         ref={inputRef}
         value={query}
         onValueChange={setQuery}
         onSearch={ejecutarBusqueda}
-        placeholder="Buscar por nombre o código (mínimo 3 caracteres)..."
+        placeholder="Escanear código o escribir nombre del producto..."
       />
 
       <div className="mt-6">
@@ -74,7 +76,7 @@ export function ConsultarStockPage() {
         {/* Resultados */}
         {mostrarResultados && resultados.length > 0 && (
           <>
-            <ResultsHeader count={totalEncontrados} label="Productos encontrados" />
+            <ResultsHeader count={totalEncontrados} />
             <ul className="mt-4 space-y-3">
               {resultados.map((producto) => (
                 <li key={producto.productoId}>
@@ -85,13 +87,13 @@ export function ConsultarStockPage() {
           </>
         )}
 
-        {/* Sin resultados */}
+        {/* Sin resultados (estado alternativo E-06 del contrato) */}
         {mostrarSinResultados && (
           <EmptyState
-            title="No se encontraron productos"
+            title="Producto no encontrado"
             description={
               mensajeBackend ||
-              'Intenta buscar con otro nombre o código de producto.'
+              `No existe ningún producto activo con el código o nombre "${queryBuscada}". Verifique el código de barras o intente con otra palabra clave.`
             }
           />
         )}

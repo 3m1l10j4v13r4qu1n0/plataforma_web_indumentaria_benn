@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { productosService } from '@/api/services/productos.service';
+import { normalizarErrorApi } from '@/utils/apiErrors';
 import type { ProductoBusqueda } from '@/types/domain';
 
 interface UseBuscarProductosResult {
@@ -22,6 +23,8 @@ interface UseBuscarProductosResult {
   error: string | null;
   /** Indica si se ha realizado al menos una búsqueda */
   buscoAlMenosUnaVez: boolean;
+  /** Último término efectivamente buscado */
+  queryBuscada: string;
 }
 
 /**
@@ -58,7 +61,8 @@ export function useBuscarProductos(): UseBuscarProductosResult {
     totalEncontrados: data?.totalEncontrados ?? 0,
     mensajeBackend: data?.mensaje ?? null,
     isLoading,
-    error: error ? 'Ocurrió un error al buscar productos. Intentalo de nuevo.' : null,
+    error: error ? normalizarErrorApi(error) : null,
     buscoAlMenosUnaVez,
+    queryBuscada: activeQuery,
   };
 }
