@@ -46,6 +46,7 @@ class ValidarTicketCompraUseCase:
 
         return {
             "existe": True,
+            "venta_original_id": venta.id,
             "numero_ticket": venta.numero_ticket,
             "fecha_compra": venta.fecha_hora,
             "cajero_original_id": venta.vendedor_id,

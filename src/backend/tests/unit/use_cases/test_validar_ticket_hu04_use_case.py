@@ -100,6 +100,7 @@ async def test_buscar_ticket_existente_retorna_datos_venta(
 
     # Assert: habilita continuar con el flujo de cambio
     assert resultado["existe"] is True
+    assert resultado["venta_original_id"] == venta_confirmada.id
     assert resultado["numero_ticket"] == TICKET_VALIDO
     assert resultado["fecha_compra"] == venta_confirmada.fecha_hora
     assert resultado["cajero_original_id"] == "C-003"

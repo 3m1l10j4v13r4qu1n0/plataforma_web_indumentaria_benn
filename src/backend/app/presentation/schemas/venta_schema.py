@@ -75,6 +75,10 @@ class ValidarTicketResponse(BaseModel):
     """Respuesta exitosa al validar la existencia de un ticket (HU-04)."""
 
     existe: bool = Field(True, description="Indica que el ticket fue encontrado")
+    venta_original_id: str = Field(
+        ...,
+        description="ID de la venta original, requerido para registrar el cambio (HU-02)",
+    )
     numero_ticket: str
     fecha_compra: datetime
     cajero_original_id: str = Field(
@@ -87,6 +91,7 @@ class ValidarTicketResponse(BaseModel):
         json_schema_extra={
             "example": {
                 "existe": True,
+                "venta_original_id": "V-999",
                 "numero_ticket": "T-20260601-001",
                 "fecha_compra": "2026-05-20T14:30:00Z",
                 "cajero_original_id": "C-003",
