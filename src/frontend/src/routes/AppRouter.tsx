@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-// opcional:
 import { ROUTES } from '@/constants/routes';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
 import { CrearVentaPage } from '@/pages/ventas/CrearVentaPage';
+import { RegistrarCambioPage } from '@/pages/cambios/RegistrarCambioPage';
 
 /**
  * Router principal de la aplicación SGVIR.
@@ -24,31 +24,12 @@ export function AppRouter() {
       {/* HU-01: Procesar venta (validar stock antes de vender) */}
       <Route path="/ventas" element={<CrearVentaPage />} />
 
-      {/* Placeholder para futuras HUs (se completarán en sus respectivos pasos) */}
-      <Route path="/cambios" element={<Placeholder page="Cambios" />} />
+      {/* HU-04 + HU-02 + HU-03: Flujo de cambios de productos */}
+      <Route path={ROUTES.CAMBIOS} element={<RegistrarCambioPage />} />
 
       {/* Fallback 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
-  );
-}
-
-/**
- * Placeholder temporal para rutas aún no implementadas.
- * SRP: solo informa el estado de la ruta, sin lógica de negocio.
- */
-function Placeholder({ page }: { page: string }) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-800">
-          {page} — Próximamente
-        </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Esta pantalla está en desarrollo.
-        </p>
-      </div>
-    </div>
   );
 }
 
