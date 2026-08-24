@@ -192,7 +192,40 @@ export function CrearVentaPage() {
         timestamp={formatoFechaCorta(new Date())}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+      {/* HU-07: vista post-venta según contrato (card centrada) */}
+      {ventaExitosa ? (
+        <div className="mx-auto flex max-w-md flex-col gap-4">
+          <TicketCard
+            venta={ventaExitosa}
+            onImprimir={imprimirTicket}
+            onCerrar={cerrarTicket}
+          />
+
+          {/* HU-05: Botón para aplicar descuento */}
+          {!descuentoMutation.data && (
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => setDescuentoModalAbierto(true)}
+            >
+              Aplicar descuento
+            </Button>
+          )}
+
+          {/* Descuento aplicado */}
+          {descuentoMutation.data && (
+            <div className="rounded-lg border-l-4 border-green-500 bg-green-50 p-4">
+              <p className="text-sm font-semibold text-green-800">
+                Descuento aplicado
+              </p>
+              <p className="mt-1 text-sm text-green-700">
+                {descuentoMutation.data.mensaje}
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* Columna izquierda: búsqueda + producto */}
         <section className="space-y-4">
           <StockSearchInput
@@ -393,41 +426,9 @@ export function CrearVentaPage() {
               message={errorConfirmacion}
             />
           )}
-
-          {ventaExitosa && (
-            <>
-              <TicketCard
-                venta={ventaExitosa}
-                onImprimir={imprimirTicket}
-                onCerrar={cerrarTicket}
-              />
-
-              {/* HU-05: Botón para aplicar descuento */}
-              {!descuentoMutation.data && (
-                <Button
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => setDescuentoModalAbierto(true)}
-                >
-                  Aplicar descuento
-                </Button>
-              )}
-
-              {/* Descuento aplicado */}
-              {descuentoMutation.data && (
-                <div className="rounded-lg border-l-4 border-green-500 bg-green-50 p-4">
-                  <p className="text-sm font-semibold text-green-800">
-                    Descuento aplicado
-                  </p>
-                  <p className="mt-1 text-sm text-green-700">
-                    {descuentoMutation.data.mensaje}
-                  </p>
-                </div>
-              )}
-            </>
-          )}
         </aside>
-      </div>
+        </div>
+      )}
 
       {/* HU-05: Modal de descuento */}
       <DescuentoModal

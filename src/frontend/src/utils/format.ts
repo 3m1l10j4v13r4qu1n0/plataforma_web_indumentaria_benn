@@ -55,13 +55,18 @@ export function formatoMoneda(monto: number): string {
  * Formatea una fecha como la cabecera de las pantallas del contrato.
  *
  * @param fecha Fecha ISO o instancia de Date.
- * @returns Ej: `05 Jun 2026 - 14:30`.
+ * @param opciones `conSegundos` incluye los segundos (ticket HU-07).
+ * @returns Ej: `05 Jun 2026 - 14:30` o `05 Jun 2026 - 14:45:30`.
  */
-export function formatoFechaCorta(fecha: Date | string): string {
+export function formatoFechaCorta(
+  fecha: Date | string,
+  opciones?: { conSegundos?: boolean },
+): string {
   const d = asegurarDate(fecha);
+  const segundos = opciones?.conSegundos ? `:${pad(d.getSeconds())}` : '';
   return `${pad(d.getDate())} ${MESES[d.getMonth()]} ${d.getFullYear()} - ${pad(
     d.getHours(),
-  )}:${pad(d.getMinutes())}`;
+  )}:${pad(d.getMinutes())}${segundos}`;
 }
 
 /**

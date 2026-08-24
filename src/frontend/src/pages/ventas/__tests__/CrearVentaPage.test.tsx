@@ -157,7 +157,8 @@ describe('CrearVentaPage', () => {
     // Confirmar venta
     await user.click(screen.getByRole('button', { name: 'Confirmar Venta' }));
 
-    expect(await screen.findByText('Comprobante de Venta')).toBeInTheDocument();
+    expect(await screen.findByText('¡Venta Registrada!')).toBeInTheDocument();
+    expect(screen.getByText('TIENDA RETAIL S.A.')).toBeInTheDocument();
     expect(screen.getByText('T-20260819-001')).toBeInTheDocument();
     expect(mockProcesarVenta).toHaveBeenCalledWith({
       vendedor_id: 'V-001',
