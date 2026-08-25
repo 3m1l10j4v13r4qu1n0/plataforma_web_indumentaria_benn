@@ -8,7 +8,10 @@ Reglas separadas por concepto para que opencode Code las respete de forma consis
 | `reglas-negocio.md`            | Reglas de negocio críticas (stock, cambios, descuentos, tickets) — no negociables |
 | `calidad-arquitectura.md`      | Separación de capas, inyección de dependencias, manejo de errores HTTP            |
 | `roadmap-historias-usuario.md` | Plan paso a paso y resumen de las HU-1 a HU-8 (referencia, se va actualizando)    |
-| `solid-python.md` | Principios S.O.L.I.D que orientan la generacion de codigo limpio    |
+| `solid-python.md`              | Principios S.O.L.I.D que orientan la generacion de codigo limpio                  |
+| `contrato-visual-mockups.md`   | Contrato visual con mockups HTML y checklist de cierre por pantalla               |
+| `estado-proyecto.md`           | Snapshot vigente: HUs implementadas, endpoints vivos, pantallas, deuda conocida   |
+| `flujo-git.md`                 | Ramas, commits convencionales en español, checklist pre-merge y limpieza          |
 
 ## Cómo referenciarlos desde AGENTS.md
 
