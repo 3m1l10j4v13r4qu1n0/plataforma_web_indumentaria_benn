@@ -13,15 +13,15 @@ from app.application.use_cases.validar_stock_venta_use_case import (
 from app.application.use_cases.validar_ticket_compra_use_case import (
     ValidarTicketCompraUseCase,
 )
+from app.domain.models.usuario import RolUsuario, Usuario
 from app.domain.models.venta import EstadoVenta
-from app.domain.models.usuario import Usuario
 from app.infrastructure.dependencies.dependency_injection import (
     get_consultar_stock_producto_use_case,
     get_marcar_venta_en_cambio_use_case,
     get_validar_stock_venta_use_case,
     get_validar_ticket_compra_use_case,
 )
-from app.presentation.dependencies import get_current_user
+from app.presentation.dependencies import RequireAnyRole, RequireRole, get_current_user
 from app.presentation.schemas.venta_schema import (
     CrearVentaRequest,
     ItemTicketResponse,
@@ -76,11 +76,11 @@ async def consultar_stock(
             "description": "El número de ticket ingresado no existe en el sistema",
         }
     },
+    dependencies=[Depends(RequireRole(RolUsuario.CAJERO))],
 )
 async def validar_ticket_compra(
     numero_ticket: str,
     use_case: ValidarTicketCompraUseCase = Depends(get_validar_ticket_compra_use_case),
-    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Verifica si un ticket existe en el sistema y devuelve los datos de la
@@ -112,11 +112,11 @@ async def validar_ticket_compra(
     response_model=MarcarEnCambioResponse,
     status_code=status.HTTP_200_OK,
     summary="Marcar venta como EN_CAMBIO (HU-04)",
+    dependencies=[Depends(RequireRole(RolUsuario.CAJERO))],
 )
 async def marcar_venta_en_cambio(
     numero_ticket: str,
     use_case: MarcarVentaEnCambioUseCase = Depends(get_marcar_venta_en_cambio_use_case),
-    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Retiene el ticket cambiando su estado a EN_CAMBIO, evitando que dos cajeros
@@ -138,11 +138,11 @@ async def marcar_venta_en_cambio(
     response_model=VentaResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Finalizar venta y generar ticket (HU-01 / HU-07)",
+    dependencies=[Depends(RequireAnyRole(RolUsuario.VENDEDOR, RolUsuario.CAJERO))],
 )
 async def procesar_venta(
     request: CrearVentaRequest,
     use_case: ValidarStockVentaUseCase = Depends(get_validar_stock_venta_use_case),
-    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Valida el stock de todos los items. Si es válido, confirma la venta,

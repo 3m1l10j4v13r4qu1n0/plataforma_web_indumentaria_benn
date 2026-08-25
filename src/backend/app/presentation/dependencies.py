@@ -61,7 +61,7 @@ class RequireRole:
     """Dependency factory que valida que el usuario tenga un rol específico.
 
     Uso:
-        @router.get("/admin", dependencies=[Depends(RequireRole(Role.GERENTE))])
+        @router.get("/admin", dependencies=[Depends(RequireRole(RolUsuario.GERENTE))])
     """
 
     def __init__(self, rol_requerido: RolUsuario):
@@ -72,4 +72,23 @@ class RequireRole:
     ) -> Usuario:
         if not usuario.tiene_rol(self.rol_requerido):
             raise UsuarioNoAutorizadoError(self.rol_requerido.value)
+        return usuario
+
+
+class RequireAnyRole:
+    """Dependency factory que valida que el usuario tenga al menos uno de los roles indicados.
+
+    Uso:
+        @router.post("/ventas", dependencies=[Depends(RequireAnyRole(RolUsuario.VENDEDOR, RolUsuario.CAJERO))])
+    """
+
+    def __init__(self, *roles_permitidos: RolUsuario):
+        self.roles_permitidos = roles_permitidos
+
+    async def __call__(
+        self, usuario: Annotated[Usuario, Depends(get_current_user)]
+    ) -> Usuario:
+        if usuario.rol not in self.roles_permitidos:
+            roles_str = ", ".join(r.value for r in self.roles_permitidos)
+            raise UsuarioNoAutorizadoError(roles_str)
         return usuario

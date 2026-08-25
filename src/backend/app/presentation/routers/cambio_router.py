@@ -8,12 +8,12 @@ from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUse
 from app.application.use_cases.validar_estado_producto_use_case import (
     ValidarEstadoProductoUseCase,
 )
-from app.domain.models.usuario import Usuario
+from app.domain.models.usuario import RolUsuario
 from app.infrastructure.dependencies.dependency_injection import (
     get_procesar_cambio_use_case,
     get_validar_estado_producto_use_case,
 )
-from app.presentation.dependencies import get_current_user
+from app.presentation.dependencies import RequireRole
 from app.presentation.schemas.cambio_schema import (
     CambioErrorResponse,
     CambioResponse,
@@ -37,11 +37,11 @@ router = APIRouter(prefix="/api/v1", tags=["Cambios"])
             "description": "Plazo de 15 días vencido",
         }
     },
+    dependencies=[Depends(RequireRole(RolUsuario.CAJERO))],
 )
 async def procesar_cambio(
     request: ProcesarCambioRequest,
     use_case: ProcesarCambioUseCase = Depends(get_procesar_cambio_use_case),
-    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Registra el cambio de un producto, validando estrictamente que no hayan pasado
@@ -84,6 +84,7 @@ async def procesar_cambio(
             "description": "Producto no apto para el cambio",
         },
     },
+    dependencies=[Depends(RequireRole(RolUsuario.CAJERO))],
 )
 async def validar_estado_producto(
     cambio_id: str,
@@ -91,7 +92,6 @@ async def validar_estado_producto(
     use_case: ValidarEstadoProductoUseCase = Depends(
         get_validar_estado_producto_use_case
     ),
-    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Valida el estado físico del producto que el cliente desea cambiar (HU-03).
