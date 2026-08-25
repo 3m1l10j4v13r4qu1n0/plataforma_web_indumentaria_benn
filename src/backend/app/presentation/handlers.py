@@ -21,6 +21,7 @@ from app.domain.exceptions import (
     TicketDuplicadoError,
     TicketNoEncontradoError,
     TokenInvalidoError,
+    UsuarioNoAutorizadoError,
     VentaNoEncontradaError,
     VentaYaEnCambioError,
 )
@@ -280,6 +281,18 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_409_CONFLICT,
             content=ErrorResponse(
                 error="EMAIL_DUPLICADO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(UsuarioNoAutorizadoError)
+    async def usuario_no_autorizado_handler(
+        request: Request, exc: UsuarioNoAutorizadoError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=ErrorResponse(
+                error="USUARIO_NO_AUTORIZADO",
                 mensaje=str(exc),
             ).model_dump(),
         )
