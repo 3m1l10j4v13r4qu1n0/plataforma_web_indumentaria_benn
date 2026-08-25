@@ -198,3 +198,48 @@ class ObservacionesRequeridasError(DomainException):
             "Las observaciones son obligatorias cuando el producto no es apto "
             "para el cambio."
         )
+
+
+# ── Excepciones de Autenticación (HU-09) ─────────────────────────────
+
+
+class CredencialesInvalidasError(DomainException):
+    """Se lanza cuando el email o la contraseña son incorrectos."""
+
+    def __init__(self) -> None:
+        super().__init__("Credenciales inválidas. Verifique email y contraseña.")
+
+
+class UsuarioNoAutenticadoError(DomainException):
+    """Se lanza cuando se intenta acceder a un recurso sin sesión válida."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            "Usuario no autenticado. Inicie sesión para continuar."
+        )
+
+
+class UsuarioNoAutorizadoError(DomainException):
+    """Se lanza cuando el usuario autenticado no tiene el rol requerido."""
+
+    def __init__(self, rol_requerido: str) -> None:
+        self.rol_requerido = rol_requerido
+        super().__init__(
+            f"No tiene permisos para realizar esta acción. "
+            f"Se requiere rol: {rol_requerido}."
+        )
+
+
+class EmailDuplicadoError(DomainException):
+    """Se lanza cuando se intenta registrar un email que ya existe."""
+
+    def __init__(self, email: str) -> None:
+        self.email = email
+        super().__init__(f"El email '{email}' ya está registrado en el sistema.")
+
+
+class TokenInvalidoError(DomainException):
+    """Se lanza cuando un token JWT es inválido o está expirado."""
+
+    def __init__(self, motivo: str = "Token inválido o expirado") -> None:
+        super().__init__(motivo)

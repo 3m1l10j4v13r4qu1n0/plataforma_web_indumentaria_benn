@@ -5,6 +5,13 @@
  * Verificado contra app/presentation/routers/.
  */
 export const API_ENDPOINTS = {
+  // Auth (HU-09)
+  AUTH: {
+    REGISTRO: '/api/v1/auth/registro',
+    LOGIN: '/api/v1/auth/login',
+    REFRESH: '/api/v1/auth/refresh',
+  },
+
   // Ventas
   VENTAS: {
     CREATE: '/api/v1/ventas',

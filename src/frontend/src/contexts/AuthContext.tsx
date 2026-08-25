@@ -1,10 +1,11 @@
-// Preparación para autenticación futura (YAGNI)
+// Contexto de autenticación — activado con backend de auth (HU-09)
 
 import {
   createContext,
   useContext,
   useState,
   useCallback,
+  useEffect,
   type ReactNode,
 } from 'react';
 
@@ -24,21 +25,42 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+const STORAGE_KEY = 'auth_token';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem(STORAGE_KEY),
+  );
+
+  // Restaurar usuario desde el token al montar
+  useEffect(() => {
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUser({
+          id: payload.sub,
+          nombre: payload.sub,
+          rol: payload.rol,
+        });
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        setToken(null);
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback((nextUser: AuthUser, nextToken: string) => {
     setUser(nextUser);
     setToken(nextToken);
-    // localStorage.setItem('auth_token', nextToken); // activar cuando backend tenga auth
-
+    localStorage.setItem(STORAGE_KEY, nextToken);
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
     setToken(null);
-    // localStorage.removeItem('auth_token'); // activar cuando backend tenga auth
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('auth_refresh_token');
   }, []);
 
   return (

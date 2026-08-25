@@ -1,0 +1,13 @@
+from typing import Protocol
+
+
+class ITokenService(Protocol):
+    """Puerto de salida para la creación y verificación de tokens JWT."""
+
+    def crear_access_token(self, user_id: str, rol: str) -> str: ...
+
+    def crear_refresh_token(self, user_id: str) -> str: ...
+
+    def verificar_access_token(self, token: str) -> dict: ...
+
+    def verificar_refresh_token(self, token: str) -> dict: ...

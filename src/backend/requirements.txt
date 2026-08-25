@@ -26,8 +26,11 @@ pydantic-settings>=2.6.0,<3.0.0 # Gestión de variables de entorno (.env) integr
 python-dotenv>=1.0.0,<2.0.0    # Carga de variables de entorno desde archivo .env
 
 # ------------------------------------------------------------------------------
-# Testing y Calidad de Código (Developer Culture)
+# Autenticación y Seguridad
 # ------------------------------------------------------------------------------
+bcrypt>=4.0.0,<5.0.0             # Hashing de contraseñas (bcrypt)
+python-jose[cryptography]>=3.3.0,<4.0.0 # Tokens JWT
+python-multipart>=0.0.9,<1.0.0  # Formularios (requerido por FastAPI para OAuth2)
 pytest>=8.2.0,<9.0.0           # Framework de pruebas unitarias
 pytest-asyncio>=0.24.0,<0.26.0 # Soporte para pruebas asíncronas (async/await) en pytest; 0.24+ para Python 3.14
 ruff>=0.4.0,<0.5.0             # Linter y formateador ultrarrápido (reemplazo moderno de flake8/isort)

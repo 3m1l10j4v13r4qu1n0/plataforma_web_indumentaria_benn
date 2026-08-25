@@ -4,9 +4,11 @@ from fastapi import APIRouter, Depends, status
 
 from app.application.dtos.descuento_dto import AplicarDescuentoCommand
 from app.application.use_cases.aplicar_descuento_use_case import AplicarDescuentoUseCase
+from app.domain.models.usuario import Usuario
 from app.infrastructure.dependencies.dependency_injection import (
     get_aplicar_descuento_use_case,
 )
+from app.presentation.dependencies import get_current_user
 from app.presentation.schemas.descuento_schema import (
     AplicarDescuentoRequest,
     DescuentoResponse,
@@ -24,6 +26,7 @@ router = APIRouter(prefix="/api/v1", tags=["Descuentos"])
 async def aplicar_descuento(
     request: AplicarDescuentoRequest,
     use_case: AplicarDescuentoUseCase = Depends(get_aplicar_descuento_use_case),
+    _usuario: Usuario = Depends(get_current_user),
 ):
     """
     Aplica un descuento a una venta existente.
