@@ -93,9 +93,14 @@ Desarrollar un sistema integral de punto de venta que garantice la integridad de
 El proyecto está organizado como un **Monorepo** para centralizar la documentación y el código, facilitando la trazabilidad entre requisitos e implementación.
 
 ```text
-proyecto-retail/
+plataforma_web_indumentaria_benn/
 │
 ├── README.md                   # Resumen del proyecto, cómo levantar el entorno y enlace a la documentación
+├── AGENTS.md                   # Contexto y reglas para asistentes de IA (opencode)
+├── opencode.json               # Configuración de opencode
+├── .opencode/
+│   ├── rules/                  # Reglas del proyecto (stack, negocio, arquitectura, git, estado)
+│   └── skills/                 # Skills de scaffolding backend (DI) y frontend (FE)
 │
 ├── docs/                       # Carpeta principal de documentación
 │   ├── 01_global/              # 🌍 Información que aplica a TODO el proyecto
@@ -110,75 +115,16 @@ proyecto-retail/
 │   ├── 03_procesos/            # 🔄 Cómo trabajamos (Kanban)
 │   │   └── definicion_listo.md # (DoR) Qué debe tener una HU para pasar a "En Desarrollo"
 │   │
-│   ├── 04_historias_usuario
-│   │   ├── HU-01
-│   │   │   ├── HU-01_api.md
-│   │   │   ├── HU-01_caso_uso_expandido.md
-│   │   │   ├── HU-01.md
-│   │   │   ├── HU-01_modelos_datos.md
-│   │   │   ├── HU-01_pruebas.md
-│   │   │   └── HU-01_requerimientos.md
-│   │   ├── HU-02
-│   │   │   ├── HU-02_api.md
-│   │   │   ├── HU-02_caso_uso_expandido.md
-│   │   │   ├── HU-02.md
-│   │   │   ├── HU-02_modelos_datos.md
-│   │   │   ├── HU-02_pruevas.md
-│   │   │   └── HU-02_requerimientos.md
-│   │   ├── HU-03
-│   │   │   ├── HU-03_api.md
-│   │   │   ├── HU-03_caso_uso_expandido.md
-│   │   │   ├── HU-03.md
-│   │   │   ├── HU-03_modelos_datos.md
-│   │   │   ├── HU-03_pruevas.md
-│   │   │   └── HU-03_requerimientos.md
-│   │   ├── HU-04
-│   │   │   ├── HU-04_api.md
-│   │   │   ├── HU-04_caso_uso_expandido.md
-│   │   │   ├── HU-04.md
-│   │   │   ├── HU-04_modelo_datos.md
-│   │   │   ├── HU-04_pruevas.md
-│   │   │   └── HU-04_requerimientos.md
-│   │   ├── HU-05
-│   │   │   ├── HU-05_api.md
-│   │   │   ├── HU-05_caso_uso_expandido.md
-│   │   │   ├── HU-05.md
-│   │   │   ├── HU-05_modelos_datos.md
-│   │   │   ├── HU-05_pruevas.md
-│   │   │   └── HU-05_requerimientos.md
-│   │   ├── HU-06
-│   │   │   ├── HU-06_api.md
-│   │   │   ├── HU-06_caso_uso_expandido.md
-│   │   │   ├── HU-06.md
-│   │   │   ├── HU-06_modelo_datos.md
-│   │   │   ├── HU-06_pruevas.md
-│   │   │   └── HU-06_requerimientos.md
-│   │   ├── HU-07
-│   │   │   ├── HU-07_api.md
-│   │   │   ├── HU-07_caso_uso_expandido.md
-│   │   │   ├── HU-07.md
-│   │   │   ├── HU-07_modelo_datos.md
-│   │   │   ├── HU-07_pruevas.md
-│   │   │   └── HU-07_requerimientos.md
-│   │   └── HU-08
-│   │       ├── HU-08_api.md
-│   │       ├── HU-08_caso_uso_expandido.md
-│   │       ├── HU-08.md
-│   │       ├── HU-08_modelos_datos.md
-│   │       ├── HU-08_pruevas.md
-│   │       └── HU-08_requerimientos.md
-│   └── 05_mockups
-│       ├── mockup_hu01.html
-│       ├── mockup_hu02_hu04.html
-│       ├── mockup_hu03.html
-│       ├── mockup_hu05.html
-│       ├── mockup_hu06.html
-│       └── mockup_hu07.html
-│──src/                        # Carpeta del código (Backend / Frontend)
-│  ├── backend/                # Lógica de servidor, controladores, modelos, servicios
-│  └── frontend/               # Componentes de interfaz, vistas, servicios HTTP
-├── database/                  # Scripts de migración, seeders y diseño ER
-└── .github/                   # Workflows de CI/CD (si aplica)
+│   ├── 04_historias_usuario/   # 📖 Fuente de verdad: una carpeta HU-XX por historia,
+│   │   └── HU-01 ... HU-08     #    con especificación, API, modelos de datos y plan de pruebas
+│   │
+│   └── 05_mockups/             # 🎨 Prototipos HTML + Tailwind por HU
+│
+├── src/                        # Carpeta del código (Backend / Frontend)
+│   ├── backend/                # API FastAPI — Clean/Hexagonal Architecture (ver src/backend/README.md)
+│   └── frontend/               # SPA React + Vite + TypeScript (ver src/frontend/README.md)
+│
+└── anexo_implementacion_ia/    # Anexos del proceso de implementación con IA
 
 ```
 
@@ -190,20 +136,20 @@ Hoja de ruta basada en las Historias de Usuario, agrupadas por módulos funciona
 
 ### Fase 1: Núcleo de Ventas e Inventario
 
-- [x] [HU-01: Validar stock antes de vender](docs/04_historias_usuario/HU-01/HU-01.md)
-- [ ] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06.md)
-- [ ] [HU-07: Generar ticket de venta](docs/04_historias_usuario/HU-07/HU-07.md)
-- [ ] [HU-08: Actualizar stock automáticamente](docs/04_historias_usuario/HU-08/HU-08.md)
+- [x] [HU-01: Validar stock antes de vender](docs/04_historias_usuario/HU-01/HU-01-validad_stock_anters_de_vender.md)
+- [x] [HU-06: Consultar stock disponible](docs/04_historias_usuario/HU-06/HU-06-Consultar_stock_disponible.md)
+- [x] [HU-07: Generar ticket de venta](docs/04_historias_usuario/HU-07/HU-07-Generar_ticket_de_venta.md)
+- [x] [HU-08: Actualizar stock automáticamente](docs/04_historias_usuario/HU-08/HU-08-Actualizar_stock_automaticamente.md)
 
 ### Fase 2: Gestión de Cambios y Devoluciones
 
-- [ ] [HU-04: Solicitar ticket de compra (Validación obligatoria)](docs/04_historias_usuario/HU-04/HU-04.md)
-- [ ] [HU-02: Registrar cambios (Validación de plazo de 15 días)](docs/04_historias_usuario/HU-02/HU-02.md)
-- [ ] [HU-03: Validar estado del producto devuelto](docs/04_historias_usuario/HU-03/HU-03.md)
+- [x] [HU-04: Solicitar ticket de compra (Validación obligatoria)](docs/04_historias_usuario/HU-04/HU-04-Solicitar_ticket_de_compra.md)
+- [x] [HU-02: Registrar cambios (Validación de plazo de 15 días)](docs/04_historias_usuario/HU-02/HU-02-Registrar_cambios_de_productos.md)
+- [x] [HU-03: Validar estado del producto devuelto](docs/04_historias_usuario/HU-03/HU-03-Validar_estado_del_producto.md)
 
 ### Fase 3: Administración y Control
 
-- [ ] [HU-05: Controlar descuentos (Límites y autorización de gerente)](docs/04_historias_usuario/HU-05.md)
+- [x] [HU-05: Controlar descuentos (Límites y autorización de gerente)](docs/04_historias_usuario/HU-05/HU-05-Controlar_descuentos.md)
 
 ---
 
@@ -235,7 +181,7 @@ El sistema sigue una arquitectura en capas de tipo **Cliente-Servidor**:
 Las entidades principales identificadas en el relevamiento son:
 
 - **Usuario**: `id`, `nombre`, `rol` (Vendedor, Cajero, Gerente).
-- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `presio`, `camtidad`.
+- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `precio`, `cantidad`.
 - **Venta**: `id`, `numero_ticket` (único), `fecha_hora`, `vendedor_id`, `cajero_id`, `total`, `estado`.
 - **Detalle_Venta**: `venta_id`, `producto_id`, `cantidad`, `precio_unitario`.
 - **Cambio**: `id`, `venta_original_id`, `fecha_cambio`, `estado_producto` (Nuevo/Usado/Dañado), `tiene_etiqueta` (Boolean), `cajero_id`.
@@ -271,24 +217,25 @@ Las entidades principales identificadas en el relevamiento son:
 
 ## 12. Estado Actual del Proyecto
 
-Al día de la fecha, el proyecto se encuentra en la fase de **Transición de Ingeniería de Requisitos a Desarrollo**.
+Al día de la fecha, el **alcance funcional definido está implementado** (backend y frontend), con las 8 Historias de Usuario integradas en la rama `develop`.
 
 - ✅ **Relevamiento y Documentación**: 100% Completado. Todas las HU cuentan con su especificación en formato Gherkin, _Specification by Example_ y casos de prueba TDD.
-- ✅ **Diseño de Arquitectura y Modelo de Datos**: 100% Completado a nivel conceptual y lógico.
-- ⏳ **Desarrollo de Software**: 0% Iniciado (Listo para comenzar con la HU-01 según el tablero Kanban).
+- ✅ **Diseño de Arquitectura y Modelo de Datos**: 100% Completado a nivel conceptual, lógico y físico.
+- ✅ **Desarrollo Backend**: FastAPI con Clean/Hexagonal Architecture. 8 endpoints de negocio operativos, tests unitarios en verde (fakes en memoria, sin DB).
+- ✅ **Desarrollo Frontend**: React 19 + Vite + TypeScript. 3 pantallas productivas (`/productos/stock`, `/ventas`, `/cambios`) más el modal de descuentos.
+- ⏳ **Refinamiento**: pendientes opcionales (historial de validaciones por producto, autenticación real, RBAC).
 
 ---
 
 ## 13. Próximos Pasos
 
-Basado en el roadmap y la metodología Kanban, las tareas inmediatas son:
+Basado en el roadmap y la metodología Kanban:
 
-1. **Configuración del Entorno**: Inicializar el monorepo, configurar linters, formatters y la base de datos local de desarrollo.
-2. **Implementación de HU-01 (Prioridad Alta)**:
-   - Backend: Crear entidad `Producto` y endpoint de validación de stock.
-   - Frontend: Implementar la vista de venta con indicador visual de stock.
-   - QA: Ejecutar los casos de prueba TDD definidos en `docs/04_historias_usuario/HU-01/HU-01_pruebas.md`.
-3. **Revisión de Código**: Establecer el flujo de Pull Requests con al menos una aprobación requerida antes de fusionar a la rama principal.
+1. **Endpoint opcional de historial**: `GET /api/v1/productos/{producto_id}/validaciones` para consultar inspecciones previas (HU-03).
+2. **Autenticación real**: cuando el backend exponga `/auth/login`, activar la protección de rutas en el frontend (hoy YAGNI).
+3. **Roles y permisos (RBAC)**: diferenciar flujos de Vendedor, Cajero y Gerente.
+4. **Reportes y dashboards**: métricas de ventas, cambios y descuentos autorizados.
+5. **QA continuo**: mantener suites en verde (pytest backend, Vitest frontend) como criterio de merge.
 
 ---
 
@@ -337,4 +284,4 @@ Tienes dos opciones para revisar los diseños:
    - Copia todo el código.
    - Pégalo en [https://play.tailwindcss.com/](https://play.tailwindcss.com/) para verlo renderizado al instante y experimentar con los estados comentados en el código.
 
-_Documento generado para fines académicos. Última actualización: Junio 2026._
+_Documento generado para fines académicos. Última actualización: Agosto 2026._
