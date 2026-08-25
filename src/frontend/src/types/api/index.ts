@@ -1,3 +1,4 @@
+export * from './auth.types';
 export * from './cambio.types';
 export * from './descuento.types';
 export * from './error.types';

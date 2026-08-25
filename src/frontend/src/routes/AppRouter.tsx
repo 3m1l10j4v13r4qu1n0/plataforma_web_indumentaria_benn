@@ -1,31 +1,55 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
+import { LoginPage } from '@/pages/auth/LoginPage';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
 import { CrearVentaPage } from '@/pages/ventas/CrearVentaPage';
 import { RegistrarCambioPage } from '@/pages/cambios/RegistrarCambioPage';
 
 /**
  * Router principal de la aplicación SGVIR.
- *
- * ⚠️ Nota sobre autenticación:
- * El backend AÚN no tiene endpoints de auth implementados.
- * Por YAGNI, NO envolvemos rutas en <ProtectedRoute /> todavía.
- * Cuando el backend exponga /auth/login, se activará la protección aquí.
+ * Todas las rutas de negocio requieren autenticación (ProtectedRoute).
+ * Solo /login y / están disponibles sin sesión.
  */
 export function AppRouter() {
   return (
     <Routes>
-      {/* Redirección raíz → primera pantalla disponible */}
-      <Route path="/" element={<Navigate to={ROUTES.PRODUCTOS_STOCK} replace />} />
+      {/* Login — ruta pública */}
+      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
 
-      {/* HU-06: Consultar stock disponible */}
-      <Route path="/productos/stock" element={<ConsultarStockPage />} />
-
-      {/* HU-01: Procesar venta (validar stock antes de vender) */}
-      <Route path="/ventas" element={<CrearVentaPage />} />
-
-      {/* HU-04 + HU-02 + HU-03: Flujo de cambios de productos */}
-      <Route path={ROUTES.CAMBIOS} element={<RegistrarCambioPage />} />
+      {/* Rutas protegidas */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Navigate to={ROUTES.PRODUCTOS_STOCK} replace />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/productos/stock"
+        element={
+          <ProtectedRoute>
+            <ConsultarStockPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ventas"
+        element={
+          <ProtectedRoute>
+            <CrearVentaPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.CAMBIOS}
+        element={
+          <ProtectedRoute>
+            <RegistrarCambioPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Fallback 404 */}
       <Route path="*" element={<NotFoundPage />} />
