@@ -9,15 +9,15 @@ Monorepo académico: sistema de ventas e inventario retail. Backend **FastAPI** 
   - Backend: `.opencode/skills/di-architect-scaffold/SKILL.md`
   - Frontend: `.opencode/skills/fe-architect-scaffold/SKILL.md`
   - Ambos usan un flujo de 6 pasos y esperan confirmación explícita ("Continuar") entre pasos.
-- **Reglas del proyecto**: `.opencode/rules/*.md` (stack, reglas de negocio, calidad de arquitectura, roadmap).
-- Los README.md están desactualizados en varios puntos (ESLint, `/health`, alembic init). Confiá en `package.json`, `requirements.txt` y el código real antes que en la prosa.
+- **Reglas del proyecto**: `.opencode/rules/*.md` (stack, reglas de negocio, calidad de arquitectura, roadmap, estado de proyecto actual, flujo de git).
+- Los README.md son referencia aproximada. Siempre verificá contra el código real (`package.json`, `requirements.txt`, routers) para datos como endpoints o versiones del stack.
 
 ## Backend (`src/backend/`)
 
 - Requiere **Python 3.14.6** (`.python-version`, pyenv). Comandos SIEMPRE desde `src/backend/`.
 - Setup: `python -m venv venv && pip install -r requirements.txt && cp .env.example .env` (`DATABASE_URL` postgresql+asyncpg://... es obligatorio).
 - Levantar: `uvicorn app.main:app --reload` (docs en `/api/docs`).
-- **Health check es `GET /`** (devuelve `{"estado":"ok",...}`). NO existe `/health` aunque el frontend lo declare en `endpoints.ts`.
+- **Health check es `GET /`** (devuelve `{"estado":"ok",...}`). NO existe `/health`.
 - Tests: `pytest` (usa `@pytest.mark.asyncio`, fakes en memoria de `tests/unit/fakes/`, no requiere DB). Los imports son `from app.*` y `from tests.unit.*`, por eso corren desde la raíz del backend.
 - Lint/format: `ruff check .` y `black .` (antes de commitear).
 - Migraciones: `alembic revision --autogenerate -m "..."` + `alembic upgrade head`. **Gotcha**: `alembic/env.py` NO importa los modelos ORM (línea comentada), así que autogenerate no detecta tablas nuevas hasta que los imports se agreguen ahí.
@@ -38,7 +38,7 @@ Monorepo académico: sistema de ventas e inventario retail. Backend **FastAPI** 
   - Tipos en `src/types/api/` deben reflejar exactamente los esquemas Pydantic.
   - Errores HTTP centralizados (interceptor Axios / ErrorBoundary), sin `try/catch` dispersos.
   - NO implementar autenticación real (YAGNI; backend aún no la tiene).
-- HU-06 (Consultar stock) es la única pantalla real hoy; el resto de la app aún es el starter de Vite.
+- **Pantallas activas (ago 2026)**: `/productos/stock` (HU-06), `/ventas` (HU-01/07), `/cambios` (HU-02/03/04) + modal de descuentos (HU-05). Para un snapshot completo: `.opencode/rules/estado-proyecto.md`.
 
 ## Convenciones de trabajo
 
