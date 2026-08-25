@@ -7,10 +7,15 @@ from app.application.use_cases.buscar_productos_use_case import BuscarProductosU
 from app.application.use_cases.consultar_stock_producto_use_case import (
     ConsultarStockProductoUseCase,
 )
+from app.application.use_cases.login_use_case import LoginUseCase
 from app.application.use_cases.marcar_venta_en_cambio_use_case import (
     MarcarVentaEnCambioUseCase,
 )
 from app.application.use_cases.procesar_cambio_use_case import ProcesarCambioUseCase
+from app.application.use_cases.refresh_token_use_case import RefreshTokenUseCase
+from app.application.use_cases.registrar_usuario_use_case import (
+    RegistrarUsuarioUseCase,
+)
 from app.application.use_cases.validar_estado_producto_use_case import (
     ValidarEstadoProductoUseCase,
 )
@@ -20,6 +25,8 @@ from app.application.use_cases.validar_stock_venta_use_case import (
 from app.application.use_cases.validar_ticket_compra_use_case import (
     ValidarTicketCompraUseCase,
 )
+from app.infrastructure.auth.bcrypt_password_hasher import BcryptPasswordHasher
+from app.infrastructure.auth.jwt_token_service import JWTTokenService
 from app.infrastructure.database.generador_numero_ticket import GeneradorNumeroTicket
 from app.infrastructure.database.repositories.cambio_repository import CambioRepository
 from app.infrastructure.database.repositories.descuento_repository import (
@@ -30,6 +37,9 @@ from app.infrastructure.database.repositories.movimiento_stock_repository import
 )
 from app.infrastructure.database.repositories.producto_repository import (
     ProductoRepository,
+)
+from app.infrastructure.database.repositories.usuario_repository import (
+    UsuarioRepository,
 )
 from app.infrastructure.database.repositories.venta_repository import VentaRepository
 from app.infrastructure.database.session import get_async_session
@@ -228,3 +238,54 @@ def get_marcar_venta_en_cambio_use_case(
     para retener un ticket en proceso de cambio (HU-04).
     """
     return MarcarVentaEnCambioUseCase(venta_repository=venta_repo)
+
+
+# ── Fábricas de Autenticación (HU-09) ────────────────────────────────
+
+
+def get_usuario_repository(
+    session: AsyncSession = Depends(get_async_session),
+) -> UsuarioRepository:
+    """Fábrica Transient: Crea una nueva instancia del repositorio de usuarios."""
+    return UsuarioRepository(session=session)
+
+
+def get_password_hasher() -> BcryptPasswordHasher:
+    """Fábrica Singleton: Retorna la instancia de hashing bcrypt."""
+    return BcryptPasswordHasher()
+
+
+def get_token_service() -> JWTTokenService:
+    """Fábrica Singleton: Retorna la instancia del servicio JWT."""
+    return JWTTokenService()
+
+
+def get_registrar_usuario_use_case(
+    usuario_repo: UsuarioRepository = Depends(get_usuario_repository),
+    password_hasher: BcryptPasswordHasher = Depends(get_password_hasher),
+) -> RegistrarUsuarioUseCase:
+    """Fábrica del Caso de Uso: Registra un usuario nuevo."""
+    return RegistrarUsuarioUseCase(
+        usuario_repository=usuario_repo,
+        password_hasher=password_hasher,
+    )
+
+
+def get_login_use_case(
+    usuario_repo: UsuarioRepository = Depends(get_usuario_repository),
+    password_hasher: BcryptPasswordHasher = Depends(get_password_hasher),
+    token_service: JWTTokenService = Depends(get_token_service),
+) -> LoginUseCase:
+    """Fábrica del Caso de Uso: Autentica un usuario y emite tokens."""
+    return LoginUseCase(
+        usuario_repository=usuario_repo,
+        password_hasher=password_hasher,
+        token_service=token_service,
+    )
+
+
+def get_refresh_token_use_case(
+    token_service: JWTTokenService = Depends(get_token_service),
+) -> RefreshTokenUseCase:
+    """Fábrica del Caso de Uso: Renueva un access token."""
+    return RefreshTokenUseCase(token_service=token_service)

@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, status
 
 from app.application.use_cases.buscar_productos_use_case import BuscarProductosUseCase
 from app.domain.models.producto import Producto
+from app.domain.models.usuario import Usuario
 from app.infrastructure.dependencies.dependency_injection import (
     get_buscar_productos_use_case,
 )
+from app.presentation.dependencies import get_current_user
 from app.presentation.schemas.producto_schema import (
     BuscarProductosResponse,
     ProductoStockResponse,
@@ -23,6 +25,7 @@ router = APIRouter(prefix="/api/v1/productos", tags=["Productos"])
 async def buscar_productos(
     query: str,
     buscar_use_case: BuscarProductosUseCase = Depends(get_buscar_productos_use_case),
+    _usuario: Usuario = Depends(get_current_user),
 ) -> BuscarProductosResponse:
     """
     Busca productos por nombre o código y devuelve su stock actual en tiempo real.

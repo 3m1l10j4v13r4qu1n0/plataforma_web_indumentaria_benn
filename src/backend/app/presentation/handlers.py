@@ -6,10 +6,12 @@ from app.domain.exceptions import (
     CambioNoEncontradoError,
     CambioPlazoVencidoError,
     CantidadMovimientoInvalidaError,
+    CredencialesInvalidasError,
     DescuentoExcedeLimiteError,
     DescuentoInvalidoError,
     DescuentoSinAutorizacionError,
     DomainException,
+    EmailDuplicadoError,
     ObservacionesRequeridasError,
     ProductoInvalidoError,
     ProductoNoAptoError,
@@ -18,6 +20,7 @@ from app.domain.exceptions import (
     StockUpdateException,
     TicketDuplicadoError,
     TicketNoEncontradoError,
+    TokenInvalidoError,
     VentaNoEncontradaError,
     VentaYaEnCambioError,
 )
@@ -244,5 +247,39 @@ def register_exception_handlers(app: FastAPI):
             status_code=status.HTTP_400_BAD_REQUEST,
             content=ErrorResponse(
                 error="ERROR_DE_DOMINIO", mensaje=str(exc)
+            ).model_dump(),
+        )
+
+    # ── Handlers de Autenticación (HU-09) ─────────────────────────────
+
+    @app.exception_handler(CredencialesInvalidasError)
+    async def credenciales_invalidas_handler(
+        request: Request, exc: CredencialesInvalidasError
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content=ErrorResponse(
+                error="CREDENCIALES_INVALIDAS",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(TokenInvalidoError)
+    async def token_invalido_handler(request: Request, exc: TokenInvalidoError):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content=ErrorResponse(
+                error="TOKEN_INVALIDO",
+                mensaje=str(exc),
+            ).model_dump(),
+        )
+
+    @app.exception_handler(EmailDuplicadoError)
+    async def email_duplicado_handler(request: Request, exc: EmailDuplicadoError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=ErrorResponse(
+                error="EMAIL_DUPLICADO",
+                mensaje=str(exc),
             ).model_dump(),
         )
