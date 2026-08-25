@@ -9,6 +9,7 @@ from app.infrastructure.dependencies.dependency_injection import (
     get_refresh_token_use_case,
     get_registrar_usuario_use_case,
 )
+from app.presentation.dependencies import RequireRole
 from app.presentation.schemas.auth_schema import (
     LoginRequest,
     RefreshRequest,
@@ -26,6 +27,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Autenticación"])
     response_model=UsuarioResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Registrar usuario nuevo",
+    dependencies=[Depends(RequireRole(RolUsuario.GERENTE))],
 )
 async def registrar_usuario(
     request: RegistroRequest,
