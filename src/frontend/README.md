@@ -83,19 +83,21 @@ El frontend sigue los principios de **Clean Architecture adaptados a React**, co
 
 | Categoría | Tecnología | Versión | Justificación |
 |---|---|---|---|
-| **Build Tool** | Vite | 5.x | Rápido, moderno, configuración mínima |
-| **Framework** | React | 18.x | Estándar de la industria |
+| **Build Tool** | Vite | 8.x | Rápido, moderno, configuración mínima |
+| **Framework** | React | 19.x | Estándar de la industria |
 | **Lenguaje** | TypeScript | 5.x (strict) | Tipado fuerte, evita bugs |
-| **Router** | React Router | v6 | Estándar para SPA |
+| **Router** | React Router | v7 | Estándar para SPA |
 | **HTTP Client** | Axios | 1.x | Interceptores, fácil manejo de errores |
 | **Estado API** | TanStack Query | 5.x | Cache, refetch, estados de carga |
 | **Estado Global** | Context API | — | Simple, sin dependencias extra |
-| **Estilos** | Tailwind CSS | 3.x | Rápido, consistente, utility-first |
+| **Estilos** | Tailwind CSS | 4.x (plugin Vite) | Rápido, consistente, utility-first |
 | **Testing** | Vitest + RTL | — | Rápido, alineado con Vite |
-| **Linting** | ESLint + Prettier | — | Calidad de código |
+| **Linting** | oxlint | — | Calidad de código (config en `.oxlintrc.json`) |
 | **Formularios** | React Hook Form + Zod | — | Validación tipada en el borde |
 | **Utilidades** | clsx + tailwind-merge | — | Combinación segura de clases |
 | **Fechas** | date-fns | — | Formateo ligero y modular |
+
+> ⚠️ Tailwind v4 no usa `tailwind.config.js` ni `postcss.config.js`: la configuración de tema vive en el CSS con `@theme`. El lint es **oxlint** (`npm run lint`); no hay script `format`.
 
 ---
 
@@ -176,19 +178,7 @@ Reemplazar el contenido de `src/index.css`:
 ```bash
 npm run dev
 ```
-Abre tu navegador en `http://localhost:5173` y deberías ver la pantalla inicial de Vite + React.
-
----
-
-```
-
-### Paso 4: Verificar instalación
-
-```bash
-npm run dev
-```
-
-Abre tu navegador en `http://localhost:5173` y deberías ver la pantalla inicial de Vite + React.
+Abre tu navegador en `http://localhost:5173` y deberías ver la pantalla inicial.
 
 ---
 
@@ -263,8 +253,9 @@ El frontend está configurado con un proxy en `vite.config.ts` que redirige las 
 
 ```bash
 # Desde src/frontend
-curl http://localhost:8000/health
-# Debería responder: {"status": "ok"}
+curl http://localhost:8000/
+# Debería responder: {"estado": "ok", ...}
+# (El health check del backend es GET / — NO existe /health)
 ```
 
 ---
@@ -292,23 +283,22 @@ src/frontend/
     │   ├── client.ts             # Instancia de Axios + interceptores
     │   ├── endpoints.ts          # Constantes de URLs oficiales
     │   └── services/             # Servicios por dominio
-    │       ├── productos.service.ts        # Consulta de stock
+    │       ├── productos.service.ts        # Consulta y búsqueda de stock (HU-06)
     │       ├── productos.service.types.ts  # Contrato IProductosService
-    │       └── venta.service.ts            # Procesar venta
+    │       ├── venta.service.ts            # Procesar venta / ticket (HU-01/07)
+    │       ├── cambio.service.ts           # Flujo de cambios (HU-02/03/04)
+    │       └── descuento.service.ts        # Descuentos con autorización (HU-05)
     │
     ├── components/               # 🎨 Componentes reutilizables
-    │   ├── ui/                   # Presentacionales puros (botones, inputs, cards)
-    │   │   ├── Button.tsx
-    │   │   ├── Alert.tsx
-    │   │   ├── StockBadge.tsx
-    │   │   ├── StockSearchInput.tsx
-    │   │   ├── StockResultCard.tsx
-    │   │   ├── VentaProductoCard.tsx
-    │   │   ├── VentaItemRow.tsx
-    │   │   ├── ResultsHeader.tsx
-    │   │   ├── EmptyState.tsx
+    │   ├── ui/                   # Presentacionales puros (reciben props y renderizan)
+    │   │   ├── Alert.tsx, Button.tsx, Toast.tsx, EmptyState.tsx
+    │   │   ├── StockBadge.tsx, StockSearchInput.tsx, ProductoBusquedaCard.tsx
+    │   │   ├── VentaProductoCard.tsx, VentaItemRow.tsx, ResultsHeader.tsx
+    │   │   ├── TicketSearchInput.tsx, TicketCard.tsx, CompraOriginalCard.tsx
+    │   │   ├── RegistroCambioForm.tsx, EstadoProductoSelector.tsx
+    │   │   ├── CambioExitosoCard.tsx, DescuentoModal.tsx
     │   │   └── index.ts          # Barrel export
-    │   └── layout/               # Layout (header, error boundary)
+    │   └── layout/               # Layout (header)
     │       ├── PageHeader.tsx
     │       └── index.ts
     │
@@ -317,36 +307,45 @@ src/frontend/
     │   │   ├── CrearVentaPage.tsx
     │   │   └── __tests__/
     │   ├── productos/
-    │   │   └── ConsultarStockPage.tsx
-    │   └── (cambios/ - planificada)
+    │   │   ├── ConsultarStockPage.tsx
+    │   │   └── __tests__/
+    │   └── cambios/
+    │       ├── RegistrarCambioPage.tsx     # Wizard completo (HU-02/03/04)
+    │       └── __tests__/
     │
     ├── hooks/                    # 🪝 Custom hooks (lógica de UI)
     │   ├── useStockProducto.ts
+    │   ├── useBuscarProductos.ts
     │   ├── useVenta.ts
-    │   └── (más hooks por HU)
+    │   ├── useTicket.ts
+    │   ├── useMarcarVentaEnCambio.ts
+    │   ├── useCambio.ts
+    │   └── useDescuento.ts
     │
     ├── contexts/                 # 🌍 Contextos globales
     │   └── AuthContext.tsx       # Preparado para auth futura (YAGNI)
     │
-    ├── routes/                   # 🧭 Configuración de React Router
-    │   ├── AppRouter.tsx
-    │   └── ProtectedRoute.tsx
+    ├── routes/                   # 🧭 Configuración de React Router v7
+    │   └── AppRouter.tsx         # /productos/stock · /ventas · /cambios
     │
     ├── types/                    # 📝 Tipos TypeScript
     │   ├── api/                  # Espejo de esquemas Pydantic
     │   │   ├── productos.types.ts
     │   │   ├── venta.types.ts
+    │   │   ├── cambio.types.ts
+    │   │   ├── descuento.types.ts
     │   │   ├── error.types.ts
     │   │   └── index.ts
     │   └── domain/               # Tipos de dominio del frontend
-    │       └── producto.types.ts
     │
     ├── utils/                    # 🛠️ Helpers puros
     │   ├── cn.ts                 # clsx + tailwind-merge
+    │   ├── format.ts             # Formateo de moneda/fechas
     │   └── apiErrors.ts          # Normalización de errores de API
     │
     ├── constants/                # 📌 Constantes globales
-    │   └── routes.ts
+    │   ├── routes.ts
+    │   └── stock.ts              # Umbrales de niveles de stock
     │
     ├── styles/                   # 🎨 Estilos globales
     │   └── index.css             # Tailwind v4 (@theme con colores brand)
@@ -362,11 +361,11 @@ src/frontend/
 | Script | Descripción |
 |---|---|
 | `npm run dev` | Levanta el servidor de desarrollo en `http://localhost:5173` |
-| `npm run build` | Compila la aplicación para producción (en `dist/`) |
+| `npm run build` | Compila la aplicación para producción (`tsc -b && vite build`, en `dist/`) |
 | `npm run preview` | Previsualiza el build de producción localmente |
 | `npm run test` | Ejecuta todas las pruebas con Vitest |
+| `npm run test:ui` | Ejecuta las pruebas con la interfaz visual de Vitest |
 | `npm run test -- --watch` | Ejecuta pruebas en modo watch |
-| `npm run test -- --coverage` | Ejecuta pruebas con reporte de cobertura |
 | `npm run lint` | Ejecuta oxlint para verificar calidad de código |
 
 ---
@@ -416,13 +415,15 @@ style: aplicar formato con Prettier
 | HU | Módulo | Título | Estado Frontend |
 |---|---|---|---|
 | HU-01 | Ventas | Validar stock antes de vender | ✅ Completada |
-| HU-06 | Ventas | Consultar stock disponible | 🚧 En progreso (esqueleto) |
-| HU-07 | Ventas | Generar ticket de venta | ⏳ Pendiente (sin endpoint backend) |
-| HU-08 | Inventario | Actualizar stock automáticamente | ✅ Completada (sin UI) |
-| HU-04 | Cambios | Solicitar ticket de compra | ⏳ Pendiente (sin endpoint backend) |
-| HU-02 | Cambios | Registrar cambios (15 días) | ⏳ Pendiente |
-| HU-03 | Cambios | Validar estado del producto | ⏳ Pendiente |
-| HU-05 | Admin | Controlar descuentos | ⏳ Pendiente (sin endpoint backend) |
+| HU-02 | Cambios | Registrar cambios (15 días) | ✅ Completada |
+| HU-03 | Cambios | Validar estado del producto | ✅ Completada |
+| HU-04 | Cambios | Solicitar ticket de compra | ✅ Completada |
+| HU-05 | Admin | Controlar descuentos | ✅ Completada (modal) |
+| HU-06 | Ventas | Consultar stock disponible | ✅ Completada |
+| HU-07 | Ventas | Generar ticket de venta | ✅ Completada |
+| HU-08 | Inventario | Actualizar stock automáticamente | ✅ Completada (feedback post-venta) |
+
+Pantallas activas en el router: `/productos/stock`, `/ventas` y `/cambios`.
 
 ### Flujo de Trabajo (6 Pasos por HU)
 
@@ -445,13 +446,13 @@ Cada HU se implementa siguiendo estrictamente estos pasos:
 - [x] HU-07: Generar ticket de venta
 - [x] HU-08: Actualizar stock automáticamente
 
-### Fase 2: Gestión de Cambios y Devoluciones 🚧
-- [ ] HU-04: Solicitar ticket de compra (en progreso)
-- [ ] HU-02: Registrar cambios (15 días)
-- [ ] HU-03: Validar estado del producto devuelto
+### Fase 2: Gestión de Cambios y Devoluciones ✅
+- [x] HU-04: Solicitar ticket de compra
+- [x] HU-02: Registrar cambios (15 días)
+- [x] HU-03: Validar estado del producto devuelto
 
-### Fase 3: Administración y Control ⏳
-- [ ] HU-05: Controlar descuentos (autorización de gerente)
+### Fase 3: Administración y Control ✅
+- [x] HU-05: Controlar descuentos (autorización de gerente)
 
 ### Futuro
 - [ ] Autenticación real (cuando el backend la implemente)
@@ -464,10 +465,10 @@ Cada HU se implementa siguiendo estrictamente estos pasos:
 
 Este es un proyecto académico. Para contribuir:
 
-1. Crear una rama desde `main`: `git checkout -b feat/nueva-funcionalidad`
+1. Crear una rama desde `develop`: `git checkout -b feat/nueva-funcionalidad`
 2. Seguir los 6 pasos del scaffold para cada HU
 3. Asegurar que `npm run lint`, `npm run build` y `npm run test` pasen
-4. Hacer commits atómicos siguiendo Conventional Commits
+4. Hacer commits atómicos siguiendo Conventional Commits (en español, ver `.opencode/rules/flujo-git.md`)
 5. Solicitar Pull Request con al menos 1 aprobación
 
 ---
