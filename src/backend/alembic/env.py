@@ -13,6 +13,7 @@ from app.infrastructure.database.orm_models import (  # noqa: F401
     CambioORM,
     DetalleVentaORM,
     ProductoORM,
+    UsuarioORM,
     VentaORM,
 )
 

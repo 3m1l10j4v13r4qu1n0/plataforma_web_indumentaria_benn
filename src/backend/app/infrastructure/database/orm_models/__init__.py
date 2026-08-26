@@ -5,6 +5,7 @@ from app.infrastructure.database.orm_models.movimiento_stock_orm import (
     MovimientoStockORM,
 )
 from app.infrastructure.database.orm_models.producto_orm import ProductoORM
+from app.infrastructure.database.orm_models.usuario_orm import UsuarioORM
 from app.infrastructure.database.orm_models.venta_orm import VentaORM
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     "DescuentoORM",
     "MovimientoStockORM",
     "ProductoORM",
+    "UsuarioORM",
     "VentaORM",
 ]
