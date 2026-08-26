@@ -8,11 +8,12 @@ tags:
   - stack/sqlalchemy
   - stack/react
   - stack/postgresql
-status: pendiente
+status: hecho
 prioridad: alta
 relacionado:
   - "[[Categoria - autenticacion]]"
 fecha_creacion: 2026-08-26
+fecha_finalizacion: 2026-08-26
 agent_context: true
 resumen: "Implementar capa de autenticación JWT (access + refresh token) con roles, protegiendo todos los endpoints existentes y preparando el frontend para login."
 ---
@@ -21,7 +22,7 @@ resumen: "Implementar capa de autenticación JWT (access + refresh token) con ro
 
 ## Descripción
 
-El sistema actualmente no tiene autenticación: no existe modelo de Usuario, ORM, schema ni endpoints de auth. El frontend tiene `AuthContext`, `ProtectedRoute` e interceptor Axios pre-armados pero desactivados. Hay 8 endpoints existentes en 4 routers que deben quedar protegidos. Se implementará autenticación JWT (access + refresh token) con roles para controlar el acceso a todo el sistema.
+El sistema actualmente tiene autenticación JWT completa: modelo de Usuario, ORM, schemas, endpoints de auth (login, registro, refresh), y protección de endpoints con `get_current_user`. El frontend tiene `AuthContext` activo, `ProtectedRoute` con soporte de roles, navbar con logout, y todas las pantallas protegidas. Los 8 endpoints existentes en 4 routers más 2 endpoints de dashboard quedan protegidos.
 
 ## Criterios de Aceptación
 
@@ -48,46 +49,51 @@ El sistema actualmente no tiene autenticación: no existe modelo de Usuario, ORM
 - Rol insuficiente → rechazo 403
 - Email duplicado en registro → error 409
 
-## Acceptance TDD
-
-- Probar login exitoso con credenciales correctas
-- Probar login fallido con credenciales incorrectas
-- Probar refresh token exitoso
-- Probar refresh token inválido/expirado
-- Probar protección de endpoints con token válido
-- Probar rechazo de endpoints sin token
-- Probar registro exitoso
-- Probar registro con email duplicado
-
 ## Backend
 
-- [ ] Crear entidad `Usuario` con enum `RolUsuario` (VENDEDOR, CAJERO, GERENTE, ENCARGADO_VENTAS)
-- [ ] Crear puerto `IUsuarioRepository` (buscar_por_email, crear)
-- [ ] Crear puerto `IPasswordHasher` (hash, verify)
-- [ ] Crear puerto `ITokenService` (crear_access_token, crear_refresh_token, verificar_access_token, verificar_refresh_token)
-- [ ] Crear excepciones de dominio: `CredencialesInvalidasError`, `UsuarioNoAutenticadoError`, `UsuarioNoAutorizadoError`, `EmailDuplicadoError`, `TokenInvalidoError`
-- [ ] Crear caso de uso `RegistrarUsuarioUseCase`
-- [ ] Crear caso de uso `LoginUseCase`
-- [ ] Crear caso de uso `RefreshTokenUseCase`
-- [ ] Crear adaptador `BcryptPasswordHasher` (bcrypt>=4.0.0)
-- [ ] Crear adaptador `JWTTokenService` (python-jose[cryptography]>=3.3.0)
-- [ ] Crear ORM `UsuarioORM` (tabla `usuarios`)
-- [ ] Crear repositorio `UsuarioRepository` (AsyncSession)
-- [ ] Crear migración Alembic para tabla `usuarios`
-- [ ] Crear schemas Pydantic: `RegistroRequest`, `LoginRequest`, `TokenResponse`, `RefreshRequest`
-- [ ] Crear router `auth_router.py` (POST /registro, POST /login, POST /refresh)
-- [ ] Crear dependencias FastAPI: `get_current_user`, `require_role`
-- [ ] Mapear excepciones auth en `handlers.py`
-- [ ] Registrar router auth en `main.py`
-- [ ] Agregar dependencias a `requirements.txt`: bcrypt, python-jose, python-multipart
-- [ ] Agregar variables de entorno: `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `REFRESH_TOKEN_EXPIRE_DAYS`
-- [ ] Proteger 8 endpoints existentes con `Depends(get_current_user)`
-- [ ] Descomentar import de modelos ORM en `alembic/env.py`
+- [x] Crear entidad `Usuario` con enum `RolUsuario` (VENDEDOR, CAJERO, GERENTE, ENCARGADO_VENTAS)
+- [x] Crear puerto `IUsuarioRepository` (buscar_por_email, crear)
+- [x] Crear puerto `IPasswordHasher` (hash, verify)
+- [x] Crear puerto `ITokenService` (crear_access_token, crear_refresh_token, verificar_access_token, verificar_refresh_token)
+- [x] Crear excepciones de dominio: `CredencialesInvalidasError`, `UsuarioNoAutenticadoError`, `UsuarioNoAutorizadoError`, `EmailDuplicadoError`, `TokenInvalidoError`
+- [x] Crear caso de uso `RegistrarUsuarioUseCase`
+- [x] Crear caso de uso `LoginUseCase`
+- [x] Crear caso de uso `RefreshTokenUseCase`
+- [x] Crear adaptador `BcryptPasswordHasher` (bcrypt>=4.0.0)
+- [x] Crear adaptador `JWTTokenService` (python-jose[cryptography]>=3.3.0)
+- [x] Crear ORM `UsuarioORM` (tabla `usuarios`)
+- [x] Crear repositorio `UsuarioRepository` (AsyncSession)
+- [x] Crear migración Alembic para tabla `usuarios`
+- [x] Crear schemas Pydantic: `RegistroRequest`, `LoginRequest`, `TokenResponse`, `RefreshRequest`, `UsuarioResponse`
+- [x] Crear router `auth_router.py` (POST /registro, POST /login, POST /refresh)
+- [x] Crear dependencias FastAPI: `get_current_user`, `RequireRole`, `RequireAnyRole`
+- [x] Mapear excepciones auth en `handlers.py`
+- [x] Registrar router auth en `main.py`
+- [x] Agregar dependencias a `requirements.txt`: bcrypt, python-jose, python-multipart
+- [x] Agregar variables de entorno: `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `REFRESH_TOKEN_EXPIRE_DAYS`
+- [x] Proteger 10 endpoints existentes con `Depends(get_current_user)`
+- [x] Descomentar import de modelos ORM en `alembic/env.py`
+- [x] Crear script `scripts/seed_admin.py` para usuario GERENTE inicial
 
 ## Frontend
 
-- [ ] Crear servicio `src/api/services/auth.service.ts` (login, registro, refresh)
-- [ ] Crear página `src/pages/auth/LoginPage.tsx` (formulario de login)
-- [ ] Activar lógica de `src/contexts/AuthContext.tsx` (conectar al backend)
-- [ ] Modificar `src/routes/AppRouter.tsx` (envolver rutas en `ProtectedRoute`, agregar `/login`)
-- [ ] Crear tipos `src/types/api/auth.types.ts`
+- [x] Crear servicio `src/api/services/auth.service.ts` (login, registro, refresh)
+- [x] Crear página `src/pages/auth/LoginPage.tsx` (formulario de login)
+- [x] Crear página `src/pages/auth/RegisterPage.tsx` (registro, solo GERENTE)
+- [x] Implementar `src/contexts/AuthContext.tsx` (login, logout, restore user from JWT)
+- [x] Implementar `src/routes/ProtectedRoute.tsx` (con soporte `allowedRoles`)
+- [x] Crear tipos `src/types/api/auth.types.ts`
+- [x] Crear interceptor Axios con inyección de Bearer token
+- [x] Crear `Navbar` con links de navegación + botón de logout
+- [x] Crear `AppLayout` con navbar para rutas protegidas
+- [x] Crear Dashboard (`/dashboard`) con métricas del día
+- [x] Proteger rutas con roles (`/registro` solo GERENTE)
+- [x] Eliminar link "Continuar sin sesión" (causaba loop infinito)
+- [x] Fix 404 usando `<Link>` en vez de `<a href>`
+
+## Notas de implementación
+
+- La tabla de endpoints oficiales está en `fe-architect-scaffold/SKILL.md`.
+- El health check real es `GET /` (no `/health`).
+- Auth en el router de registro se protege con `dependencies=[Depends(RequireRole(RolUsuario.GERENTE))]`.
+- Los endpoints de dashboard (`/dashboard/resumen`, `/dashboard/productos-stock-bajo`) se agregaron como parte de la mejora de navegación.

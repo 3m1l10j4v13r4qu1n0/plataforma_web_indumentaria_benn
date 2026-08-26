@@ -1,10 +1,12 @@
 # HU-09: Especificación de API (Autenticación JWT)
 
+**Estado**: Implementado. Los 3 endpoints funcionan y están documentados en `/api/docs`.
+
 ## Endpoint 1: Registrar Usuario
 - **Método**: `POST`
 - **Ruta**: `/api/v1/auth/registro`
 - **Descripción**: Registra un usuario nuevo en el sistema.
-- **Auth**: No requerida
+- **Auth**: Requerida — solo rol `GERENTE` (via `RequireRole(RolUsuario.GERENTE)`)
 - **Request Body**:
   ```json
   {
@@ -96,6 +98,21 @@ Todos los endpoints protegidos requieren el header:
 Authorization: Bearer <access_token>
 ```
 
+## Endpoints protegidos
+
+| Endpoint | Auth requerido | Notas |
+|----------|---------------|-------|
+| `GET /api/v1/productos/buscar` | `get_current_user` | |
+| `GET /api/v1/productos/{codigo}/stock` | `get_current_user` | |
+| `POST /api/v1/ventas` | `get_current_user` | |
+| `GET /api/v1/ventas/validar-ticket/{numero_ticket}` | `get_current_user` | |
+| `PATCH /api/v1/ventas/{numero_ticket}/estado` | `get_current_user` | |
+| `POST /api/v1/cambios` | `get_current_user` | |
+| `POST /api/v1/cambios/{cambio_id}/validar-estado` | `get_current_user` | |
+| `POST /api/v1/descuentos` | `get_current_user` | |
+| `GET /api/v1/dashboard/resumen` | `get_current_user` | |
+| `GET /api/v1/dashboard/productos-stock-bajo` | `get_current_user` | |
+
 ## Mapeo de excepciones a HTTP
 
 | Excepción | HTTP Status | Código de error |
@@ -105,3 +122,13 @@ Authorization: Bearer <access_token>
 | `UsuarioNoAutorizadoError` | 403 | `USUARIO_NO_AUTORIZADO` |
 | `EmailDuplicadoError` | 409 | `EMAIL_DUPLICADO` |
 | `TokenInvalidoError` | 401 | `TOKEN_INVALIDO` |
+
+## Endpoints del frontend (consumidos)
+
+| Endpoint backend | Servicio frontend | Página |
+|-----------------|-------------------|--------|
+| `POST /auth/login` | `authService.login()` | `LoginPage` |
+| `POST /auth/registro` | `authService.registro()` | `RegisterPage` |
+| `POST /auth/refresh` | `authService.refresh()` | (interceptor Axios) |
+| `GET /dashboard/resumen` | `dashboardService.obtenerResumen()` | `DashboardPage` |
+| `GET /dashboard/productos-stock-bajo` | `dashboardService.obtenerProductosStockBajo()` | `DashboardPage` |

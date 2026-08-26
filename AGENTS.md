@@ -37,8 +37,8 @@ Monorepo académico: sistema de ventas e inventario retail. Backend **FastAPI** 
   - Prohibido `any`, prohibido inventar endpoints (solo los de `src/api/endpoints.ts`), prohibida lógica de negocio en componentes presentacionales.
   - Tipos en `src/types/api/` deben reflejar exactamente los esquemas Pydantic.
   - Errores HTTP centralizados (interceptor Axios / ErrorBoundary), sin `try/catch` dispersos.
-  - NO implementar autenticación real (YAGNI; backend aún no la tiene).
-- **Pantallas activas (ago 2026)**: `/productos/stock` (HU-06), `/ventas` (HU-01/07), `/cambios` (HU-02/03/04) + modal de descuentos (HU-05). Para un snapshot completo: `.opencode/rules/estado-proyecto.md`.
+  - Autenticación implementada (AuthContext + ProtectedRoute + JWT).
+- **Pantallas activas (ago 2026)**: `/dashboard` (panel principal), `/productos/stock` (HU-06), `/ventas` (HU-01/07), `/cambios` (HU-02/03/04) + modal de descuentos (HU-05), `/registro` (solo GERENTE). Para un snapshot completo: `.opencode/rules/estado-proyecto.md`.
 
 ## Convenciones de trabajo
 

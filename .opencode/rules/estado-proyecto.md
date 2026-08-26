@@ -2,7 +2,7 @@
 
 Snapshot vigente de la implementación. **NO asumas estado viejo** ni de memoria ni de sesiones anteriores: este archivo es la fuente rápida de contexto y el código es la fuente definitiva. Si algo de acá contradice el código, gana el código — y actualizá este archivo en el mismo commit para no volver a desincronizar.
 
-Última sincronización: 2026-08-25.
+Última sincronización: 2026-08-26.
 
 ## Historias de Usuario
 
@@ -31,6 +31,8 @@ Todos con prefijo `/api/v1`:
 | POST | `/cambios` | HU-02 |
 | POST | `/cambios/{cambio_id}/validar-estado` | HU-03 |
 | POST | `/descuentos` | HU-05 |
+| GET | `/dashboard/resumen` | Dashboard |
+| GET | `/dashboard/productos-stock-bajo` | Dashboard |
 
 Health check: `GET /` → `{"estado": "ok", ...}`. **NO existe `/health`.**
 
@@ -38,9 +40,12 @@ Códigos HTTP de error de negocio: `404` no encontrado · `409` conflictos de st
 
 ## Pantallas frontend (fuente: `src/routes/AppRouter.tsx`)
 
+- `/dashboard` — Panel principal con métricas del día + accesos rápidos + stock bajo
 - `/productos/stock` — Consulta de stock con badges 3 niveles (HU-06)
 - `/ventas` — Nueva venta con carrito tabular + modal de descuentos (HU-01 / HU-07 / HU-05)
 - `/cambios` — Wizard de cambios e inspección de producto (HU-04 / HU-02 / HU-03)
+- `/registro` — Alta de usuarios (solo GERENTE)
+- `/login` — Inicio de sesión
 - Cualquier otra ruta cae en 404
 
 ## Verificación conocida en verde
@@ -51,5 +56,4 @@ Códigos HTTP de error de negocio: `404` no encontrado · `409` conflictos de st
 ## Deuda / pendientes conocidos
 
 - `GET /api/v1/productos/{producto_id}/validaciones` (historial de inspecciones, HU-03): **opcional**, no implementado.
-- Autenticación real: YAGNI — el backend no la tiene; el frontend tiene un `AuthContext` placeholder sin protección de rutas activa.
-- Roles/RBAC, reportes y dashboards: fuera de alcance por ahora.
+- Roles/RBAC completo: fuera de alcance. Solo se valida rol GERENTE para `/registro` a nivel de ruta.

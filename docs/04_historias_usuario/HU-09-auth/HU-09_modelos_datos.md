@@ -1,8 +1,10 @@
 # HU-09: Modelos de Datos (Autenticación JWT)
 
+**Estado**: Implementado.
+
 ## Entidades Involucradas
 
-### 1. Usuario (Nueva)
+### 1. Usuario (Implementada)
 - `id` (String/UUID): Identificador único.
 - `email` (String): Email del usuario (único, índice de búsqueda).
 - `password_hash` (String): Contraseña hasheada con bcrypt.
@@ -11,12 +13,12 @@
 - `activo` (Boolean): Si el usuario está habilitado. Default `true`.
 
 ### 2. Roles del sistema
-| Rol | Descripción |
-|-----|-------------|
-| `VENDEDOR` | Realiza ventas, consulta stock |
-| `CAJERO` | Procesa pagos, emite tickets |
-| `GERENTE` | Administra descuentos, autoriza operaciones |
-| `ENCARGADO_VENTAS` | Supervisa operaciones de venta |
+| Rol | Descripción | Permisos |
+|-----|-------------|----------|
+| `VENDEDOR` | Realiza ventas, consulta stock | Acceso a `/ventas`, `/productos/*` |
+| `CAJERO` | Procesa pagos, emite tickets | Acceso a `/ventas`, `/productos/*` |
+| `GERENTE` | Administra descuentos, autoriza operaciones | Acceso total + `/registro` |
+| `ENCARGADO_VENTAS` | Supervisa operaciones de venta | Acceso a `/ventas`, `/productos/*`, `/cambios` |
 
 ## Puertos (Interfaces de dominio)
 
@@ -54,13 +56,13 @@ class UsuarioORM(Base):
 
 ## Reglas de Integridad y Base de Datos
 
-- El campo `email` debe tener restricción `UNIQUE` e índice para búsquedas rápidas.
-- El campo `rol` debe ser un string de máximo 30 caracteres (los valores del enum se almacenan como string).
+- El campo `email` tiene restricción `UNIQUE` e índice para búsquedas rápidas.
+- El campo `rol` es un string de máximo 30 caracteres (los valores del enum se almacenan como string).
 - La contraseña NUNCA se almacena en texto plano; solo el hash bcrypt.
 - La tabla `usuarios` se crea mediante migración Alembic.
-- **Nota**: `alembic/env.py` NO importa los modelos ORM actualmente (línea comentada). Hay que descomentar/agregar el import de `UsuarioORM` para que autogenerate detecte la tabla nueva.
+- `alembic/env.py` importa `UsuarioORM` (junto con los demás modelos ORM).
 
-## Dependencias a agregar (`requirements.txt`)
+## Dependencias (`requirements.txt`)
 
 ```
 bcrypt>=4.0.0,<5.0.0
@@ -76,3 +78,25 @@ JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=15
 REFRESH_TOKEN_EXPIRE_DAYS=7
 ```
+
+## Excepciones de dominio
+
+| Excepción | HTTP Status | Código de error | Uso |
+|-----------|-------------|-----------------|-----|
+| `CredencialesInvalidasError` | 401 | `CREDENCIALES_INVALIDAS` | Email o contraseña incorrectos |
+| `UsuarioNoAutenticadoError` | 401 | `USUARIO_NO_AUTENTICADO` | Sin token o token inválido |
+| `UsuarioNoAutorizadoError` | 403 | `USUARIO_NO_AUTORIZADO` | Token válido pero rol insuficiente |
+| `EmailDuplicadoError` | 409 | `EMAIL_DUPLICADO` | Email ya registrado |
+| `TokenInvalidoError` | 401 | `TOKEN_INVALIDO` | Token expirado o mal formado |
+
+## Adaptadores implementados
+
+- `BcryptPasswordHasher` → `app/infrastructure/auth/bcrypt_password_hasher.py`
+- `JWTTokenService` → `app/infrastructure/auth/jwt_token_service.py`
+- `UsuarioRepository` → `app/infrastructure/database/repositories/usuario_repository.py`
+
+## Dependencias FastAPI
+
+- `get_current_user` — Extrae y verifica el token del header Authorization
+- `RequireRole(rol)` — Valida que el usuario tenga un rol específico
+- `RequireAnyRole(*roles)` — Valida que el usuario tenga al menos uno de varios roles

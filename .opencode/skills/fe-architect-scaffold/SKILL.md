@@ -130,6 +130,8 @@ Seguir este orden y **esperar confirmación explícita antes de avanzar al sigui
 | `PATCH` | `/api/v1/ventas/{numero_ticket}/estado` | Marcar venta como EN_CAMBIO (retiene el ticket) | HU-04 |
 | `POST` | `/api/v1/cambios` | Registrar cambio de producto (valida plazo 15 días) | HU-02 |
 | `POST` | `/api/v1/cambios/{cambio_id}/validar-estado` | Validar estado físico del producto presentado a cambio | HU-03 |
+| `GET` | `/api/v1/dashboard/resumen` | Resumen del dashboard (ventas del día, total facturado, stock bajo) | Dashboard |
+| `GET` | `/api/v1/dashboard/productos-stock-bajo` | Productos activos con stock ≤ 5 unidades | Dashboard |
 
 > Nota: el health check real del backend es `GET /` (no existe `/health`).
 
