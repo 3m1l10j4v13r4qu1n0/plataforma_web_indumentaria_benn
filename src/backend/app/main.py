@@ -8,6 +8,7 @@ from app.presentation.handlers import register_exception_handlers
 # routers
 from app.presentation.routers.auth_router import router as auth_router
 from app.presentation.routers.cambio_router import router as cambio_router
+from app.presentation.routers.dashboard_router import router as dashboard_router
 from app.presentation.routers.descuento_router import router as descuento_router
 from app.presentation.routers.producto_router import router as producto_router
 from app.presentation.routers.venta_router import router as venta_router
@@ -56,6 +57,7 @@ app.include_router(producto_router)
 app.include_router(venta_router)
 app.include_router(descuento_router)
 app.include_router(cambio_router)
+app.include_router(dashboard_router)
 
 
 # ── Health check ─────────────────────────────────────────────────────
