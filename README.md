@@ -25,10 +25,7 @@
 - [14. Instalación y configuración](#14-instalación-y-configuración)
 - [15. Mockups y Prototipos de Interfaz](#15-mockups-y-prototipos-de-interfaz)
 
-
-
-
-
+---
 
 
 
@@ -105,7 +102,6 @@ plataforma_web_indumentaria_benn/
 ├── docs/                       # Carpeta principal de documentación
 │   ├── 01_global/              # 🌍 Información que aplica a TODO el proyecto
 │   │   ├── vision.md           # Objetivo del negocio y problema a resolver
-│   │   ├── alcance.md          # Qué incluye esta fase y qué queda fuera (Out of scope)
 │   │   ├── actores.md          # Definición de roles y sus permisos generales
 │   │   └── reglas_negocio.md   # 📜 Reglas transversales extraídas de las entrevistas
 │   │
@@ -116,9 +112,9 @@ plataforma_web_indumentaria_benn/
 │   │   └── definicion_listo.md # (DoR) Qué debe tener una HU para pasar a "En Desarrollo"
 │   │
 │   ├── 04_historias_usuario/   # 📖 Fuente de verdad: una carpeta HU-XX por historia,
-│   │   └── HU-01 ... HU-08     #    con especificación, API, modelos de datos y plan de pruebas
+│   │   └── HU-01 ... HU-09     #    con especificación, API, modelos de datos y plan de pruebas
 │   │
-│   └── 05_mockups/             # 🎨 Prototipos HTML + Tailwind por HU
+│   └── 05_mockups/             # 🎨 Prototipos HTML + Tailwind por HU (6 mockups)
 │
 ├── src/                        # Carpeta del código (Backend / Frontend)
 │   ├── backend/                # API FastAPI — Clean/Hexagonal Architecture (ver src/backend/README.md)
@@ -151,6 +147,10 @@ Hoja de ruta basada en las Historias de Usuario, agrupadas por módulos funciona
 
 - [x] [HU-05: Controlar descuentos (Límites y autorización de gerente)](docs/04_historias_usuario/HU-05/HU-05-Controlar_descuentos.md)
 
+### Fase 4: Seguridad y Autenticación
+
+- [x] [HU-09: Autenticación JWT y autorización por rol](docs/04_historias_usuario/HU-09-auth/HU-09-autenticacion-jwt.md)
+
 ---
 
 ## 7. Documentación Global Disponible
@@ -162,7 +162,7 @@ Hoja de ruta basada en las Historias de Usuario, agrupadas por módulos funciona
 | [Reglas de Negocio](docs/01_global/reglas_negocio.md)            | `docs/01_global/reglas_negocio.md`       | Reglas transversales (ej. plazo de 15 días, stock >= 0).                       |
 | [Modelo de Datos Global](docs/02_tecnico/modelo_datos_global.md) | `docs/02_tecnico/modelo_datos_global.md` | Entidades base y relaciones.                                                   |
 | [Definition of Ready](docs/03_procesos/definicion_listo.md)      | `docs/03_procesos/definicion_listo.md`   | Criterios para que una HU pase a desarrollo.                                   |
-| Detalle HU-01 a HU-08                                            | `docs/04_historias_usuario/HU-XX/`       | Modelos de datos, API, Casos de Uso y Planes de Prueba (TDD/SbE) por historia. |
+| Detalle HU-01 a HU-09                                            | `docs/04_historias_usuario/HU-XX/`       | Modelos de datos, API, Casos de Uso y Planes de Prueba (TDD/SbE) por historia. |
 
 ---
 
@@ -178,14 +178,15 @@ El sistema sigue una arquitectura en capas de tipo **Cliente-Servidor**:
 
 ## 9. Modelo de Datos (Resumen)
 
-Las entidades principales identificadas en el relevamiento son:
+Las entidades principales del sistema (7 tablas en PostgreSQL):
 
-- **Usuario**: `id`, `nombre`, `rol` (Vendedor, Cajero, Gerente).
-- **Producto**: `id`, `codigo`, `nombre`, `stock_actual` (>=0), `estado`, `precio`, `cantidad`.
-- **Venta**: `id`, `numero_ticket` (único), `fecha_hora`, `vendedor_id`, `cajero_id`, `total`, `estado`.
-- **Detalle_Venta**: `venta_id`, `producto_id`, `cantidad`, `precio_unitario`.
-- **Cambio**: `id`, `venta_original_id`, `fecha_cambio`, `estado_producto` (Nuevo/Usado/Dañado), `tiene_etiqueta` (Boolean), `cajero_id`.
-- **Movimiento_Stock**: `id`, `producto_id`, `tipo_movimiento` (VENTA/DEVOLUCION), `cantidad`, `documento_referencia_id`.
+- **Usuario**: `id`, `email`, `password_hash`, `nombre`, `rol` (VENDEDOR/CAJERO/GERENTE/ENCARGADO_VENTAS), `activo`.
+- **Producto**: `id`, `codigo`, `nombre`, `categoria`, `stock_actual` (>=0), `estado`, `precio`.
+- **Venta**: `id`, `numero_ticket` (único), `fecha_hora`, `vendedor_id`, `total`, `estado`.
+- **Detalle_Venta**: `id`, `venta_id`, `producto_id`, `cantidad`, `precio_unitario`.
+- **Descuento**: `id`, `venta_id`, `porcentaje`, `monto_descuento`, `motivo`, `autorizado_por`, `fecha_aplicacion`.
+- **Cambio**: `id`, `venta_original_id`, `producto_a_cambiar_id`, `nuevo_producto_id`, `estado`, `motivo`, `fecha_compra_original`, `observaciones`, `fecha_validacion`.
+- **Movimiento_Stock**: `id`, `producto_id`, `tipo_movimiento` (VENTA/DEVOLUCION), `cantidad`, `documento_referencia_id`, `fecha_hora`.
 
 ---
 
@@ -201,6 +202,7 @@ Las entidades principales identificadas en el relevamiento son:
 | **Cambios**    | HU-02 | Registrar cambios (15 días)      | Cajero           | Cumplir con el plazo máximo permitido para cambios.               |
 | **Cambios**    | HU-03 | Validar estado del producto      | Vendedor/Cajero  | Aceptar solo productos sin uso y con etiqueta.                    |
 | **Admin**      | HU-05 | Controlar descuentos             | Gerente          | Evitar pérdidas económicas por descuentos no autorizados.         |
+| **Seguridad**  | HU-09 | Autenticación JWT y autorización | Todos            | Controlar acceso y diferenciar permisos por rol.                  |
 
 ---
 
@@ -217,13 +219,14 @@ Las entidades principales identificadas en el relevamiento son:
 
 ## 12. Estado Actual del Proyecto
 
-Al día de la fecha, el **alcance funcional definido está implementado** (backend y frontend), con las 8 Historias de Usuario integradas en la rama `develop`.
+Al día de la fecha, el **alcance funcional definido está implementado** (backend y frontend), con las 9 Historias de Usuario integradas en la rama `develop`.
 
 - ✅ **Relevamiento y Documentación**: 100% Completado. Todas las HU cuentan con su especificación en formato Gherkin, _Specification by Example_ y casos de prueba TDD.
 - ✅ **Diseño de Arquitectura y Modelo de Datos**: 100% Completado a nivel conceptual, lógico y físico.
-- ✅ **Desarrollo Backend**: FastAPI con Clean/Hexagonal Architecture. 8 endpoints de negocio operativos, tests unitarios en verde (fakes en memoria, sin DB).
-- ✅ **Desarrollo Frontend**: React 19 + Vite + TypeScript. 3 pantallas productivas (`/productos/stock`, `/ventas`, `/cambios`) más el modal de descuentos.
-- ⏳ **Refinamiento**: pendientes opcionales (historial de validaciones por producto, autenticación real, RBAC).
+- ✅ **Desarrollo Backend**: FastAPI con Clean/Hexagonal Architecture. 11 endpoints operativos (8 de negocio + 3 de auth), 75 tests unitarios en verde (fakes en memoria, sin DB).
+- ✅ **Desarrollo Frontend**: React 19 + Vite + TypeScript. 5 pantallas productivas (`/login`, `/registro`, `/productos/stock`, `/ventas`, `/cambios`) más el modal de descuentos.
+- ✅ **Autenticación y Autorización**: JWT (access + refresh token) con 4 roles, protegiendo todos los endpoints.
+- ⏳ **Refinamiento**: pendientes opcionales (historial de validaciones por producto, reportes y dashboards).
 
 ---
 
@@ -232,10 +235,10 @@ Al día de la fecha, el **alcance funcional definido está implementado** (backe
 Basado en el roadmap y la metodología Kanban:
 
 1. **Endpoint opcional de historial**: `GET /api/v1/productos/{producto_id}/validaciones` para consultar inspecciones previas (HU-03).
-2. **Autenticación real**: cuando el backend exponga `/auth/login`, activar la protección de rutas en el frontend (hoy YAGNI).
-3. **Roles y permisos (RBAC)**: diferenciar flujos de Vendedor, Cajero y Gerente.
-4. **Reportes y dashboards**: métricas de ventas, cambios y descuentos autorizados.
-5. **QA continuo**: mantener suites en verde (pytest backend, Vitest frontend) como criterio de merge.
+2. **Reportes y dashboards**: métricas de ventas, cambios y descuentos autorizados.
+3. **QA continuo**: mantener suites en verde (pytest backend, Vitest frontend) como criterio de merge.
+4. **Tests de integración**: migrar tests unitarios (fakes en memoria) a tests de integración con DB real.
+5. **CI/CD**: configurar pipeline de integración continua y despliegue automático.
 
 ---
 
