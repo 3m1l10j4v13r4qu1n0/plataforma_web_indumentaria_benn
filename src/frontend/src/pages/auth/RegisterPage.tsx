@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/api/services/auth.service';
 import { ROUTES } from '@/constants/routes';
 import type { FormEvent } from 'react';
@@ -20,27 +19,6 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const { user } = useAuth();
-
-  if (user?.rol !== 'GERENTE') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="w-full max-w-sm text-center">
-          <h1 className="text-2xl font-bold text-slate-800">Acceso denegado</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Solo los gerentes pueden registrar usuarios.
-          </p>
-          <Link
-            to={ROUTES.PRODUCTOS_STOCK}
-            className="mt-4 inline-block text-sm font-medium text-brand-600 hover:underline"
-          >
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -67,7 +45,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-slate-800">SGVIR</h1>

@@ -4,6 +4,16 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
 
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'V-001', nombre: 'Vendedor Test', rol: 'VENDEDOR' },
+    token: 'mock-token',
+    isAuthenticated: true,
+    login: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
+
 vi.mock('@/api/services/productos.service', () => ({
   productosService: {
     obtenerStock: vi.fn(),

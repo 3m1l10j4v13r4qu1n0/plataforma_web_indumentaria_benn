@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useBuscarProductos } from '@/hooks/useBuscarProductos';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   StockSearchInput,
   ResultsHeader,
@@ -20,6 +21,7 @@ import { formatoFechaCorta } from '@/utils/format';
  * SRP: Orquesta hook + componentes presentacionales.
  */
 export function ConsultarStockPage() {
+  const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     query,
@@ -39,10 +41,10 @@ export function ConsultarStockPage() {
     mostrarResultados && resultados.length === 0;
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6">
+    <>
       <PageHeader
         title="Consulta de Stock en Tiempo Real"
-        meta={{ label: 'Vendedor', value: 'V-001' }}
+        meta={{ label: 'Vendedor', value: user?.nombre ?? '—' }}
         timestamp={formatoFechaCorta(new Date())}
         timestampLabel="Sistema"
       />
@@ -98,6 +100,6 @@ export function ConsultarStockPage() {
           />
         )}
       </div>
-    </main>
+    </>
   );
 }

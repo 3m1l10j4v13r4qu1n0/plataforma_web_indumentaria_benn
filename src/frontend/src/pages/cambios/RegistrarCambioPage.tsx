@@ -110,7 +110,7 @@ export function RegistrarCambioPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6">
+    <>
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">
           Registrar Cambio de Producto
@@ -221,6 +221,6 @@ export function RegistrarCambioPage() {
           )}
         </>
       )}
-    </main>
+    </>
   );
 }

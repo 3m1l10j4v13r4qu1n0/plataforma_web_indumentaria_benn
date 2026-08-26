@@ -126,14 +126,6 @@ export function LoginPage() {
 
         <p className="mt-4 text-center text-xs text-slate-400">
           <Link
-            to={ROUTES.PRODUCTOS_STOCK}
-            className="text-brand-600 hover:underline"
-          >
-            Continuar sin sesión
-          </Link>
-        </p>
-        <p className="mt-2 text-center text-xs text-slate-400">
-          <Link
             to={ROUTES.REGISTRO}
             className="text-brand-600 hover:underline"
           >

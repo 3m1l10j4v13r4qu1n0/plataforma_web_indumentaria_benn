@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   StockSearchInput,
   VentaProductoCard,
@@ -33,11 +34,11 @@ import type { CrearVentaRequest } from '@/types/api';
  * SRP: solo orquesta; la lógica de negocio queda en hooks/servicios.
  */
 export function CrearVentaPage() {
+  const { user } = useAuth();
   const [inputCodigo, setInputCodigo] = useState('');
   const [codigoBuscado, setCodigoBuscado] = useState('');
   const [cantidad, setCantidad] = useState(1);
   const [items, setItems] = useState<VentaItem[]>([]);
-  const [vendedorId, setVendedorId] = useState('V-001');
   const [descuentoModalAbierto, setDescuentoModalAbierto] = useState(false);
   const [toastVenta, setToastVenta] = useState<string | null>(null);
 
@@ -132,7 +133,7 @@ export function CrearVentaPage() {
     if (ventaBloqueada) return;
 
     const request: CrearVentaRequest = {
-      vendedor_id: vendedorId.trim() || 'V-001',
+      vendedor_id: user?.id ?? 'V-001',
       items: items.map((i) => ({
         producto_id: i.productoId,
         cantidad: i.cantidad,
@@ -189,10 +190,10 @@ export function CrearVentaPage() {
     : null;
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6">
+    <>
       <PageHeader
         title="Nueva Venta"
-        meta={{ label: 'Vendedor', value: vendedorId }}
+        meta={{ label: 'Vendedor', value: user?.nombre ?? '—' }}
         timestamp={formatoFechaCorta(new Date())}
       />
 
@@ -333,17 +334,6 @@ export function CrearVentaPage() {
                   </span>
                 </p>
 
-                <label className="mt-4 block text-sm text-slate-700">
-                  <span className="mb-1 block">ID de vendedor</span>
-                  <input
-                    type="text"
-                    value={vendedorId}
-                    onChange={(e) => setVendedorId(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                    aria-label="ID de vendedor"
-                  />
-                </label>
-
                 {/* Bloqueo preventivo por ítem sin stock (contrato HU-01) */}
                 {ventaBloqueada && itemSinStock && (
                   <Alert
@@ -451,6 +441,6 @@ export function CrearVentaPage() {
         isPending={descuentoMutation.isPending}
         error={errorDescuento}
       />
-    </main>
+    </>
   );
 }

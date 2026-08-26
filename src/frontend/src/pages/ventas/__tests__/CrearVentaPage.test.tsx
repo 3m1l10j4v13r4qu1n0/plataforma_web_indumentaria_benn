@@ -6,6 +6,16 @@ import { CrearVentaPage } from '@/pages/ventas/CrearVentaPage';
 import type { StockProducto } from '@/types/domain';
 import type { VentaResponse } from '@/types/api';
 
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'V-001', nombre: 'Vendedor Test', rol: 'VENDEDOR' },
+    token: 'mock-token',
+    isAuthenticated: true,
+    login: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
+
 vi.mock('@/api/services/productos.service', () => ({
   productosService: {
     obtenerStock: vi.fn(),
