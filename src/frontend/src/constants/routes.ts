@@ -4,6 +4,7 @@
  */
 export const ROUTES = {
   HOME: '/',
+  DASHBOARD: '/dashboard',
   PRODUCTOS_STOCK: '/productos/stock',
   VENTAS: '/ventas',
   CAMBIOS: '/cambios',

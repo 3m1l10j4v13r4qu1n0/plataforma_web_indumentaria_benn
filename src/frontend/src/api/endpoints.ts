@@ -38,4 +38,10 @@ export const API_ENDPOINTS = {
   DESCUENTOS: {
     APPLY: '/api/v1/descuentos',
   },
+
+  // Dashboard
+  DASHBOARD: {
+    RESUMEN: '/api/v1/dashboard/resumen',
+    PRODUCTOS_STOCK_BAJO: '/api/v1/dashboard/productos-stock-bajo',
+  },
 } as const;
