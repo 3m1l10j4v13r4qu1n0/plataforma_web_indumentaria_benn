@@ -120,12 +120,12 @@ Esta documentación simula los artefactos generados por un **Analista de Sistema
 - Registro de devoluciones.
 - Reintegro automático de stock cuando corresponde.
 
-### Seguridad y Control
+### Seguridad y Autenticación (HU-09)
 
-- Gestión de usuarios.
-- Gestión de roles y permisos.
-- Validación de reglas de negocio.
-- Trazabilidad de operaciones.
+- Registro de usuarios con roles (VENDEDOR, CAJERO, GERENTE, ENCARGADO_VENTAS).
+- Login con JWT (access token 15min + refresh token 7 días).
+- Protección de endpoints con `get_current_user` y `RequireRole`.
+- Validación de permisos por rol en cada endpoint.
 
 ---
 
@@ -136,6 +136,9 @@ Todos los endpoints de negocio viven bajo el prefijo `/api/v1`. La documentació
 | Método | Ruta | Descripción | HU |
 |--------|------|-------------|----|
 | GET | `/` | Health check (`{"estado": "ok"}`) — **no existe `/health`** | — |
+| POST | `/api/v1/auth/registro` | Registrar usuario nuevo (requiere rol GERENTE) | HU-09 |
+| POST | `/api/v1/auth/login` | Login con email + password, devuelve JWT | HU-09 |
+| POST | `/api/v1/auth/refresh` | Renovar access token usando refresh token | HU-09 |
 | GET | `/api/v1/productos/{codigo}/stock` | Consultar stock en tiempo real | HU-06 |
 | GET | `/api/v1/productos/buscar?query=` | Buscar productos por código o nombre | HU-06 |
 | POST | `/api/v1/ventas` | Validar stock, confirmar venta y generar ticket | HU-01 / HU-07 |
@@ -145,11 +148,13 @@ Todos los endpoints de negocio viven bajo el prefijo `/api/v1`. La documentació
 | POST | `/api/v1/cambios/{cambio_id}/validar-estado` | Registrar inspección física del producto | HU-03 |
 | POST | `/api/v1/descuentos` | Aplicar descuento con autorización de gerente si excede el límite | HU-05 |
 
-Códigos HTTP de errores de negocio (mapeados centralizadamente en `handlers.py`):
+Códigos HTTP de errores (mapeados centralizadamente en `handlers.py`):
 
+- `400` → solicitud inválida (producto inválido, búsqueda inválida).
+- `401` → no autenticado (credenciales inválidas, token inválido/expirado).
+- `403` → no autorizado (rol insuficiente, plazo de cambio vencido).
 - `404` → recurso inexistente (producto, venta, cambio, ticket).
-- `409` → conflictos (stock insuficiente, ticket duplicado, venta ya en cambio, falla de actualización de stock).
-- `403` → plazo de cambio vencido.
+- `409` → conflictos (stock insuficiente, email duplicado, ticket duplicado, venta ya en cambio).
 - `422` → validaciones de negocio (descuento fuera de límite/sin autorización, producto no apto, observaciones requeridas).
 
 ---
@@ -201,6 +206,8 @@ Esto permite mantener el sistema modular y mantenible.
 - PostgreSQL
 - Pydantic V2
 - Pytest + pytest-asyncio
+- bcrypt (hashing de passwords)
+- python-jose[cryptography] (tokens JWT)
 
 ---
 
@@ -295,12 +302,15 @@ backend/
 │   │   │   ├── producto_router.py    (stock, búsqueda — HU-06)
 │   │   │   ├── venta_router.py       (ventas, ticket, validar-ticket — HU-01/04/07)
 │   │   │   ├── cambio_router.py      (cambios e inspección — HU-02/03)
-│   │   │   └── descuento_router.py   (descuentos — HU-05)
+│   │   │   ├── descuento_router.py   (descuentos — HU-05)
+│   │   │   └── auth_router.py        (registro, login, refresh — HU-09)
 │   │   ├── schemas/
 │   │   │   ├── producto_schema.py
 │   │   │   ├── venta_schema.py
 │   │   │   ├── cambio_schema.py
-│   │   │   └── descuento_schema.py   💬 DTOs de entrada/salida (Pydantic V2)
+│   │   │   ├── descuento_schema.py   💬 DTOs de entrada/salida (Pydantic V2)
+│   │   │   └── auth_schema.py        💬 schemas de auth (Registro, Login, Token)
+│   │   ├── dependencies.py           💬 get_current_user, RequireRole (HU-09)
 │   │   └── handlers.py         💬 mapeo centralizado dominio → HTTP (único lugar con try/except)
 │   │
 │   ├── application/            🟩 capa de aplicación (use cases)
@@ -317,7 +327,10 @@ backend/
 │   │       ├── procesar_cambio_use_case.py            (HU-02)
 │   │       ├── validar_estado_producto_use_case.py    (HU-03)
 │   │       ├── actualizar_stock_use_case.py           (HU-08, atómico con UoW)
-│   │       └── aplicar_descuento_use_case.py          (HU-05)
+│   │       ├── aplicar_descuento_use_case.py          (HU-05)
+│   │       ├── registrar_usuario_use_case.py          (HU-09)
+│   │       ├── login_use_case.py                      (HU-09)
+│   │       └── refresh_token_use_case.py              (HU-09)
 │   │
 │   ├── domain/                 🟥 capa de dominio (core, Python puro sin frameworks)
 │   │   ├── models/
@@ -326,7 +339,8 @@ backend/
 │   │   │   ├── detalle_venta.py
 │   │   │   ├── cambio.py
 │   │   │   ├── descuento.py
-│   │   │   └── movimiento_stock.py
+│   │   │   ├── movimiento_stock.py
+│   │   │   └── usuario.py               (HU-09: entidad de autenticación)
 │   │   ├── ports/              💬 contratos (typing.Protocol) → Ports & Adapters
 │   │   │   ├── i_producto_repository.py
 │   │   │   ├── i_venta_repository.py
@@ -334,25 +348,31 @@ backend/
 │   │   │   ├── i_descuento_repository.py
 │   │   │   ├── i_movimiento_stock_repository.py
 │   │   │   ├── i_generador_numero_ticket.py
-│   │   │   └── i_unit_of_work.py
+│   │   │   ├── i_unit_of_work.py
+│   │   │   ├── i_usuario_repository.py  (HU-09)
+│   │   │   ├── i_password_hasher.py     (HU-09)
+│   │   │   └── i_token_service.py       (HU-09)
 │   │   └── exceptions.py       💬 excepciones de dominio (mapeadas solo en handlers.py)
 │   │
 │   └── infrastructure/         🟨 capa de infraestructura (adapters)
 │       ├── core/
-│       │   └── config.py       💬 settings (.env, DATABASE_URL)
+│       │   └── config.py       💬 settings (.env, DATABASE_URL, JWT keys)
+│       ├── auth/                   💬 adaptadores de autenticación (HU-09)
+│       │   ├── bcrypt_password_hasher.py
+│       │   └── jwt_token_service.py
 │       ├── database/
 │       │   ├── session.py              💬 AsyncSession / engine
 │       │   ├── generador_numero_ticket.py  💬 generación única de tickets (HU-07)
 │       │   ├── unit_of_work.py             💬 transacciones atómicas entre agregados (HU-08)
-│       │   ├── orm_models/             💬 6 modelos SQLAlchemy (producto, venta, detalle,
-│       │   │                              cambio, descuento, movimiento_stock)
-│       │   └── repositories/           💬 implementaciones de los ports (5 repositorios)
+│       │   ├── orm_models/             💬 7 modelos SQLAlchemy (producto, venta, detalle,
+│       │   │                              cambio, descuento, movimiento_stock, usuario)
+│       │   └── repositories/           💬 implementaciones de los ports (6 repositorios)
 │       └── dependencies/
 │           └── dependency_injection.py 💬 fábricas con Depends (wiring por request)
 │
 ├── tests/unit/                 💬 tests de aislamiento: fakes en memoria, sin DB real
-│   ├── fakes/                      (7 fakes: repos + generador de ticket + UoW)
-│   └── use_cases/                  (8 suites de casos de uso)
+│   ├── fakes/                      (10 fakes: repos + generador de ticket + UoW + auth)
+│   └── use_cases/                  (13 suites de casos de uso, 75 tests)
 │
 ├── requirements.txt
 ├── alembic.ini
@@ -403,8 +423,9 @@ Infrastructure (DB, APIs externas)
 - Fase 5: Implementación del módulo de ventas ✔ (HU-01 / HU-07)
 - Fase 6: Implementación del módulo de descuentos ✔ (HU-05)
 - Fase 7: Implementación del módulo de cambios y devoluciones ✔ (HU-02 / HU-03 / HU-04)
-- Fase 8: Pruebas unitarias ✔ (55 tests, fakes en memoria) — integración pendiente
+- Fase 8: Pruebas unitarias ✔ (75 tests, fakes en memoria) — integración pendiente
 - Fase 9: Documentación técnica 🚧 (en mejora continua)
+- Fase 10: Autenticación y autorización (HU-09) ✔ (JWT + roles)
 ---
 
 ## 🔖 Tags
@@ -417,11 +438,13 @@ Infrastructure (DB, APIs externas)
 - `hu-06-consulta-stock-disponible`
 - `hu-07-generacion-ticket-venta`
 - `hu-08-actualizacion-automatica-stock`  
+- `hu-09-autenticacion-y-autorizacion`  
 
+---
 
+## 🧠 Perfil objetivo
 
-
-
+Este proyecto está pensado como material demostrativo para:
 
 ## 🧠 Perfil objetivo
 
