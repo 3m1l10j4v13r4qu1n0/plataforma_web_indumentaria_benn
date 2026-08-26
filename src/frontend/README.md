@@ -33,6 +33,7 @@ El **SGVIR Frontend** es la capa de presentación del Sistema de Gestión de Ven
 - ✅ Generar tickets de venta con simulación de impresión
 - ✅ Gestionar cambios y devoluciones (validación de tickets y plazos)
 - ✅ Controlar descuentos con autorización jerárquica
+- ✅ Autenticarse con JWT (login, registro, roles)
 
 ### 🏗️ Relación con el Backend
 
@@ -68,7 +69,7 @@ El frontend sigue los principios de **Clean Architecture adaptados a React**, co
 - ✅ **DIP**: Los contenedores dependen de hooks, no de Axios directamente
 - ✅ **KISS**: Solución más simple posible, sin sobre-ingeniería
 - ✅ **DRY**: Componentes y hooks reutilizables
-- ✅ **YAGNI**: No implementar lo que no se necesita aún (ej: autenticación real)
+- ✅ **YAGNI**: No implementar lo que no se necesita aún
 - ✅ **Anti-alucinación**: Solo se consumen endpoints documentados del backend
 
 ### Manejo de Errores
@@ -85,7 +86,7 @@ El frontend sigue los principios de **Clean Architecture adaptados a React**, co
 |---|---|---|---|
 | **Build Tool** | Vite | 8.x | Rápido, moderno, configuración mínima |
 | **Framework** | React | 19.x | Estándar de la industria |
-| **Lenguaje** | TypeScript | 5.x (strict) | Tipado fuerte, evita bugs |
+| **Lenguaje** | TypeScript | 6.x (strict) | Tipado fuerte, evita bugs |
 | **Router** | React Router | v7 | Estándar para SPA |
 | **HTTP Client** | Axios | 1.x | Interceptores, fácil manejo de errores |
 | **Estado API** | TanStack Query | 5.x | Cache, refetch, estados de carga |
@@ -144,11 +145,10 @@ npm install clsx tailwind-merge date-fns
 # Tailwind CSS v4 + plugin de Vite
 npm install tailwindcss @tailwindcss/vite
 # Dev dependencies
-npm install -D eslint prettier eslint-config-prettier \
-  eslint-plugin-react-hooks eslint-plugin-react-refresh
+npm install -D oxlint @vitejs/plugin-react
 npm install -D @testing-library/react @testing-library/jest-dom \
   @testing-library/user-event
-npm install -D vitest jsdom @types/node
+npm install -D vitest jsdom @types/node typescript
 ```
 
 ### Paso 3: Configurar Tailwind CSS v4
@@ -287,7 +287,8 @@ src/frontend/
     │       ├── productos.service.types.ts  # Contrato IProductosService
     │       ├── venta.service.ts            # Procesar venta / ticket (HU-01/07)
     │       ├── cambio.service.ts           # Flujo de cambios (HU-02/03/04)
-    │       └── descuento.service.ts        # Descuentos con autorización (HU-05)
+    │       ├── descuento.service.ts        # Descuentos con autorización (HU-05)
+    │       └── auth.service.ts             # Login, registro, refresh (HU-09)
     │
     ├── components/               # 🎨 Componentes reutilizables
     │   ├── ui/                   # Presentacionales puros (reciben props y renderizan)
@@ -303,6 +304,9 @@ src/frontend/
     │       └── index.ts
     │
     ├── pages/                    # 📄 Contenedores (orquestan hooks + UI)
+    │   ├── auth/
+    │   │   ├── LoginPage.tsx             # Formulario de login (HU-09)
+    │   │   └── RegisterPage.tsx          # Formulario de registro (HU-09)
     │   ├── ventas/
     │   │   ├── CrearVentaPage.tsx
     │   │   └── __tests__/
@@ -323,10 +327,11 @@ src/frontend/
     │   └── useDescuento.ts
     │
     ├── contexts/                 # 🌍 Contextos globales
-    │   └── AuthContext.tsx       # Preparado para auth futura (YAGNI)
+    │   └── AuthContext.tsx       # Auth activo: login, logout, JWT, sesion (HU-09)
     │
     ├── routes/                   # 🧭 Configuración de React Router v7
-    │   └── AppRouter.tsx         # /productos/stock · /ventas · /cambios
+    │   ├── AppRouter.tsx         # /login · /registro · /productos/stock · /ventas · /cambios
+    │   └── ProtectedRoute.tsx    # Guard de rutas autenticadas (HU-09)
     │
     ├── types/                    # 📝 Tipos TypeScript
     │   ├── api/                  # Espejo de esquemas Pydantic
@@ -334,6 +339,7 @@ src/frontend/
     │   │   ├── venta.types.ts
     │   │   ├── cambio.types.ts
     │   │   ├── descuento.types.ts
+    │   │   ├── auth.types.ts             # Tipos de auth (HU-09)
     │   │   ├── error.types.ts
     │   │   └── index.ts
     │   └── domain/               # Tipos de dominio del frontend
@@ -347,8 +353,7 @@ src/frontend/
     │   ├── routes.ts
     │   └── stock.ts              # Umbrales de niveles de stock
     │
-    ├── styles/                   # 🎨 Estilos globales
-    │   └── index.css             # Tailwind v4 (@theme con colores brand)
+    ├── index.css                 # 🎨 Tailwind v4 (@theme con colores brand)
     │
     └── test/                     # 🧪 Configuración de testing
         └── setup.ts
@@ -375,13 +380,12 @@ src/frontend/
 ### Commits Atómicos (Conventional Commits)
 
 ```bash
-feat: agregar pantalla de procesamiento de ventas
-fix: corregir validación de descuento en formulario
-refactor: extraer componente de tabla de productos
-test: agregar pruebas para hook useBuscarProductos
-docs: documentar estructura de carpetas del frontend
-chore: actualizar dependencias de Vite
-style: aplicar formato con Prettier
+feat(ventas): se agrega pantalla de procesamiento de ventas
+fix(descuentos): se corrige validacion de descuento en formulario
+refactor(productos): se extrae componente de tabla de productos
+test(hooks): se agregan pruebas para hook useBuscarProductos
+docs: se documenta estructura de carpetas del frontend
+chore: se actualizan dependencias de Vite
 ```
 
 ### Reglas Inquebrantables
@@ -390,7 +394,6 @@ style: aplicar formato con Prettier
 - ❌ **Prohibido inventar endpoints** que no estén en la lista oficial
 - ❌ **Prohibido lógica de negocio** en componentes presentacionales
 - ❌ **Prohibido `try/catch` dispersos** para errores HTTP
-- ❌ **Prohibido autenticación real** hasta que el backend la soporte
 - ✅ **Componentes pequeños** (<150 líneas)
 - ✅ **Nombres descriptivos** para componentes, hooks y variables
 - ✅ **Tipos alineados** con esquemas Pydantic del backend
@@ -422,8 +425,9 @@ style: aplicar formato con Prettier
 | HU-06 | Ventas | Consultar stock disponible | ✅ Completada |
 | HU-07 | Ventas | Generar ticket de venta | ✅ Completada |
 | HU-08 | Inventario | Actualizar stock automáticamente | ✅ Completada (feedback post-venta) |
+| HU-09 | Seguridad | Autenticación JWT y autorización | ✅ Completada (login, registro, ProtectedRoute) |
 
-Pantallas activas en el router: `/productos/stock`, `/ventas` y `/cambios`.
+Pantallas activas en el router: `/login`, `/registro`, `/productos/stock`, `/ventas` y `/cambios`.
 
 ### Flujo de Trabajo (6 Pasos por HU)
 
@@ -454,10 +458,12 @@ Cada HU se implementa siguiendo estrictamente estos pasos:
 ### Fase 3: Administración y Control ✅
 - [x] HU-05: Controlar descuentos (autorización de gerente)
 
+### Fase 4: Seguridad y Autenticación ✅
+- [x] HU-09: Autenticación JWT (login, registro, ProtectedRoute, AuthContext)
+
 ### Futuro
-- [ ] Autenticación real (cuando el backend la implemente)
-- [ ] Roles y permisos (RBAC)
 - [ ] Reportes y dashboards
+- [ ] Tests de integración con backend real
 
 ---
 
