@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { LoginPage } from '@/pages/auth/LoginPage';
+import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ConsultarStockPage } from '@/pages/productos/ConsultarStockPage';
 import { CrearVentaPage } from '@/pages/ventas/CrearVentaPage';
 import { RegistrarCambioPage } from '@/pages/cambios/RegistrarCambioPage';
@@ -16,6 +17,16 @@ export function AppRouter() {
     <Routes>
       {/* Login — ruta pública */}
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+
+      {/* Registro — ruta protegida (solo GERENTE, validado en el componente) */}
+      <Route
+        path={ROUTES.REGISTRO}
+        element={
+          <ProtectedRoute>
+            <RegisterPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Rutas protegidas */}
       <Route

@@ -7,7 +7,8 @@ export const ROUTES = {
   PRODUCTOS_STOCK: '/productos/stock',
   VENTAS: '/ventas',
   CAMBIOS: '/cambios',
-  LOGIN: '/login', // Preparado para fase futura de auth (YAGNI)
+  LOGIN: '/login',
+  REGISTRO: '/registro',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
